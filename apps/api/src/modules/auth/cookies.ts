@@ -3,6 +3,8 @@ import type { CookieOptions, Request, Response } from 'express';
 export const ACCESS_COOKIE = 'lh_at';
 export const REFRESH_COOKIE = 'lh_rt';
 export const OAUTH_STATE_COOKIE = 'lh_oauth_state';
+/** Cookie gợi ý "đang có phiên" cho proxy của web (không httpOnly, không chứa bí mật). */
+export const SESSION_HINT_COOKIE = 'lh_session';
 
 export const ACCESS_TTL_SEC = 15 * 60;
 export const REFRESH_TTL_SEC = 30 * 24 * 60 * 60;
@@ -30,11 +32,17 @@ export function setAuthCookies(res: Response, tokens: AuthTokens, secure: boolea
     path: AUTH_COOKIE_PATH,
     maxAge: REFRESH_TTL_SEC * 1000,
   });
+  res.cookie(SESSION_HINT_COOKIE, '1', {
+    ...baseOptions(secure),
+    httpOnly: false,
+    maxAge: REFRESH_TTL_SEC * 1000,
+  });
 }
 
 export function clearAuthCookies(res: Response, secure: boolean): void {
   res.clearCookie(ACCESS_COOKIE, baseOptions(secure));
   res.clearCookie(REFRESH_COOKIE, { ...baseOptions(secure), path: AUTH_COOKIE_PATH });
+  res.clearCookie(SESSION_HINT_COOKIE, { ...baseOptions(secure), httpOnly: false });
 }
 
 export function setOAuthStateCookie(res: Response, state: string, secure: boolean): void {
