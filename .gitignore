@@ -22,3 +22,7 @@ apps/api/src/generated/
 
 # Next.js generated type stub
 apps/web/next-env.d.ts
+
+# Playwright MCP artifacts
+.playwright-mcp/
+*.png

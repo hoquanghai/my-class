@@ -28,14 +28,20 @@ export class HttpExceptionFilter implements ExceptionFilter {
       return;
     }
 
-    this.logger.error(exception instanceof Error ? (exception.stack ?? exception.message) : String(exception));
-    res
-      .status(HttpStatus.INTERNAL_SERVER_ERROR)
-      .json({ statusCode: HttpStatus.INTERNAL_SERVER_ERROR, message: 'Lỗi hệ thống, vui lòng thử lại' });
+    this.logger.error(
+      exception instanceof Error ? (exception.stack ?? exception.message) : String(exception),
+    );
+    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+      statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Lỗi hệ thống, vui lòng thử lại',
+    });
   }
 }
 
-function normalizeBody(body: string | object, fallback: string): { message: string; code?: string } {
+function normalizeBody(
+  body: string | object,
+  fallback: string,
+): { message: string; code?: string } {
   if (typeof body === 'string') return { message: body };
   const b = body as { message?: unknown; code?: unknown };
   const message = Array.isArray(b.message)

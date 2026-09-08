@@ -100,14 +100,20 @@ describe('Auth (e2e)', () => {
     expect(fresh.lh_rt).toBeTruthy();
     expect(fresh.lh_rt).not.toBe(oldRt);
     await http().get('/api/auth/me').set('Cookie', cookieHeader(fresh)).expect(200);
-    await http().post('/api/auth/refresh').set('Cookie', cookieHeader({ lh_rt: oldRt })).expect(401);
+    await http()
+      .post('/api/auth/refresh')
+      .set('Cookie', cookieHeader({ lh_rt: oldRt }))
+      .expect(401);
   });
 
   it('forgot/reset password: đổi mật khẩu, thu hồi phiên cũ, email coi như đã xác thực', async () => {
     mailer.outbox.length = 0;
     const s = await signup(app, 'reset');
     await http().post('/api/auth/forgot-password').send({ email: s.email }).expect(204);
-    await http().post('/api/auth/forgot-password').send({ email: uniqueEmail('nope') }).expect(204);
+    await http()
+      .post('/api/auth/forgot-password')
+      .send({ email: uniqueEmail('nope') })
+      .expect(204);
 
     const mail = mailer.outbox.find((m) => m.to === s.email && m.subject.includes('Đặt lại'));
     const token = tokenFromMail(mail?.text ?? '');
@@ -130,7 +136,10 @@ describe('Auth (e2e)', () => {
 
   it('logout thu hồi refresh và xóa cookie', async () => {
     const s = await signup(app, 'logout');
-    const res = await http().post('/api/auth/logout').set('Cookie', cookieHeader(s.jar)).expect(204);
+    const res = await http()
+      .post('/api/auth/logout')
+      .set('Cookie', cookieHeader(s.jar))
+      .expect(204);
     const cleared = readSetCookies(res);
     expect(cleared.lh_at).toBe('');
     expect(cleared.lh_rt).toBe('');
@@ -159,6 +168,10 @@ describe('Auth (e2e)', () => {
   it('GET /limits trả giới hạn gói miễn phí', async () => {
     const s = await signup(app, 'limits');
     const res = await http().get('/api/limits').set('Cookie', cookieHeader(s.jar)).expect(200);
-    expect(res.body).toMatchObject({ maxClasses: 2, maxStudentsPerClass: 50, exportEnabled: false });
+    expect(res.body).toMatchObject({
+      maxClasses: 2,
+      maxStudentsPerClass: 50,
+      exportEnabled: false,
+    });
   });
 });

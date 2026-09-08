@@ -99,7 +99,11 @@ export class ClassesService {
     return toDetail(klass, await this.listStudents(classId));
   }
 
-  async update(teacherId: string, classId: string, input: UpdateClassInput): Promise<ClassDetailDto> {
+  async update(
+    teacherId: string,
+    classId: string,
+    input: UpdateClassInput,
+  ): Promise<ClassDetailDto> {
     await this.findOwned(teacherId, classId);
     const klass = await this.prisma.class.update({
       where: { id: classId },

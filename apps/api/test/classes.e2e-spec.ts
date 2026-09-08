@@ -125,7 +125,9 @@ describe('Classes (e2e)', () => {
       .expect(200);
     expect(qr.headers['content-type']).toBe('image/png');
     const png = qr.body as Buffer;
-    expect(png.subarray(0, 8)).toEqual(Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]));
+    expect(png.subarray(0, 8)).toEqual(
+      Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]),
+    );
   });
 
   it('xóa vĩnh viễn cascade học sinh', async () => {

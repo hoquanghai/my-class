@@ -46,6 +46,21 @@ Các lệnh trên đi qua Turbo nên tự sinh Prisma client trước. Nếu ch�
 
 Xem `apps/api/.env.example` và `apps/web/.env.example`. `apps/api/.env.test` dùng cho e2e (không có secret).
 
+| Biến (api)                                 | Ý nghĩa                                                                    |
+| ------------------------------------------ | -------------------------------------------------------------------------- |
+| `JWT_SECRET`                               | Bí mật ký access token (≥ 32 ký tự). Production: `openssl rand -base64 48` |
+| `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` | Google OAuth; để trống thì nút "Tiếp tục với Google" bị ẩn                 |
+| `SMTP_HOST/PORT/USER/PASS/SECURE`          | Gửi email xác thực và đặt lại mật khẩu (dev: Mailpit `localhost:1025`)     |
+| `MAIL_FROM`                                | Địa chỉ người gửi                                                          |
+| `MAIL_TRANSPORT`                           | `smtp` (mặc định) hoặc `memory` (test: giữ email trong RAM)                |
+| `APP_URL`, `API_URL`                       | Địa chỉ web và api, dùng cho cookie, CORS, liên kết trong email, OAuth     |
+
+## Xác thực
+
+- Giáo viên: email + mật khẩu (argon2) hoặc Google. Access token JWT 15 phút trong cookie `lh_at`, refresh token 30 ngày (xoay vòng, hash trong DB) trong cookie `lh_rt` (path `/api/auth`), cookie gợi ý `lh_session` cho `proxy.ts` của web.
+- Rate limit: 120 req/phút/IP toàn cục, 10 req/phút/IP cho các endpoint auth.
+- Redirect Google OAuth: `API_URL/api/auth/google/callback` (khai báo trong Google Cloud Console).
+
 ## Docker
 
 ```bash

@@ -18,7 +18,11 @@ export function Dialog({ open, onClose, title, children, className }: DialogProp
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    if (open && !el.open) el.showModal();
+    if (open && !el.open) {
+      el.showModal();
+      // showModal() đặt focus vào nút Đóng; chuyển sang ô nhập đầu tiên nếu có
+      el.querySelector<HTMLElement>('input, textarea, select')?.focus();
+    }
     if (!open && el.open) el.close();
   }, [open]);
 

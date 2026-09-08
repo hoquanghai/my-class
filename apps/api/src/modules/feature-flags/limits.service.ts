@@ -23,7 +23,10 @@ export class LimitsService {
     const d = FREE_LIMIT_DEFAULTS;
     return {
       maxClasses: await this.flags.get('free.max_classes', d.maxClasses),
-      maxStudentsPerClass: await this.flags.get('free.max_students_per_class', d.maxStudentsPerClass),
+      maxStudentsPerClass: await this.flags.get(
+        'free.max_students_per_class',
+        d.maxStudentsPerClass,
+      ),
       aiPagesPerMonth: await this.flags.get('free.ai_pages_per_month', d.aiPagesPerMonth),
       historyDays: await this.flags.get('free.history_days', d.historyDays),
       exportEnabled: await this.flags.get('free.export_enabled', d.exportEnabled),

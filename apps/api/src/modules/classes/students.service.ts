@@ -47,7 +47,9 @@ export class StudentsService {
     try {
       rows = await parseRosterWorkbook(buffer);
     } catch {
-      throw new BadRequestException('Không đọc được file Excel. Hãy lưu lại dạng .xlsx và thử lại.');
+      throw new BadRequestException(
+        'Không đọc được file Excel. Hãy lưu lại dạng .xlsx và thử lại.',
+      );
     }
     if (rows.length === 0) {
       throw new BadRequestException('Không tìm thấy tên học sinh trong file Excel');
@@ -141,9 +143,7 @@ export class StudentsService {
     if (!sameSet) throw new BadRequestException('Danh sách id không khớp với lớp');
 
     await this.prisma.$transaction(
-      ids.map((id, i) =>
-        this.prisma.student.update({ where: { id }, data: { sortOrder: i } }),
-      ),
+      ids.map((id, i) => this.prisma.student.update({ where: { id }, data: { sortOrder: i } })),
     );
     return this.list(classId);
   }

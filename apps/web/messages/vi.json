@@ -80,6 +80,7 @@
     "grade": "Khối / lớp",
     "schedule": "Lịch học",
     "addScheduleRow": "Thêm buổi",
+    "removeScheduleRow": "Xóa buổi",
     "weekday": "Thứ",
     "start": "Bắt đầu",
     "end": "Kết thúc",

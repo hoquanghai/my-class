@@ -1,5 +1,7 @@
 # S1 — Auth + Lớp + Roster: Kế hoạch triển khai
 
+> **Trạng thái: HOÀN THÀNH 2026-09-08.** Task 1–8 đã thực hiện; API e2e 26 test + unit 17 test xanh; kiểm thử trình duyệt: đăng ký → tạo lớp → dán tên trùng (hậu tố) → nhập Excel → QR → khóa danh sách → tạo mã mới → đăng xuất/đăng nhập. Chưa làm: Google OAuth chạy thật (chưa có client id), Playwright tự động (để S2).
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 >
 > Ghi chú thực thi: slice này được cùng một agent thực thi ngay sau khi viết kế hoạch, nên các file boilerplate (module NestJS, trang Next.js) được mô tả bằng hợp đồng + chữ ký thay vì chép toàn bộ mã; mã đầy đủ được đưa vào cho phần thuần logic (dedupe tên, parser Excel, token, chấm giới hạn) và cho mọi test.
@@ -14,17 +16,17 @@
 
 ## Quyết định trong slice
 
-| # | Quyết định |
-|---|---|
-| 1 | Xác thực email không chặn đăng nhập; banner nhắc + nút gửi lại. Token xác thực 24 giờ, reset 1 giờ; lưu SHA-256 của token. |
-| 2 | Cookie: `lh_at` (access, path `/`), `lh_rt` (refresh, path `/api/auth`), `SameSite=Lax`, `Secure` khi production. Dev: web `localhost:3000` gọi api `localhost:4000` với `credentials: 'include'`, cùng site `localhost` nên cookie hoạt động. |
-| 3 | Google OAuth: `GET /api/auth/google` → redirect (state trong cookie `lh_oauth_state`, 10 phút) → `GET /api/auth/google/callback` → đổi code lấy token, lấy `userinfo`, chỉ chấp nhận `email_verified=true`, liên kết theo email. Thiếu env Google → `GET /api/auth/providers` trả `google:false`, web ẩn nút. Facebook: chỉ có `facebook:false`. |
-| 4 | Xóa lớp: `DELETE /classes/:id` = xóa mềm (còn khôi phục), `DELETE /classes/:id/permanent` = xóa cứng cascade. Danh sách lớp không hiện lớp đã xóa mềm; giới hạn 2 lớp đếm lớp chưa xóa. |
-| 5 | Nhập Excel: sheet đầu; tìm dòng tiêu đề trong 5 dòng đầu có ô khớp `/họ và tên|họ tên|tên|name/i`; cột điện thoại khớp `/sđt|sdt|điện thoại|phone|phụ huynh/i`; không có tiêu đề thì cột A = tên. |
-| 6 | Trùng tên: giữ tên đầu, các tên sau thành `Tên (2)`, `Tên (3)`… tính cả tên đã có trong lớp (chưa xóa). |
-| 7 | Sắp xếp roster: nút lên/xuống + "Sắp xếp A→Z" (không kéo thả) trong MVP. |
-| 8 | Rate limit: toàn cục 120 req/phút/IP, nhóm auth 10 req/phút/IP, bộ nhớ trong (chuyển Redis ở S8). |
-| 9 | Lỗi API thống nhất `{ statusCode, code?, message }`; giới hạn free trả 403 với `code: 'LIMIT_CLASSES' | 'LIMIT_STUDENTS'`. |
+| #   | Quyết định                                                                                                                                                                                                                                                                                                                                       |
+| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 1   | Xác thực email không chặn đăng nhập; banner nhắc + nút gửi lại. Token xác thực 24 giờ, reset 1 giờ; lưu SHA-256 của token.                                                                                                                                                                                                                       |
+| 2   | Cookie: `lh_at` (access, path `/`), `lh_rt` (refresh, path `/api/auth`), `SameSite=Lax`, `Secure` khi production. Dev: web `localhost:3000` gọi api `localhost:4000` với `credentials: 'include'`, cùng site `localhost` nên cookie hoạt động.                                                                                                   |
+| 3   | Google OAuth: `GET /api/auth/google` → redirect (state trong cookie `lh_oauth_state`, 10 phút) → `GET /api/auth/google/callback` → đổi code lấy token, lấy `userinfo`, chỉ chấp nhận `email_verified=true`, liên kết theo email. Thiếu env Google → `GET /api/auth/providers` trả `google:false`, web ẩn nút. Facebook: chỉ có `facebook:false`. |
+| 4   | Xóa lớp: `DELETE /classes/:id` = xóa mềm (còn khôi phục), `DELETE /classes/:id/permanent` = xóa cứng cascade. Danh sách lớp không hiện lớp đã xóa mềm; giới hạn 2 lớp đếm lớp chưa xóa.                                                                                                                                                          |
+| 5   | Nhập Excel: sheet đầu; tìm dòng tiêu đề trong 5 dòng đầu có ô khớp `họ và tên \| họ tên \| tên \| name` (không phân biệt dấu, hoa thường); cột điện thoại khớp `sđt \| điện thoại \| phone \| phụ huynh`; không có tiêu đề thì cột A = tên.                                                                                                      |
+| 6   | Trùng tên: giữ tên đầu, các tên sau thành `Tên (2)`, `Tên (3)`… tính cả tên đã có trong lớp (chưa xóa).                                                                                                                                                                                                                                          |
+| 7   | Sắp xếp roster: nút lên/xuống + "Sắp xếp A→Z" (không kéo thả) trong MVP.                                                                                                                                                                                                                                                                         |
+| 8   | Rate limit: toàn cục 120 req/phút/IP, nhóm auth 10 req/phút/IP, bộ nhớ trong (chuyển Redis ở S8).                                                                                                                                                                                                                                                |
+| 9   | Lỗi API thống nhất `{ statusCode, code?, message }`; giới hạn free trả 403 với `code: 'LIMIT_CLASSES' \| 'LIMIT_STUDENTS'`.                                                                                                                                                                                                                      |
 
 ## Cấu trúc file
 
@@ -70,34 +72,34 @@ apps/web/src/
 
 ## Hợp đồng API (tất cả dưới `/api`)
 
-| Method & path | Auth | Body (zod ở shared) | Trả về |
-|---|---|---|---|
-| POST `/auth/signup` | public | `SignupInput {name, email, password≥8, acceptTerms:true}` | 201 `{teacher}` + cookie; gửi mail xác thực; event `signup` |
-| POST `/auth/login` | public | `LoginInput {email, password}` | 200 `{teacher}` + cookie; sai → 401 |
-| POST `/auth/logout` | cookie | – | 204, thu hồi refresh, xóa cookie |
-| POST `/auth/refresh` | cookie `lh_rt` | – | 200 `{teacher}` + cookie mới; token cũ/thu hồi → 401 |
-| GET `/auth/me` | jwt | – | `{teacher}` |
-| POST `/auth/verify-email` | public | `{token}` | 200 `{verified:true}`; token sai/hết hạn → 400 |
-| POST `/auth/resend-verification` | jwt | – | 204 |
-| POST `/auth/forgot-password` | public | `{email}` | luôn 204 |
-| POST `/auth/reset-password` | public | `{token, password}` | 200; thu hồi mọi refresh token |
-| GET `/auth/providers` | public | – | `{google:boolean, facebook:false}` |
-| GET `/auth/google`, `/auth/google/callback` | public | – | redirect |
-| PATCH `/teachers/me` | jwt | `{name}` | `{teacher}` |
-| GET `/limits` | jwt | – | `LimitsDto {maxClasses, maxStudentsPerClass, aiPagesPerMonth, historyDays, exportEnabled}` |
-| GET `/classes` | jwt | – | `ClassSummaryDto[]` (kèm `studentCount`) |
-| POST `/classes` | jwt | `CreateClassInput` | 201 `ClassDetailDto`; vượt giới hạn → 403 `LIMIT_CLASSES`; event `class_created` |
-| GET `/classes/:id` | jwt | – | `ClassDetailDto {…, students: StudentDto[]}` |
-| PATCH `/classes/:id` | jwt | `UpdateClassInput` (name, subject, grade, schedule, rosterLocked) | `ClassDetailDto` |
-| DELETE `/classes/:id` | jwt | – | 204 (xóa mềm) |
-| DELETE `/classes/:id/permanent` | jwt | – | 204 (xóa cứng cascade) |
-| POST `/classes/:id/regenerate-code` | jwt | – | `{code}` |
-| GET `/classes/:id/qr.png` | jwt | – | image/png, mã hóa `${APP_URL}/join/${code}` |
-| POST `/classes/:id/students/import` | jwt | `ImportNamesInput {names: string[]}` | `{students: StudentDto[], added:number}`; vượt 50 → 403 `LIMIT_STUDENTS`; event `roster_size` |
-| POST `/classes/:id/students/import-excel` | jwt | multipart `file` (.xlsx ≤ 2 MB) | như trên; file hỏng/không có tên → 400 |
-| PATCH `/classes/:id/students/:sid` | jwt | `UpdateStudentInput {name?, parentPhone?, studentCode?}` | `StudentDto` |
-| DELETE `/classes/:id/students/:sid` | jwt | – | 204 (xóa mềm) |
-| POST `/classes/:id/students/reorder` | jwt | `{ids: string[]}` | `StudentDto[]` |
+| Method & path                               | Auth           | Body (zod ở shared)                                               | Trả về                                                                                        |
+| ------------------------------------------- | -------------- | ----------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| POST `/auth/signup`                         | public         | `SignupInput {name, email, password≥8, acceptTerms:true}`         | 201 `{teacher}` + cookie; gửi mail xác thực; event `signup`                                   |
+| POST `/auth/login`                          | public         | `LoginInput {email, password}`                                    | 200 `{teacher}` + cookie; sai → 401                                                           |
+| POST `/auth/logout`                         | cookie         | –                                                                 | 204, thu hồi refresh, xóa cookie                                                              |
+| POST `/auth/refresh`                        | cookie `lh_rt` | –                                                                 | 200 `{teacher}` + cookie mới; token cũ/thu hồi → 401                                          |
+| GET `/auth/me`                              | jwt            | –                                                                 | `{teacher}`                                                                                   |
+| POST `/auth/verify-email`                   | public         | `{token}`                                                         | 200 `{verified:true}`; token sai/hết hạn → 400                                                |
+| POST `/auth/resend-verification`            | jwt            | –                                                                 | 204                                                                                           |
+| POST `/auth/forgot-password`                | public         | `{email}`                                                         | luôn 204                                                                                      |
+| POST `/auth/reset-password`                 | public         | `{token, password}`                                               | 200; thu hồi mọi refresh token                                                                |
+| GET `/auth/providers`                       | public         | –                                                                 | `{google:boolean, facebook:false}`                                                            |
+| GET `/auth/google`, `/auth/google/callback` | public         | –                                                                 | redirect                                                                                      |
+| PATCH `/teachers/me`                        | jwt            | `{name}`                                                          | `{teacher}`                                                                                   |
+| GET `/limits`                               | jwt            | –                                                                 | `LimitsDto {maxClasses, maxStudentsPerClass, aiPagesPerMonth, historyDays, exportEnabled}`    |
+| GET `/classes`                              | jwt            | –                                                                 | `ClassSummaryDto[]` (kèm `studentCount`)                                                      |
+| POST `/classes`                             | jwt            | `CreateClassInput`                                                | 201 `ClassDetailDto`; vượt giới hạn → 403 `LIMIT_CLASSES`; event `class_created`              |
+| GET `/classes/:id`                          | jwt            | –                                                                 | `ClassDetailDto {…, students: StudentDto[]}`                                                  |
+| PATCH `/classes/:id`                        | jwt            | `UpdateClassInput` (name, subject, grade, schedule, rosterLocked) | `ClassDetailDto`                                                                              |
+| DELETE `/classes/:id`                       | jwt            | –                                                                 | 204 (xóa mềm)                                                                                 |
+| DELETE `/classes/:id/permanent`             | jwt            | –                                                                 | 204 (xóa cứng cascade)                                                                        |
+| POST `/classes/:id/regenerate-code`         | jwt            | –                                                                 | `{code}`                                                                                      |
+| GET `/classes/:id/qr.png`                   | jwt            | –                                                                 | image/png, mã hóa `${APP_URL}/join/${code}`                                                   |
+| POST `/classes/:id/students/import`         | jwt            | `ImportNamesInput {names: string[]}`                              | `{students: StudentDto[], added:number}`; vượt 50 → 403 `LIMIT_STUDENTS`; event `roster_size` |
+| POST `/classes/:id/students/import-excel`   | jwt            | multipart `file` (.xlsx ≤ 2 MB)                                   | như trên; file hỏng/không có tên → 400                                                        |
+| PATCH `/classes/:id/students/:sid`          | jwt            | `UpdateStudentInput {name?, parentPhone?, studentCode?}`          | `StudentDto`                                                                                  |
+| DELETE `/classes/:id/students/:sid`         | jwt            | –                                                                 | 204 (xóa mềm)                                                                                 |
+| POST `/classes/:id/students/reorder`        | jwt            | `{ids: string[]}`                                                 | `StudentDto[]`                                                                                |
 
 `TeacherDto = { id, email, name, avatarUrl, emailVerified: boolean, plan }`.
 `StudentDto = { id, name, studentCode, parentPhone, sortOrder }`.
@@ -168,7 +170,12 @@ describe('parseNameLines', () => {
     ]);
   });
   it('bỏ số thứ tự đầu dòng dạng "1." "1)" "1-"', () => {
-    expect(parseNameLines('1. An\n2) Bình\n3 - Châu\n4\tDũng')).toEqual(['An', 'Bình', 'Châu', 'Dũng']);
+    expect(parseNameLines('1. An\n2) Bình\n3 - Châu\n4\tDũng')).toEqual([
+      'An',
+      'Bình',
+      'Châu',
+      'Dũng',
+    ]);
   });
   it('giới hạn 200 ký tự mỗi tên', () => {
     expect(parseNameLines('a'.repeat(300))[0]).toHaveLength(200);

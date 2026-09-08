@@ -55,7 +55,8 @@ export function ScheduleEditor({
           <Button
             variant="ghost"
             size="sm"
-            aria-label={t('addScheduleRow')}
+            aria-label={t('removeScheduleRow')}
+            title={t('removeScheduleRow')}
             onClick={() => onChange(value.filter((_, j) => j !== i))}
           >
             <X className="size-4" />
