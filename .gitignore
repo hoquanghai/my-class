@@ -1,0 +1,21 @@
+node_modules/
+dist/
+.next/
+out/
+.turbo/
+coverage/
+*.tsbuildinfo
+.DS_Store
+Thumbs.db
+
+# env: only .env.example and .env.test (no secrets) are committed
+.env
+.env.local
+.env.*.local
+.env.production
+
+# Prisma generated client (regenerate with `prisma generate`)
+apps/api/src/generated/
+
+# logs
+*.log
