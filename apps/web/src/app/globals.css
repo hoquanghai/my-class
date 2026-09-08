@@ -1,0 +1,13 @@
+@import 'tailwindcss';
+
+@theme {
+  --font-sans: var(--font-be-vietnam), system-ui, sans-serif;
+  --color-brand-50: oklch(0.97 0.02 250);
+  --color-brand-500: oklch(0.55 0.18 250);
+  --color-brand-600: oklch(0.48 0.18 250);
+  --color-brand-700: oklch(0.42 0.16 250);
+}
+
+body {
+  @apply bg-white text-slate-900 antialiased;
+}
