@@ -8,12 +8,20 @@ export default function LandingPage() {
         {t('title')}
       </h1>
       <p className="max-w-2xl text-lg text-slate-600">{t('subtitle')}</p>
-      <a
-        href="/signup"
-        className="rounded-lg bg-brand-600 px-6 py-3 text-lg font-semibold text-white shadow hover:bg-brand-700"
-      >
-        {t('cta')}
-      </a>
+      <div className="flex flex-wrap items-center justify-center gap-3">
+        <a
+          href="/signup"
+          className="rounded-lg bg-brand-600 px-6 py-3 text-lg font-semibold text-white shadow hover:bg-brand-700"
+        >
+          {t('cta')}
+        </a>
+        <a
+          href="/login"
+          className="rounded-lg border border-slate-300 px-6 py-3 text-lg font-medium text-slate-700 hover:bg-slate-50"
+        >
+          {t('login')}
+        </a>
+      </div>
       <div className="flex aspect-video w-full max-w-2xl items-center justify-center rounded-xl border border-dashed border-slate-300 bg-slate-50 text-slate-500">
         {t('demoPlaceholder')}
       </div>

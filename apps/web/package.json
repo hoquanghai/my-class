@@ -11,10 +11,13 @@
   },
   "dependencies": {
     "@lophoc/shared": "workspace:*",
+    "@tanstack/react-query": "^5.102.8",
+    "lucide-react": "^1.43.0",
     "next": "16.3.4",
     "next-intl": "^4.14.2",
     "react": "19.2.8",
-    "react-dom": "19.2.8"
+    "react-dom": "19.2.8",
+    "zod": "^4.5.4"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.3.3",

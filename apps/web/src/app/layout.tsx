@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { NextIntlClientProvider } from 'next-intl';
 import { getLocale } from 'next-intl/server';
 import { Be_Vietnam_Pro } from 'next/font/google';
+import { QueryProvider } from '@/lib/query';
 import './globals.css';
 
 const beVietnam = Be_Vietnam_Pro({
@@ -21,7 +22,9 @@ export default async function RootLayout({ children }: LayoutProps<'/'>) {
   return (
     <html lang={locale} className={`${beVietnam.variable} h-full`}>
       <body className="flex min-h-full flex-col font-sans">
-        <NextIntlClientProvider>{children}</NextIntlClientProvider>
+        <NextIntlClientProvider>
+          <QueryProvider>{children}</QueryProvider>
+        </NextIntlClientProvider>
       </body>
     </html>
   );
