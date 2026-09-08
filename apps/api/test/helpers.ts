@@ -68,6 +68,18 @@ export async function signup(
   return { jar: readSetCookies(res), teacher: res.body.teacher, email, password };
 }
 
+/** Parser cho supertest khi response là nhị phân (ảnh PNG…). Dùng với `.buffer(true).parse(binaryParser)`. */
+export function binaryParser(
+  res: unknown,
+  callback: (err: Error | null, body: Buffer) => void,
+): void {
+  const stream = res as NodeJS.ReadableStream;
+  const chunks: Buffer[] = [];
+  stream.on('data', (chunk: Buffer) => chunks.push(chunk));
+  stream.on('end', () => callback(null, Buffer.concat(chunks)));
+  stream.on('error', (err: Error) => callback(err, Buffer.alloc(0)));
+}
+
 /** Lấy token từ liên kết trong email (`?token=...`). */
 export function tokenFromMail(text: string): string {
   const match = text.match(/token=([A-Za-z0-9_-]+)/);
