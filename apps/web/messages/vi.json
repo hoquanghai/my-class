@@ -125,6 +125,47 @@
     "locked": "Danh sách đang khóa: tên đã gắn thiết bị không thể được chọn từ máy khác.",
     "editHint": "Nhấn vào tên hoặc SĐT để sửa. Enter để lưu, Esc để hủy."
   },
+  "Sessions": {
+    "start": "Bắt đầu buổi học",
+    "continue": "Tiếp tục buổi đang mở",
+    "needRoster": "Thêm học sinh vào danh sách trước khi bắt đầu buổi học.",
+    "empty": "Chưa có buổi học nào. Bấm \"Bắt đầu buổi học\" để điểm danh.",
+    "active": "Đang mở",
+    "ended": "Đã kết thúc",
+    "hidden": "{count} buổi cũ hơn {days} ngày đã bị ẩn (gói miễn phí). Gói Trung tâm sắp có.",
+    "feedbackGiven": "Đã gửi phản hồi"
+  },
+  "Attendance": {
+    "title": "Điểm danh",
+    "backToClass": "Về lớp",
+    "status": {
+      "present": "Có mặt",
+      "absent": "Vắng",
+      "late": "Muộn",
+      "excused": "Có phép"
+    },
+    "allPresent": "Tất cả có mặt",
+    "allAbsent": "Tất cả vắng",
+    "undo": "Hoàn tác",
+    "endSession": "Kết thúc buổi",
+    "endConfirm": "Kết thúc buổi học này? Bạn vẫn có thể sửa điểm danh sau đó.",
+    "ended": "Đã kết thúc",
+    "noteFor": "Ghi chú cho {name}",
+    "notePlaceholder": "VD: Xin phép về sớm",
+    "quizSoon": "Kiểm tra đầu giờ (bước tiếp theo)",
+    "tapHint": "Bấm vào tên để đổi trạng thái: Có mặt → Vắng → Muộn → Có phép. Biểu tượng góc phải để ghi chú.",
+    "feedbackTitle": "Buổi học vừa rồi thế nào?",
+    "feedbackHint": "Đánh giá 1 chạm giúp chúng tôi cải thiện ứng dụng cho giáo viên.",
+    "feedbackComment": "Góp ý thêm (tùy chọn)",
+    "feedbackSend": "Gửi",
+    "feedbackSkip": "Bỏ qua",
+    "feedbackThanks": "Cảm ơn phản hồi của bạn!",
+    "historyTitle": "Lịch sử điểm danh",
+    "historyRate": "Đi học {present}/{total} buổi ({percent}%)",
+    "historyEmpty": "Chưa có buổi học nào trong {days} ngày gần đây.",
+    "historyHidden": "{count} buổi cũ hơn đã bị ẩn (gói miễn phí).",
+    "history": "Lịch sử"
+  },
   "Settings": {
     "info": "Thông tin lớp",
     "lock": "Khóa danh sách",

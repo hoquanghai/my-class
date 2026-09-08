@@ -43,20 +43,28 @@ describe('Sessions & attendance (e2e)', () => {
 
   it('bắt đầu buổi: 201 với mọi học sinh "có mặt"; gọi lại → 200 cùng buổi', async () => {
     const { s, classId } = await setup('sess-start');
-    const first = await http().post(`/api/classes/${classId}/sessions`).set('Cookie', ck(s)).expect(201);
+    const first = await http()
+      .post(`/api/classes/${classId}/sessions`)
+      .set('Cookie', ck(s))
+      .expect(201);
     expect(first.body.status).toBe('active');
     expect(first.body.records).toHaveLength(3);
     expect(first.body.records.every((r: Rec) => r.status === 'present')).toBe(true);
     expect(first.body.summary).toEqual({ present: 3, absent: 0, late: 0, excused: 0, total: 3 });
     expect(first.body.className).toBe('Lớp sess-start');
 
-    const again = await http().post(`/api/classes/${classId}/sessions`).set('Cookie', ck(s)).expect(200);
+    const again = await http()
+      .post(`/api/classes/${classId}/sessions`)
+      .set('Cookie', ck(s))
+      .expect(200);
     expect(again.body.id).toBe(first.body.id);
   });
 
   it('cập nhật điểm danh đơn lẻ, hàng loạt, ghi chú; học sinh lạ → 400', async () => {
     const { s, classId, students } = await setup('sess-update');
-    const session = (await http().post(`/api/classes/${classId}/sessions`).set('Cookie', ck(s)).expect(201)).body;
+    const session = (
+      await http().post(`/api/classes/${classId}/sessions`).set('Cookie', ck(s)).expect(201)
+    ).body;
     const [an, binh, chau] = students;
 
     const single = await http()
@@ -97,9 +105,14 @@ describe('Sessions & attendance (e2e)', () => {
 
   it('kết thúc buổi (idempotent), phản hồi ghi đè, danh sách có summary/hasFeedback', async () => {
     const { s, classId } = await setup('sess-end');
-    const session = (await http().post(`/api/classes/${classId}/sessions`).set('Cookie', ck(s)).expect(201)).body;
+    const session = (
+      await http().post(`/api/classes/${classId}/sessions`).set('Cookie', ck(s)).expect(201)
+    ).body;
 
-    const ended = await http().post(`/api/sessions/${session.id}/end`).set('Cookie', ck(s)).expect(200);
+    const ended = await http()
+      .post(`/api/sessions/${session.id}/end`)
+      .set('Cookie', ck(s))
+      .expect(200);
     expect(ended.body.status).toBe('ended');
     expect(typeof ended.body.endedAt).toBe('string');
     await http().post(`/api/sessions/${session.id}/end`).set('Cookie', ck(s)).expect(200);
@@ -125,13 +138,23 @@ describe('Sessions & attendance (e2e)', () => {
     expect(fb?.comment).toBeNull();
 
     // Kết thúc rồi vẫn mở buổi mới được
-    const next = await http().post(`/api/classes/${classId}/sessions`).set('Cookie', ck(s)).expect(201);
+    const next = await http()
+      .post(`/api/classes/${classId}/sessions`)
+      .set('Cookie', ck(s))
+      .expect(201);
     expect(next.body.id).not.toBe(session.id);
 
-    const list = await http().get(`/api/classes/${classId}/sessions`).set('Cookie', ck(s)).expect(200);
+    const list = await http()
+      .get(`/api/classes/${classId}/sessions`)
+      .set('Cookie', ck(s))
+      .expect(200);
     expect(list.body.sessions).toHaveLength(2);
     expect(list.body.sessions[0].id).toBe(next.body.id);
-    expect(list.body.sessions[1]).toMatchObject({ id: session.id, status: 'ended', hasFeedback: true });
+    expect(list.body.sessions[1]).toMatchObject({
+      id: session.id,
+      status: 'ended',
+      hasFeedback: true,
+    });
     expect(list.body.sessions[1].summary.total).toBe(3);
     expect(list.body.hiddenCount).toBe(0);
     expect(list.body.historyDays).toBe(30);
@@ -154,21 +177,28 @@ describe('Sessions & attendance (e2e)', () => {
       },
     });
 
-    const recent = (await http().post(`/api/classes/${classId}/sessions`).set('Cookie', ck(s)).expect(201)).body;
+    const recent = (
+      await http().post(`/api/classes/${classId}/sessions`).set('Cookie', ck(s)).expect(201)
+    ).body;
     await http()
       .patch(`/api/sessions/${recent.id}/attendance`)
       .set('Cookie', ck(s))
       .send({ updates: [{ studentId: an.id, status: 'late' }] })
       .expect(200);
     await http().post(`/api/sessions/${recent.id}/end`).set('Cookie', ck(s)).expect(200);
-    const recent2 = (await http().post(`/api/classes/${classId}/sessions`).set('Cookie', ck(s)).expect(201)).body;
+    const recent2 = (
+      await http().post(`/api/classes/${classId}/sessions`).set('Cookie', ck(s)).expect(201)
+    ).body;
     await http()
       .patch(`/api/sessions/${recent2.id}/attendance`)
       .set('Cookie', ck(s))
       .send({ updates: [{ studentId: an.id, status: 'absent' }] })
       .expect(200);
 
-    const list = await http().get(`/api/classes/${classId}/sessions`).set('Cookie', ck(s)).expect(200);
+    const list = await http()
+      .get(`/api/classes/${classId}/sessions`)
+      .set('Cookie', ck(s))
+      .expect(200);
     expect(list.body.sessions.map((x: { id: string }) => x.id)).toEqual([recent2.id, recent.id]);
     expect(list.body.hiddenCount).toBe(1);
 
@@ -180,12 +210,16 @@ describe('Sessions & attendance (e2e)', () => {
     expect(history.body.items.map((i: { status: string }) => i.status)).toEqual(['absent', 'late']);
     expect(history.body.rate).toEqual({ present: 1, total: 2 });
     expect(history.body.hiddenCount).toBe(1);
-    expect(history.body.items.find((i: { sessionId: string }) => i.sessionId === old.id)).toBeUndefined();
+    expect(
+      history.body.items.find((i: { sessionId: string }) => i.sessionId === old.id),
+    ).toBeUndefined();
   });
 
   it('học sinh thêm sau khi mở buổi được bổ sung "có mặt"; học sinh rời lớp vẫn còn trong buổi cũ', async () => {
     const { s, classId, students } = await setup('sess-backfill', ['An', 'Bình']);
-    const session = (await http().post(`/api/classes/${classId}/sessions`).set('Cookie', ck(s)).expect(201)).body;
+    const session = (
+      await http().post(`/api/classes/${classId}/sessions`).set('Cookie', ck(s)).expect(201)
+    ).body;
     expect(session.records).toHaveLength(2);
 
     await http()
@@ -193,7 +227,10 @@ describe('Sessions & attendance (e2e)', () => {
       .set('Cookie', ck(s))
       .send({ names: ['Châu'] })
       .expect(200);
-    await http().delete(`/api/classes/${classId}/students/${students[0]!.id}`).set('Cookie', ck(s)).expect(204);
+    await http()
+      .delete(`/api/classes/${classId}/students/${students[0]!.id}`)
+      .set('Cookie', ck(s))
+      .expect(204);
 
     const detail = await http().get(`/api/sessions/${session.id}`).set('Cookie', ck(s)).expect(200);
     const names = detail.body.records.map((r: Rec) => r.name);
@@ -204,7 +241,9 @@ describe('Sessions & attendance (e2e)', () => {
   it('buổi học của giáo viên khác → 404', async () => {
     const { s, classId } = await setup('sess-owner');
     const other = await signup(app, 'sess-other');
-    const session = (await http().post(`/api/classes/${classId}/sessions`).set('Cookie', ck(s)).expect(201)).body;
+    const session = (
+      await http().post(`/api/classes/${classId}/sessions`).set('Cookie', ck(s)).expect(201)
+    ).body;
     await http().get(`/api/sessions/${session.id}`).set('Cookie', ck(other)).expect(404);
     await http().post(`/api/sessions/${session.id}/end`).set('Cookie', ck(other)).expect(404);
     await http().get(`/api/classes/${classId}/sessions`).set('Cookie', ck(other)).expect(404);

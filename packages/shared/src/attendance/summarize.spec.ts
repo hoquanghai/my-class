@@ -14,7 +14,13 @@ describe('summarizeAttendance', () => {
   });
 
   it('danh sách rỗng → toàn 0', () => {
-    expect(summarizeAttendance([])).toEqual({ present: 0, absent: 0, late: 0, excused: 0, total: 0 });
+    expect(summarizeAttendance([])).toEqual({
+      present: 0,
+      absent: 0,
+      late: 0,
+      excused: 0,
+      total: 0,
+    });
   });
 });
 

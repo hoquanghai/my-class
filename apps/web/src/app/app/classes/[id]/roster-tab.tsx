@@ -6,9 +6,10 @@ import {
   parseNameLines,
   type StudentDto,
 } from '@lophoc/shared';
-import { ArrowDown, ArrowUp, ArrowDownAZ, Trash2, Upload } from 'lucide-react';
+import { ArrowDown, ArrowUp, ArrowDownAZ, History, Trash2, Upload } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { type KeyboardEvent, useMemo, useRef, useState } from 'react';
+import { AttendanceHistoryDialog } from '@/components/attendance-history-dialog';
 import { Alert } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Input, Textarea } from '@/components/ui/input';
@@ -31,6 +32,8 @@ interface Editing {
 
 export function RosterTab({ klass, limits }: { klass: ClassDetailDto; limits?: LimitsDto }) {
   const t = useTranslations('Roster');
+  const ta = useTranslations('Attendance');
+  const [historyStudent, setHistoryStudent] = useState<StudentDto | null>(null);
   const importNames = useImportNames(klass.id);
   const importExcel = useImportExcel(klass.id);
   const updateStudent = useUpdateStudent(klass.id);
@@ -141,7 +144,7 @@ export function RosterTab({ klass, limits }: { klass: ClassDetailDto; limits?: L
                   <th className="w-12 px-3 py-2">{t('colIndex')}</th>
                   <th className="px-3 py-2">{t('colName')}</th>
                   <th className="w-40 px-3 py-2">{t('colPhone')}</th>
-                  <th className="w-32 px-3 py-2" />
+                  <th className="w-44 px-3 py-2" />
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
@@ -194,6 +197,15 @@ export function RosterTab({ klass, limits }: { klass: ClassDetailDto; limits?: L
                         <Button
                           variant="ghost"
                           size="sm"
+                          aria-label={ta('history')}
+                          title={ta('history')}
+                          onClick={() => setHistoryStudent(s)}
+                        >
+                          <History className="size-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
                           aria-label={t('moveUp')}
                           disabled={i === 0 || reorder.isPending}
                           onClick={() => move(i, -1)}
@@ -233,6 +245,11 @@ export function RosterTab({ klass, limits }: { klass: ClassDetailDto; limits?: L
             </p>
           </div>
         )}
+        <AttendanceHistoryDialog
+          classId={klass.id}
+          student={historyStudent}
+          onClose={() => setHistoryStudent(null)}
+        />
       </section>
 
       <aside className="space-y-4">

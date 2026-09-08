@@ -12,6 +12,7 @@ import { Tabs } from '@/components/ui/tabs';
 import { useClassDetail, useLimits } from '@/lib/classes';
 import { PrintSheet } from './print-sheet';
 import { RosterTab } from './roster-tab';
+import { SessionsTab } from './sessions-tab';
 import { SettingsTab } from './settings-tab';
 
 type TabId = 'roster' | 'sessions' | 'reports' | 'settings';
@@ -82,8 +83,9 @@ export default function ClassDetailPage() {
         <Tabs tabs={tabs} value={tab} onChange={setTab} />
 
         {tab === 'roster' && <RosterTab klass={klass} limits={limits.data} />}
+        {tab === 'sessions' && <SessionsTab klass={klass} />}
         {tab === 'settings' && <SettingsTab klass={klass} />}
-        {(tab === 'sessions' || tab === 'reports') && (
+        {tab === 'reports' && (
           <div className="rounded-xl border border-dashed border-slate-300 bg-white p-10 text-center text-slate-500">
             {tc('comingSoon')}
           </div>

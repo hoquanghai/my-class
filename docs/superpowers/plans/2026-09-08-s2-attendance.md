@@ -14,27 +14,27 @@
 
 ## Quyết định trong slice
 
-| #   | Quyết định                                                                                                                                                      |
-| --- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1   | Mỗi lớp tối đa một buổi `active`. `POST /classes/:id/sessions` trả buổi đang mở nếu có (200), không thì tạo mới (201).                                          |
-| 2   | Bấm vào ô học sinh xoay vòng trạng thái: Có mặt → Vắng → Muộn → Có phép → Có mặt. Nút ghi chú riêng mở hộp thoại nhập ghi chú.                                  |
-| 3   | Hoàn tác ở client: giữ ngăn xếp các thay đổi (giá trị trước), "Hoàn tác" gửi lại giá trị trước qua cùng endpoint upsert.                                        |
-| 4   | Buổi đã kết thúc vẫn sửa được điểm danh (giáo viên sửa sai sót), không có "mở lại".                                                                             |
-| 5   | Kết thúc buổi → hộp thoại phản hồi: 5 sao + góp ý, có thể bỏ qua. Lưu `SessionFeedback` (1 buổi 1 phản hồi, gửi lại thì ghi đè).                               |
-| 6   | Lịch sử: danh sách buổi và lịch sử học sinh chỉ gồm buổi có `startedAt` trong `free.history_days` ngày gần nhất; trả thêm `hiddenCount` để UI hiện nút khóa.    |
-| 7   | Sự kiện: `session_started {classId, rosterSize}` khi tạo buổi mới.                                                                                              |
+| #   | Quyết định                                                                                                                                                   |
+| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 1   | Mỗi lớp tối đa một buổi `active`. `POST /classes/:id/sessions` trả buổi đang mở nếu có (200), không thì tạo mới (201).                                       |
+| 2   | Bấm vào ô học sinh xoay vòng trạng thái: Có mặt → Vắng → Muộn → Có phép → Có mặt. Nút ghi chú riêng mở hộp thoại nhập ghi chú.                               |
+| 3   | Hoàn tác ở client: giữ ngăn xếp các thay đổi (giá trị trước), "Hoàn tác" gửi lại giá trị trước qua cùng endpoint upsert.                                     |
+| 4   | Buổi đã kết thúc vẫn sửa được điểm danh (giáo viên sửa sai sót), không có "mở lại".                                                                          |
+| 5   | Kết thúc buổi → hộp thoại phản hồi: 5 sao + góp ý, có thể bỏ qua. Lưu `SessionFeedback` (1 buổi 1 phản hồi, gửi lại thì ghi đè).                             |
+| 6   | Lịch sử: danh sách buổi và lịch sử học sinh chỉ gồm buổi có `startedAt` trong `free.history_days` ngày gần nhất; trả thêm `hiddenCount` để UI hiện nút khóa. |
+| 7   | Sự kiện: `session_started {classId, rosterSize}` khi tạo buổi mới.                                                                                           |
 
 ## Hợp đồng API (dưới `/api`, đều cần JWT)
 
-| Method & path                                             | Body                                                             | Trả về                                                                                                  |
-| --------------------------------------------------------- | ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
-| POST `/classes/:classId/sessions`                         | –                                                                | 201/200 `SessionDetailDto`                                                                              |
-| GET `/classes/:classId/sessions`                          | –                                                                | `{ sessions: SessionSummaryDto[], hiddenCount, historyDays }` mới nhất trước                            |
-| GET `/sessions/:id`                                       | –                                                                | `SessionDetailDto { id, classId, className, status, startedAt, endedAt, note, records[], summary }`     |
-| PATCH `/sessions/:id/attendance`                          | `{ updates: [{ studentId, status, note? }] }` (1..100)           | `SessionDetailDto`; studentId không thuộc lớp → 400                                                     |
-| POST `/sessions/:id/end`                                  | –                                                                | `SessionDetailDto` (idempotent)                                                                         |
-| POST `/sessions/:id/feedback`                             | `{ rating 1..5, comment? ≤ 500 }`                                | 204                                                                                                     |
-| GET `/classes/:classId/students/:studentId/attendance`    | –                                                                | `{ student, items: [{ sessionId, startedAt, status, note }], rate: { present, total }, hiddenCount }`   |
+| Method & path                                          | Body                                                   | Trả về                                                                                                |
+| ------------------------------------------------------ | ------------------------------------------------------ | ----------------------------------------------------------------------------------------------------- |
+| POST `/classes/:classId/sessions`                      | –                                                      | 201/200 `SessionDetailDto`                                                                            |
+| GET `/classes/:classId/sessions`                       | –                                                      | `{ sessions: SessionSummaryDto[], hiddenCount, historyDays }` mới nhất trước                          |
+| GET `/sessions/:id`                                    | –                                                      | `SessionDetailDto { id, classId, className, status, startedAt, endedAt, note, records[], summary }`   |
+| PATCH `/sessions/:id/attendance`                       | `{ updates: [{ studentId, status, note? }] }` (1..100) | `SessionDetailDto`; studentId không thuộc lớp → 400                                                   |
+| POST `/sessions/:id/end`                               | –                                                      | `SessionDetailDto` (idempotent)                                                                       |
+| POST `/sessions/:id/feedback`                          | `{ rating 1..5, comment? ≤ 500 }`                      | 204                                                                                                   |
+| GET `/classes/:classId/students/:studentId/attendance` | –                                                      | `{ student, items: [{ sessionId, startedAt, status, note }], rate: { present, total }, hiddenCount }` |
 
 `AttendanceRecordDto = { studentId, name, status, note }`, `AttendanceSummary = { present, absent, late, excused, total }`, `SessionSummaryDto = { id, status, startedAt, endedAt, summary, hasFeedback }`.
 

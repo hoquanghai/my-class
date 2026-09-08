@@ -101,7 +101,10 @@ export class SessionsService {
         skipDuplicates: true,
       });
     }
-    const records = missing.length > 0 ? await this.prisma.attendanceRecord.findMany({ where: { sessionId } }) : existing;
+    const records =
+      missing.length > 0
+        ? await this.prisma.attendanceRecord.findMany({ where: { sessionId } })
+        : existing;
     const byStudent = new Map(records.map((r) => [r.studentId, r]));
 
     const dtoRecords: AttendanceRecordDto[] = students.map((s) => {
