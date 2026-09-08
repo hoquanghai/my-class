@@ -228,6 +228,19 @@
     "preview": "Xem trước",
     "editRaw": "Sửa"
   },
+  "Manual": {
+    "question": "Câu {n}",
+    "placeholder": "Gõ đề bài rồi nhấn Enter…\nA. phương án\nB. phương án (Ctrl+Enter để đánh dấu đúng)",
+    "hintEnter": "Enter: xuống dòng và tự thêm nhãn phương án (A., B., C.…). Shift+Enter: xuống dòng thường.",
+    "hintCtrlEnter": "Ctrl+Enter trên dòng phương án: đánh dấu/bỏ đánh dấu đáp án đúng (dấu * ở đầu).",
+    "hintTab": "Tab: sang câu tiếp theo (tự tạo câu mới ở cuối). Shift+Tab: về câu trước.",
+    "hintExtra": "Câu trả lời ngắn: ghi dòng \"Đáp án: …\". Lời giải: dòng \"Lời giải: …\". Công thức trong $…$. Dán ảnh từ clipboard để chèn ảnh.",
+    "add": "Thêm câu",
+    "remove": "Bỏ câu này",
+    "valid": "Hợp lệ",
+    "previewEmpty": "Xem trước sẽ hiện ở đây",
+    "uploading": "Đang tải ảnh…"
+  },
   "Settings": {
     "info": "Thông tin lớp",
     "lock": "Khóa danh sách",

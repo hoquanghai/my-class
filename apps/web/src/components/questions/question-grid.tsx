@@ -1,14 +1,13 @@
 'use client';
 
-import { DIFFICULTIES, DIFFICULTY_LABELS, type QuestionSource } from '@lophoc/shared';
+import type { QuestionSource } from '@lophoc/shared';
 import { CheckCircle2, Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/components/ui/cn';
-import { Input } from '@/components/ui/input';
-import { Select } from '@/components/ui/select';
+import { BatchTagsFields } from './batch-tags';
 import { type BatchTags, type EditableQuestion, validateEditable } from './editable';
-import { FacetDatalists, QuestionFields } from './question-fields';
+import { QuestionFields } from './question-fields';
 
 export interface QuestionGridProps {
   rows: EditableQuestion[];
@@ -29,7 +28,6 @@ export function QuestionGrid({
   facets,
 }: QuestionGridProps) {
   const t = useTranslations('Import');
-  const tq = useTranslations('Questions');
 
   const update = (localId: string, q: EditableQuestion) =>
     onChange(rows.map((r) => (r.localId === localId ? q : r)));
@@ -37,44 +35,7 @@ export function QuestionGrid({
 
   return (
     <div className="space-y-4">
-      <div className="rounded-xl border border-slate-200 bg-white p-4">
-        <p className="mb-2 text-sm font-medium text-slate-700">{t('batchTags')}</p>
-        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-          <Input
-            list="facet-subjects"
-            placeholder={tq('subject')}
-            value={batch.subject}
-            onChange={(e) => onBatchChange({ ...batch, subject: e.target.value })}
-          />
-          <Input
-            list="facet-grades"
-            placeholder={tq('grade')}
-            value={batch.grade}
-            onChange={(e) => onBatchChange({ ...batch, grade: e.target.value })}
-          />
-          <Input
-            list="facet-topics"
-            placeholder={tq('topic')}
-            value={batch.topic}
-            onChange={(e) => onBatchChange({ ...batch, topic: e.target.value })}
-          />
-          <Select
-            aria-label={tq('difficulty')}
-            value={batch.difficulty}
-            onChange={(e) =>
-              onBatchChange({ ...batch, difficulty: e.target.value as BatchTags['difficulty'] })
-            }
-          >
-            <option value="">{tq('difficulty')}</option>
-            {DIFFICULTIES.map((d) => (
-              <option key={d} value={d}>
-                {DIFFICULTY_LABELS[d]}
-              </option>
-            ))}
-          </Select>
-          <FacetDatalists facets={facets} />
-        </div>
-      </div>
+      <BatchTagsFields batch={batch} onChange={onBatchChange} facets={facets} />
 
       <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white">
         <table className="w-full min-w-[720px] text-sm">

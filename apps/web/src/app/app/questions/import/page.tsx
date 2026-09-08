@@ -12,6 +12,7 @@ import {
   toInput,
   validateEditable,
 } from '@/components/questions/editable';
+import { ManualEditor } from '@/components/questions/manual-editor';
 import { QuestionGrid } from '@/components/questions/question-grid';
 import { Alert } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
@@ -28,11 +29,7 @@ export default function ImportQuestionsPage() {
   const [tab, setTab] = useState<TabId>('paste');
   const [text, setText] = useState('');
   const [rows, setRows] = useState<EditableQuestion[]>([]);
-  const [meta, setMeta] = useState<{
-    answerKeyFound: boolean;
-    skipped: number;
-    total: number;
-  } | null>(null);
+  const [meta, setMeta] = useState<{ answerKeyFound: boolean; skipped: number } | null>(null);
   const [source, setSource] = useState<QuestionSource>('paste');
   const [batch, setBatch] = useState<BatchTags>({
     subject: '',
@@ -48,19 +45,10 @@ export default function ImportQuestionsPage() {
   const bulk = useBulkCreateQuestions();
 
   function applyResult(result: ParseResult, src: QuestionSource) {
-    const next = result.questions.map(fromParsed);
-    setRows(next);
+    setRows(result.questions.map(fromParsed));
     setSource(src);
     setSavedCount(null);
-    setMeta({
-      answerKeyFound: result.answerKeyFound,
-      skipped: result.skippedLines,
-      total: next.length,
-    });
-  }
-
-  function parsePaste() {
-    applyResult(parseQuestions(text), 'paste');
+    setMeta({ answerKeyFound: result.answerKeyFound, skipped: result.skippedLines });
   }
 
   async function onDocx(file: File | undefined) {
@@ -90,6 +78,7 @@ export default function ImportQuestionsPage() {
     { id: 'ai' as const, label: t('tabs.ai') },
     { id: 'manual' as const, label: t('tabs.manual') },
   ];
+  const showGrid = tab !== 'manual' && rows.length > 0 && meta !== null;
 
   return (
     <div className="space-y-5">
@@ -121,7 +110,10 @@ export default function ImportQuestionsPage() {
           />
           <div className="flex flex-wrap items-center justify-between gap-2">
             <p className="text-xs text-slate-500">{t('pasteHint')}</p>
-            <Button onClick={parsePaste} disabled={text.trim().length === 0}>
+            <Button
+              onClick={() => applyResult(parseQuestions(text), 'paste')}
+              disabled={text.trim().length === 0}
+            >
               <FileText className="size-4" />
               {t('parse')}
             </Button>
@@ -153,9 +145,12 @@ export default function ImportQuestionsPage() {
       )}
 
       {tab === 'ai' && <Alert variant="info">{t('aiSoon')}</Alert>}
-      {tab === 'manual' && <Alert variant="info">{t('manualSoon')}</Alert>}
 
-      {savedCount !== null && (
+      {tab === 'manual' && (
+        <ManualEditor batch={batch} onBatchChange={setBatch} facets={facets.data} />
+      )}
+
+      {tab !== 'manual' && savedCount !== null && (
         <Alert variant="success">
           {t('saved', { count: savedCount })}{' '}
           {rows.length > 0 && t('remaining', { count: rows.length })}{' '}
@@ -165,7 +160,7 @@ export default function ImportQuestionsPage() {
         </Alert>
       )}
 
-      {rows.length > 0 && meta && (
+      {showGrid && (
         <>
           <div className="flex flex-wrap items-center gap-3 text-sm">
             <span className="font-medium text-slate-800">
