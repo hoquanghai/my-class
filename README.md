@@ -1,0 +1,56 @@
+# Lớp Học (lophoc) — Điểm danh & kiểm tra đầu giờ
+
+Ứng dụng web miễn phí cho giáo viên (trung tâm gia sư): lớp & danh sách, điểm danh, ngân hàng câu hỏi (dán / Word / ảnh AI), kiểm tra đầu giờ, chế độ máy chiếu, báo cáo.
+
+Tài liệu: `mvp-requirements-classroom-app.md` (yêu cầu), `docs/superpowers/specs/` (thiết kế), `docs/superpowers/plans/` (kế hoạch từng slice).
+
+## Cấu trúc
+
+- `apps/api` — NestJS 12 (ESM), Prisma 7, PostgreSQL, Redis, Socket.IO
+- `apps/web` — Next.js 16, Tailwind 4, next-intl (vi), PWA
+- `packages/shared` — kiểu dữ liệu, schema Zod, parser câu hỏi, chấm điểm, hợp đồng socket
+- `infra` — Docker Compose, Caddy
+
+## Chạy local
+
+Yêu cầu: Node 24, pnpm 9 (`corepack enable`), Docker Desktop.
+
+```bash
+pnpm install
+pnpm infra:up                      # postgres (cổng 5433), redis, minio, mailpit
+cp apps/api/.env.example apps/api/.env
+cp apps/web/.env.example apps/web/.env.local
+pnpm db:migrate                    # tạo bảng
+pnpm db:seed                       # dữ liệu demo: demo@lophoc.app / demo1234
+pnpm dev                           # api :4000, web :3000
+```
+
+- API health: http://localhost:4000/api/health
+- Web: http://localhost:3000
+- Mailpit (email dev): http://localhost:8025
+- MinIO console: http://localhost:9001 (lophoc / lophoc123)
+
+Postgres dev lắng nghe ở cổng **5433** trên máy host để tránh đụng bản Postgres khác đang dùng 5432.
+
+## Kiểm thử
+
+```bash
+pnpm test                            # unit (shared + api)
+pnpm --filter @lophoc/api test:e2e   # e2e trên DB lophoc_test
+pnpm lint && pnpm typecheck
+```
+
+## Biến môi trường
+
+Xem `apps/api/.env.example` và `apps/web/.env.example`. `apps/api/.env.test` dùng cho e2e (không có secret).
+
+## Docker
+
+```bash
+docker build -f apps/api/Dockerfile -t lophoc-api .
+docker build -f apps/web/Dockerfile -t lophoc-web .
+```
+
+## Deploy
+
+Sẽ bổ sung ở slice S8 (Docker Compose production + Caddy + backup + Cloudflare).

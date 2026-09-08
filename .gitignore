@@ -19,3 +19,6 @@ apps/api/src/generated/
 
 # logs
 *.log
+
+# Next.js generated type stub
+apps/web/next-env.d.ts
