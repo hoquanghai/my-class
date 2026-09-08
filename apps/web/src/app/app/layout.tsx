@@ -64,7 +64,7 @@ export default function TeacherLayout({ children }: { children: ReactNode }) {
 
   const nav = [
     { href: '/app/classes', label: t('classes'), icon: Users, enabled: true },
-    { href: '/app/questions', label: t('questions'), icon: BookOpen, enabled: false },
+    { href: '/app/questions', label: t('questions'), icon: BookOpen, enabled: true },
     { href: '/app/quizzes', label: t('quizzes'), icon: ClipboardList, enabled: false },
   ];
 

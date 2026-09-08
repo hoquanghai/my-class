@@ -148,7 +148,10 @@ export class QuestionsService {
     return toQuestionDto(created);
   }
 
-  async bulkCreate(teacherId: string, input: BulkCreateQuestionsInput): Promise<BulkCreateResultDto> {
+  async bulkCreate(
+    teacherId: string,
+    input: BulkCreateQuestionsInput,
+  ): Promise<BulkCreateResultDto> {
     const created = await this.prisma.$transaction(
       input.questions.map((q) =>
         this.prisma.question.create({
@@ -170,12 +173,14 @@ export class QuestionsService {
     const merged = questionInputSchema.safeParse({
       ...toQuestionDto(existing),
       ...input,
-      options: input.options ?? existing.options.map((o) => ({
-        label: o.label,
-        contentMd: o.contentMd,
-        isCorrect: o.isCorrect,
-        imageKey: o.imageKey,
-      })),
+      options:
+        input.options ??
+        existing.options.map((o) => ({
+          label: o.label,
+          contentMd: o.contentMd,
+          isCorrect: o.isCorrect,
+          imageKey: o.imageKey,
+        })),
     });
     if (!merged.success) {
       throw new BadRequestException(z.prettifyError(merged.error).replace(/\n/g, '; '));

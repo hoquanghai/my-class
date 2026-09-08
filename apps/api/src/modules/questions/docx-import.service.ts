@@ -1,5 +1,10 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { type ParsedQuestion, type ParseResult, type ParserLine, parseQuestions } from '@lophoc/shared';
+import {
+  type ParsedQuestion,
+  type ParseResult,
+  type ParserLine,
+  parseQuestions,
+} from '@lophoc/shared';
 import mammoth from 'mammoth';
 import { HTMLElement, type Node, NodeType, parse as parseHtml } from 'node-html-parser';
 import { PrismaService } from '../../prisma/prisma.service.js';

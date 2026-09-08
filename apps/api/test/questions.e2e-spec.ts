@@ -73,8 +73,15 @@ describe('Questions (e2e)', () => {
     expect(res.body.options.map((o: { label: string }) => o.label)).toEqual(['A', 'B']);
     expect(res.body.options[1].isCorrect).toBe(true);
 
-    const noCorrect = { ...singleChoice('x'), options: singleChoice('x').options.map((o) => ({ ...o, isCorrect: false })) };
-    const bad = await http().post('/api/questions').set('Cookie', ck(s)).send(noCorrect).expect(400);
+    const noCorrect = {
+      ...singleChoice('x'),
+      options: singleChoice('x').options.map((o) => ({ ...o, isCorrect: false })),
+    };
+    const bad = await http()
+      .post('/api/questions')
+      .set('Cookie', ck(s))
+      .send(noCorrect)
+      .expect(400);
     expect(bad.body.message).toContain('đáp án');
 
     await http()
@@ -112,7 +119,10 @@ describe('Questions (e2e)', () => {
     expect(all.body.total).toBe(3);
     expect(all.body.items[0].source).toBe('paste');
 
-    const page = await http().get('/api/questions?page=2&pageSize=2').set('Cookie', ck(s)).expect(200);
+    const page = await http()
+      .get('/api/questions?page=2&pageSize=2')
+      .set('Cookie', ck(s))
+      .expect(200);
     expect(page.body.items).toHaveLength(1);
 
     const byGrade = await http().get('/api/questions?grade=7').set('Cookie', ck(s)).expect(200);
@@ -130,7 +140,9 @@ describe('Questions (e2e)', () => {
   it('sửa (thay phương án, đổi loại), xóa mềm, của người khác → 404', async () => {
     const s = await signup(app, 'q-update');
     const other = await signup(app, 'q-other');
-    const created = (await http().post('/api/questions').set('Cookie', ck(s)).send(singleChoice('gốc')).expect(201)).body;
+    const created = (
+      await http().post('/api/questions').set('Cookie', ck(s)).send(singleChoice('gốc')).expect(201)
+    ).body;
 
     const updated = await http()
       .patch(`/api/questions/${created.id}`)
@@ -184,7 +196,11 @@ describe('Questions (e2e)', () => {
       .attach('file', docx, 'de.docx')
       .expect(200);
     expect(res.body.questions).toHaveLength(2);
-    expect(res.body.questions[0].options.map((o: { isCorrect: boolean }) => o.isCorrect)).toEqual([false, true, false]);
+    expect(res.body.questions[0].options.map((o: { isCorrect: boolean }) => o.isCorrect)).toEqual([
+      false,
+      true,
+      false,
+    ]);
     expect(res.body.questions[0].options[1].contentMd).toBe('Hà Nội');
     expect(res.body.questions[1].options[1].isCorrect).toBe(true);
     expect(res.body.answerKeyFound).toBe(true);

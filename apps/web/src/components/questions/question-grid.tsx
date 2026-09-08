@@ -1,0 +1,133 @@
+'use client';
+
+import { DIFFICULTIES, DIFFICULTY_LABELS, type QuestionSource } from '@lophoc/shared';
+import { CheckCircle2, Trash2 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/components/ui/cn';
+import { Input } from '@/components/ui/input';
+import { Select } from '@/components/ui/select';
+import { type BatchTags, type EditableQuestion, validateEditable } from './editable';
+import { FacetDatalists, QuestionFields } from './question-fields';
+
+export interface QuestionGridProps {
+  rows: EditableQuestion[];
+  onChange: (rows: EditableQuestion[]) => void;
+  batch: BatchTags;
+  onBatchChange: (b: BatchTags) => void;
+  source: QuestionSource;
+  facets?: { subjects: string[]; grades: string[]; topics: string[] };
+}
+
+/** Lưới xem trước và sửa: mỗi hàng một câu, hàng lỗi tô đỏ, sửa tại chỗ. */
+export function QuestionGrid({
+  rows,
+  onChange,
+  batch,
+  onBatchChange,
+  source,
+  facets,
+}: QuestionGridProps) {
+  const t = useTranslations('Import');
+  const tq = useTranslations('Questions');
+
+  const update = (localId: string, q: EditableQuestion) =>
+    onChange(rows.map((r) => (r.localId === localId ? q : r)));
+  const remove = (localId: string) => onChange(rows.filter((r) => r.localId !== localId));
+
+  return (
+    <div className="space-y-4">
+      <div className="rounded-xl border border-slate-200 bg-white p-4">
+        <p className="mb-2 text-sm font-medium text-slate-700">{t('batchTags')}</p>
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+          <Input
+            list="facet-subjects"
+            placeholder={tq('subject')}
+            value={batch.subject}
+            onChange={(e) => onBatchChange({ ...batch, subject: e.target.value })}
+          />
+          <Input
+            list="facet-grades"
+            placeholder={tq('grade')}
+            value={batch.grade}
+            onChange={(e) => onBatchChange({ ...batch, grade: e.target.value })}
+          />
+          <Input
+            list="facet-topics"
+            placeholder={tq('topic')}
+            value={batch.topic}
+            onChange={(e) => onBatchChange({ ...batch, topic: e.target.value })}
+          />
+          <Select
+            aria-label={tq('difficulty')}
+            value={batch.difficulty}
+            onChange={(e) =>
+              onBatchChange({ ...batch, difficulty: e.target.value as BatchTags['difficulty'] })
+            }
+          >
+            <option value="">{tq('difficulty')}</option>
+            {DIFFICULTIES.map((d) => (
+              <option key={d} value={d}>
+                {DIFFICULTY_LABELS[d]}
+              </option>
+            ))}
+          </Select>
+          <FacetDatalists facets={facets} />
+        </div>
+      </div>
+
+      <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white">
+        <table className="w-full min-w-[720px] text-sm">
+          <thead className="bg-slate-50 text-left text-xs uppercase tracking-wide text-slate-500">
+            <tr>
+              <th className="w-10 px-3 py-2">{t('colNo')}</th>
+              <th className="px-3 py-2">{t('colContent')}</th>
+              <th className="w-44 px-3 py-2">{t('colIssues')}</th>
+              <th className="w-12 px-2 py-2" />
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-slate-100">
+            {rows.map((row, i) => {
+              const errors = validateEditable(row, source);
+              const invalid = errors.length > 0;
+              return (
+                <tr key={row.localId} className={cn('align-top', invalid && 'bg-red-50/60')}>
+                  <td className="px-3 py-3 font-semibold text-slate-500">{i + 1}</td>
+                  <td className="px-3 py-3">
+                    <QuestionFields value={row} onChange={(q) => update(row.localId, q)} compact />
+                  </td>
+                  <td className="px-3 py-3">
+                    {invalid ? (
+                      <ul className="space-y-1 text-xs text-red-700" role="alert">
+                        {errors.map((e) => (
+                          <li key={e}>• {e}</li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <span className="inline-flex items-center gap-1 text-xs font-medium text-green-700">
+                        <CheckCircle2 className="size-4" />
+                        {t('ok')}
+                      </span>
+                    )}
+                  </td>
+                  <td className="px-2 py-3">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      aria-label={t('removeRow')}
+                      title={t('removeRow')}
+                      className="text-red-600 hover:bg-red-50"
+                      onClick={() => remove(row.localId)}
+                    >
+                      <Trash2 className="size-4" />
+                    </Button>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
