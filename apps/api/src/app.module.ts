@@ -9,6 +9,7 @@ import { ClassesModule } from './modules/classes/classes.module.js';
 import { FeatureFlagsModule } from './modules/feature-flags/feature-flags.module.js';
 import { HealthModule } from './modules/health/health.module.js';
 import { MailerModule } from './modules/mailer/mailer.module.js';
+import { SessionsModule } from './modules/sessions/sessions.module.js';
 import { TeachersModule } from './modules/teachers/teachers.module.js';
 import { PrismaModule } from './prisma/prisma.module.js';
 
@@ -31,6 +32,7 @@ import { PrismaModule } from './prisma/prisma.module.js';
     AuthModule,
     TeachersModule,
     ClassesModule,
+    SessionsModule,
     HealthModule,
   ],
   providers: [{ provide: APP_GUARD, useClass: ThrottlerGuard }],
