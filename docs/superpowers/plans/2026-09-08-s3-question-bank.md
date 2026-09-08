@@ -1,5 +1,7 @@
 # S3 — Ngân hàng câu hỏi: Kế hoạch triển khai
 
+> **Trạng thái:** S3a HOÀN THÀNH 2026-09-08 (parser 13 fixture, API e2e 5 test, kiểm thử trình duyệt dán đề 5 câu → lưới → lưu → ngân hàng render LaTeX, sửa qua hộp thoại). S3b (soạn tay) và S3c (AI ảnh/PDF) đang làm.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 >
 > Cùng agent thực thi ngay sau khi viết. Chia ba phần: **S3a** dán/Word + lưới preview-and-fix + bank; **S3b** soạn tay keyboard-first + dán ảnh; **S3c** AI ảnh/PDF qua job nền + quota.
