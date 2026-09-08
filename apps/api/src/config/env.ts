@@ -43,6 +43,8 @@ export const envSchema = z.object({
 
   /** `bullmq` cần Redis; `inline` chạy job ngay trong tiến trình (test). */
   QUEUE_DRIVER: z.enum(['bullmq', 'inline']).default('bullmq'),
+  /** Socket.IO adapter: `redis` để chạy nhiều instance api; `memory` cho test/một instance. */
+  REALTIME_ADAPTER: z.enum(['redis', 'memory']).default('redis'),
   /** Giai đoạn 1: worker chạy chung tiến trình api. Đặt false khi tách container worker. */
   WORKER_INLINE: z.stringbool().default(true),
 });

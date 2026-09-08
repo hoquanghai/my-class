@@ -10,7 +10,7 @@ export const E2E_EMAIL_PREFIX = 'e2e-';
 export async function createTestApp(): Promise<INestApplication> {
   const moduleRef = await Test.createTestingModule({ imports: [AppModule] }).compile();
   const app = moduleRef.createNestApplication();
-  configureApp(app);
+  await configureApp(app, { corsOrigin: true });
   await app.init();
   return app;
 }
@@ -85,4 +85,29 @@ export function tokenFromMail(text: string): string {
   const match = text.match(/token=([A-Za-z0-9_-]+)/);
   if (!match) throw new Error('Không tìm thấy token trong email');
   return match[1] as string;
+}
+
+export interface StudentSession {
+  jar: CookieJar;
+  token: string;
+  studentId: string;
+  deviceId: string;
+}
+
+/** Học sinh chọn tên trong lớp theo mã → cookie + token thiết bị. */
+export async function pickStudent(
+  app: INestApplication,
+  code: string,
+  studentId: string,
+): Promise<StudentSession> {
+  const res = await request(app.getHttpServer())
+    .post(`/api/join/${code}/pick`)
+    .send({ studentId })
+    .expect(200);
+  return {
+    jar: readSetCookies(res),
+    token: res.body.token,
+    studentId,
+    deviceId: res.body.student.deviceId,
+  };
 }

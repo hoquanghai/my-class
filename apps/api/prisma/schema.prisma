@@ -314,6 +314,7 @@ model QuizRun {
   questionOpenedAt DateTime?
   questionClosedAt DateTime?
   deadlineAt       DateTime?
+  selfPacedMinutes Int?
   startedAt        DateTime?
   endedAt          DateTime?
   createdAt        DateTime  @default(now())
