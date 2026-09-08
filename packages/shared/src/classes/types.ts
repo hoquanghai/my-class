@@ -47,6 +47,9 @@ export const ErrorCodes = {
   ROSTER_LOCKED: 'ROSTER_LOCKED',
   LIMIT_AI_PAGES: 'LIMIT_AI_PAGES',
   AI_DISABLED: 'AI_DISABLED',
+  RUN_ACTIVE: 'RUN_ACTIVE',
+  RUN_NOT_OPEN: 'RUN_NOT_OPEN',
+  STUDENT_BOUND: 'STUDENT_BOUND',
 } as const;
 export type ErrorCode = (typeof ErrorCodes)[keyof typeof ErrorCodes];
 
