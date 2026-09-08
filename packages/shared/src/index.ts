@@ -9,6 +9,7 @@ export * from './questions/schemas.js';
 export * from './questions/types.js';
 export * from './questions/parser/types.js';
 export * from './questions/parser/question-parser.js';
+export * from './questions/extracted.js';
 export * from './roster/dedupe-names.js';
 export * from './roster/parse-names.js';
 export * from './text/normalize.js';

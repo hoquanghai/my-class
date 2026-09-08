@@ -1,6 +1,9 @@
 'use client';
 
 import type {
+  AiJobCreatedDto,
+  AiJobDto,
+  AiQuotaDto,
   BulkCreateQuestionsInput,
   BulkCreateResultDto,
   MediaUploadDto,
@@ -13,7 +16,7 @@ import type {
   UpdateQuestionInput,
 } from '@lophoc/shared';
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { apiFetch } from './api';
+import { apiFetch, ApiError } from './api';
 
 export type QuestionFilterInput = Partial<QuestionFilter>;
 
@@ -22,6 +25,7 @@ export const questionKeys = {
   list: (filter: QuestionFilterInput) => ['questions', 'list', filter] as const,
   facets: ['questions', 'facets'] as const,
   detail: (id: string) => ['questions', id] as const,
+  aiQuota: ['questions', 'ai', 'quota'] as const,
 };
 
 function toQuery(filter: QuestionFilterInput): string {
@@ -106,5 +110,60 @@ export function useUploadImage() {
       formData.append('file', file, file instanceof File ? file.name : 'image.png');
       return apiFetch<MediaUploadDto>('/media/upload', { method: 'POST', formData });
     },
+  });
+}
+
+// ---------- AI ----------
+
+export function useAiQuota() {
+  return useQuery({
+    queryKey: questionKeys.aiQuota,
+    queryFn: () => apiFetch<AiQuotaDto>('/questions/import/ai/quota'),
+    staleTime: 30_000,
+  });
+}
+
+export interface AiImportRequest {
+  files: File[];
+  subject?: string;
+  grade?: string;
+  onProgress?: (status: AiJobDto['status'], elapsedMs: number) => void;
+}
+
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+/** Tạo job AI rồi thăm dò tới khi xong (≤ 5 phút). Trả về job hoàn thành hoặc ném lỗi. */
+export function useAiImport() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({
+      files,
+      subject,
+      grade,
+      onProgress,
+    }: AiImportRequest): Promise<AiJobDto> => {
+      const formData = new FormData();
+      for (const f of files) formData.append('files', f, f.name);
+      if (subject) formData.append('subject', subject);
+      if (grade) formData.append('grade', grade);
+      const created = await apiFetch<AiJobCreatedDto>('/questions/import/ai', {
+        method: 'POST',
+        formData,
+      });
+      const started = Date.now();
+      for (;;) {
+        const job = await apiFetch<AiJobDto>(`/questions/import/ai/jobs/${created.jobId}`);
+        onProgress?.(job.status, Date.now() - started);
+        if (job.status === 'done') return job;
+        if (job.status === 'failed') {
+          throw new ApiError(500, 'AI_FAILED', job.error ?? 'Trích xuất thất bại');
+        }
+        if (Date.now() - started > 5 * 60_000) {
+          throw new ApiError(504, 'AI_TIMEOUT', 'Trích xuất quá lâu, hãy thử lại với ít trang hơn');
+        }
+        await sleep(2000);
+      }
+    },
+    onSettled: () => queryClient.invalidateQueries({ queryKey: questionKeys.aiQuota }),
   });
 }

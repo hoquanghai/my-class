@@ -12,6 +12,7 @@ import {
   toInput,
   validateEditable,
 } from '@/components/questions/editable';
+import { AiImportPanel } from '@/components/questions/ai-import-panel';
 import { ManualEditor } from '@/components/questions/manual-editor';
 import { QuestionGrid } from '@/components/questions/question-grid';
 import { Alert } from '@/components/ui/alert';
@@ -144,7 +145,7 @@ export default function ImportQuestionsPage() {
         </div>
       )}
 
-      {tab === 'ai' && <Alert variant="info">{t('aiSoon')}</Alert>}
+      {tab === 'ai' && <AiImportPanel onResult={(r) => applyResult(r, 'image_ai')} />}
 
       {tab === 'manual' && (
         <ManualEditor batch={batch} onBatchChange={setBatch} facets={facets.data} />

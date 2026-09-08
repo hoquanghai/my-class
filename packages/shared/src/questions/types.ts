@@ -1,3 +1,4 @@
+import type { ParseResult } from './parser/types.js';
 import type { Difficulty, QuestionSource, QuestionType } from './schemas.js';
 
 export interface QuestionOptionDto {
@@ -47,6 +48,35 @@ export interface BulkCreateResultDto {
 export interface MediaUploadDto {
   key: string;
   url: string;
+}
+
+/** Hạn mức trích xuất AI theo tháng. */
+export interface AiQuotaDto {
+  enabled: boolean;
+  provider: string;
+  limit: number;
+  used: number;
+  remaining: number;
+  /** YYYY-MM */
+  month: string;
+}
+
+export type AiJobStatus = 'pending' | 'processing' | 'done' | 'failed';
+
+export interface AiJobCreatedDto {
+  jobId: string;
+  pageCount: number;
+  status: AiJobStatus;
+}
+
+export interface AiJobDto {
+  id: string;
+  status: AiJobStatus;
+  pageCount: number;
+  result: ParseResult | null;
+  error: string | null;
+  createdAt: string;
+  finishedAt: string | null;
 }
 
 export const DIFFICULTY_LABELS: Record<Difficulty, string> = {

@@ -228,6 +228,19 @@
     "preview": "Xem trước",
     "editRaw": "Sửa"
   },
+  "Ai": {
+    "quota": "Hạn mức AI tháng {month}: còn {remaining}/{limit} trang.",
+    "disabled": "Trích xuất bằng AI chưa được bật.",
+    "disabledHint": "Quản trị viên cần cấu hình nhà cung cấp AI (Claude hoặc OpenAI) trên máy chủ.",
+    "select": "Chọn ảnh hoặc PDF",
+    "selectHint": "Tối đa 10 ảnh (PNG/JPG/WebP) hoặc 1 file PDF ≤ 20 trang. Mỗi ảnh/trang trừ 1 trang hạn mức.",
+    "mixError": "Chỉ chọn một file PDF, hoặc chỉ chọn ảnh.",
+    "tooMany": "Tối đa {max} ảnh mỗi lần.",
+    "extract": "Trích xuất bằng AI",
+    "pagesNote": "Sẽ dùng {count} trang hạn mức.",
+    "processing": "Đang trích xuất… {seconds}s (thường 20–90 giây)",
+    "reviewNote": "Kết quả AI luôn hiện trong lưới xem trước để bạn kiểm tra và sửa trước khi lưu, không tự lưu."
+  },
   "Manual": {
     "question": "Câu {n}",
     "placeholder": "Gõ đề bài rồi nhấn Enter…\nA. phương án\nB. phương án (Ctrl+Enter để đánh dấu đúng)",

@@ -1,7 +1,7 @@
 import { randomBytes } from 'node:crypto';
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import { GetObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import type { Env } from '../../config/env.js';
 
 export const IMAGE_MIME_EXT: Record<string, string> = {
@@ -26,17 +26,25 @@ export function sniffImageMime(buf: Buffer): string | null {
   return null;
 }
 
+export function isPdf(buf: Buffer): boolean {
+  return buf.length > 5 && buf.subarray(0, 5).toString('ascii') === '%PDF-';
+}
+
+export interface StoredObject {
+  body: Buffer;
+  mime: string;
+}
+
 /**
  * Lưu file lên object storage (MinIO ở dev, R2 ở prod) và trả URL công khai.
  * `STORAGE_DRIVER=memory` giữ file trong RAM cho test.
  */
 @Injectable()
 export class StorageService {
-  private readonly logger = new Logger(StorageService.name);
   private readonly client: S3Client | null;
   private readonly bucket: string;
   private readonly publicUrl: string;
-  private readonly memory = new Map<string, { body: Buffer; mime: string }>();
+  private readonly memory = new Map<string, StoredObject>();
 
   constructor(config: ConfigService<Env, true>) {
     this.bucket = config.get('S3_BUCKET', { infer: true });
@@ -82,8 +90,20 @@ export class StorageService {
     return this.url(key);
   }
 
+  async get(key: string): Promise<StoredObject | null> {
+    if (!this.client) return this.memory.get(key) ?? null;
+    try {
+      const res = await this.client.send(new GetObjectCommand({ Bucket: this.bucket, Key: key }));
+      if (!res.Body) return null;
+      const bytes = await res.Body.transformToByteArray();
+      return { body: Buffer.from(bytes), mime: res.ContentType ?? 'application/octet-stream' };
+    } catch {
+      return null;
+    }
+  }
+
   /** Chỉ dùng trong test (driver memory). */
-  getFromMemory(key: string): { body: Buffer; mime: string } | undefined {
+  getFromMemory(key: string): StoredObject | undefined {
     return this.memory.get(key);
   }
 }

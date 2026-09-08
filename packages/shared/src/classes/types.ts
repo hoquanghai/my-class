@@ -45,6 +45,8 @@ export const ErrorCodes = {
   EMAIL_TAKEN: 'EMAIL_TAKEN',
   INVALID_TOKEN: 'INVALID_TOKEN',
   ROSTER_LOCKED: 'ROSTER_LOCKED',
+  LIMIT_AI_PAGES: 'LIMIT_AI_PAGES',
+  AI_DISABLED: 'AI_DISABLED',
 } as const;
 export type ErrorCode = (typeof ErrorCodes)[keyof typeof ErrorCodes];
 

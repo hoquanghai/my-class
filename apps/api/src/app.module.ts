@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { validateEnv } from './config/env.js';
+import { AiImportModule } from './modules/ai-import/ai-import.module.js';
 import { AnalyticsModule } from './modules/analytics/analytics.module.js';
 import { AuthModule } from './modules/auth/auth.module.js';
 import { ClassesModule } from './modules/classes/classes.module.js';
@@ -38,6 +39,7 @@ import { PrismaModule } from './prisma/prisma.module.js';
     ClassesModule,
     SessionsModule,
     QuestionsModule,
+    AiImportModule,
     MediaModule,
     HealthModule,
   ],

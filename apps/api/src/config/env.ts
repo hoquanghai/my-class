@@ -32,6 +32,19 @@ export const envSchema = z.object({
   /** URL công khai của bucket, ví dụ http://localhost:9000/lophoc hoặc https://media.example.com */
   S3_PUBLIC_URL: z.string().optional(),
   S3_FORCE_PATH_STYLE: z.stringbool().default(true),
+
+  /** Trích xuất câu hỏi từ ảnh/PDF. `mock` không gọi mạng (dev/test). */
+  AI_PROVIDER: z.enum(['claude', 'openai', 'mock']).default('claude'),
+  ANTHROPIC_API_KEY: z.string().optional(),
+  OPENAI_API_KEY: z.string().optional(),
+  /** Ghi đè model mặc định của nhà cung cấp (claude-opus-5 / gpt-5.6). */
+  AI_MODEL: z.string().optional(),
+  AI_EFFORT: z.enum(['low', 'medium', 'high']).default('medium'),
+
+  /** `bullmq` cần Redis; `inline` chạy job ngay trong tiến trình (test). */
+  QUEUE_DRIVER: z.enum(['bullmq', 'inline']).default('bullmq'),
+  /** Giai đoạn 1: worker chạy chung tiến trình api. Đặt false khi tách container worker. */
+  WORKER_INLINE: z.stringbool().default(true),
 });
 
 export type Env = z.infer<typeof envSchema>;
