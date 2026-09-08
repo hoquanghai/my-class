@@ -36,9 +36,11 @@ Postgres dev lắng nghe ở cổng **5433** trên máy host để tránh đụn
 
 ```bash
 pnpm test                            # unit (shared + api)
-pnpm --filter @lophoc/api test:e2e   # e2e trên DB lophoc_test
+pnpm test:e2e                        # e2e trên DB lophoc_test
 pnpm lint && pnpm typecheck
 ```
+
+Các lệnh trên đi qua Turbo nên tự sinh Prisma client trước. Nếu chạy script trực tiếp trong `apps/api` (ví dụ `pnpm --filter @lophoc/api test`), hãy chạy `pnpm --filter @lophoc/api db:generate` một lần trước.
 
 ## Biến môi trường
 

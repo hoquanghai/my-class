@@ -14,7 +14,7 @@ COPY apps/api/package.json apps/api/
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile --filter @lophoc/api...
 COPY packages/shared packages/shared
 COPY apps/api apps/api
-RUN pnpm --filter @lophoc/shared build && pnpm --filter @lophoc/api build
+RUN pnpm --filter @lophoc/shared build && pnpm --filter @lophoc/api db:generate && pnpm --filter @lophoc/api build
 RUN pnpm --filter @lophoc/api deploy --prod /out
 
 FROM node:24-bookworm-slim AS runner

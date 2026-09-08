@@ -44,7 +44,7 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm format:check
       - run: pnpm turbo run build lint typecheck test
-      - run: pnpm --filter @lophoc/api test:e2e
+      - run: pnpm turbo run test:e2e
 
   docker:
     runs-on: ubuntu-latest

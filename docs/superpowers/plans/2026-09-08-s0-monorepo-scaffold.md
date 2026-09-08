@@ -47,6 +47,7 @@
 ### Task 1: Khởi tạo git và cấu hình workspace gốc
 
 **Files:**
+
 - Create: `.gitignore`, `.editorconfig`, `.npmrc`, `.nvmrc`, `.prettierrc`, `.prettierignore`, `package.json`, `pnpm-workspace.yaml`, `turbo.json`, `tsconfig.base.json`
 
 - [ ] **Step 1: git init**
@@ -54,6 +55,7 @@
 ```bash
 git init -b main
 ```
+
 Expected: `Initialized empty Git repository`.
 
 - [ ] **Step 2: Tạo `.gitignore`**
@@ -85,6 +87,7 @@ apps/api/src/generated/
 - [ ] **Step 3: Tạo `.editorconfig`, `.npmrc`, `.nvmrc`, `.prettierrc`, `.prettierignore`**
 
 `.editorconfig`:
+
 ```ini
 root = true
 
@@ -98,17 +101,20 @@ trim_trailing_whitespace = true
 ```
 
 `.npmrc`:
+
 ```ini
 auto-install-peers=true
 strict-peer-dependencies=false
 ```
 
 `.nvmrc`:
+
 ```
 24
 ```
 
 `.prettierrc`:
+
 ```json
 {
   "singleQuote": true,
@@ -119,6 +125,7 @@ strict-peer-dependencies=false
 ```
 
 `.prettierignore`:
+
 ```
 node_modules
 dist
@@ -165,6 +172,7 @@ apps/api/prisma/migrations
 - [ ] **Step 5: Tạo `pnpm-workspace.yaml`, `turbo.json`, `tsconfig.base.json`**
 
 `pnpm-workspace.yaml`:
+
 ```yaml
 packages:
   - apps/*
@@ -172,6 +180,7 @@ packages:
 ```
 
 `turbo.json`:
+
 ```json
 {
   "$schema": "https://turbo.build/schema.json",
@@ -203,6 +212,7 @@ packages:
 ```
 
 `tsconfig.base.json`:
+
 ```json
 {
   "compilerOptions": {
@@ -223,6 +233,7 @@ packages:
 pnpm install
 git add -A && git commit -m "chore: init monorepo workspace (pnpm + turbo)"
 ```
+
 Expected: `pnpm install` tạo `pnpm-lock.yaml`, không lỗi.
 
 ---
@@ -230,12 +241,14 @@ Expected: `pnpm install` tạo `pnpm-lock.yaml`, không lỗi.
 ### Task 2: `packages/shared` với tiện ích mã lớp (TDD)
 
 **Files:**
+
 - Create: `packages/shared/package.json`, `tsconfig.json`, `tsconfig.build.json`, `vitest.config.ts`, `eslint.config.mjs`, `src/index.ts`, `src/class-code.ts`
 - Test: `packages/shared/src/class-code.spec.ts`
 
 - [ ] **Step 1: Tạo cấu hình package**
 
 `packages/shared/package.json`:
+
 ```json
 {
   "name": "@lophoc/shared",
@@ -273,6 +286,7 @@ Expected: `pnpm install` tạo `pnpm-lock.yaml`, không lỗi.
 ```
 
 `packages/shared/tsconfig.json`:
+
 ```json
 {
   "extends": "../../tsconfig.base.json",
@@ -290,6 +304,7 @@ Expected: `pnpm install` tạo `pnpm-lock.yaml`, không lỗi.
 ```
 
 `packages/shared/tsconfig.build.json`:
+
 ```json
 {
   "extends": "./tsconfig.json",
@@ -301,6 +316,7 @@ Expected: `pnpm install` tạo `pnpm-lock.yaml`, không lỗi.
 ```
 
 `packages/shared/vitest.config.ts`:
+
 ```ts
 import { defineConfig } from 'vitest/config';
 
@@ -313,6 +329,7 @@ export default defineConfig({
 ```
 
 `packages/shared/eslint.config.mjs`:
+
 ```js
 import js from '@eslint/js';
 import tseslint from 'typescript-eslint';
@@ -332,7 +349,12 @@ export default tseslint.config(
 - [ ] **Step 2: Viết test thất bại `src/class-code.spec.ts`**
 
 ```ts
-import { CLASS_CODE_ALPHABET, generateClassCode, isValidClassCode, normalizeClassCode } from './class-code.js';
+import {
+  CLASS_CODE_ALPHABET,
+  generateClassCode,
+  isValidClassCode,
+  normalizeClassCode,
+} from './class-code.js';
 
 describe('generateClassCode', () => {
   it('sinh mã 6 ký tự chỉ gồm bảng chữ không nhầm lẫn', () => {
@@ -376,11 +398,13 @@ describe('normalizeClassCode', () => {
 ```bash
 pnpm --filter @lophoc/shared test
 ```
+
 Expected: FAIL, `Cannot find module './class-code.js'`.
 
 - [ ] **Step 4: Viết `src/class-code.ts` và `src/index.ts`**
 
 `src/class-code.ts`:
+
 ```ts
 /** Bảng chữ không có 0/O, 1/I/L để đọc trên máy chiếu không nhầm. */
 export const CLASS_CODE_ALPHABET = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
@@ -417,6 +441,7 @@ export function normalizeClassCode(input: string): string {
 ```
 
 `src/index.ts`:
+
 ```ts
 export * from './class-code.js';
 ```
@@ -428,6 +453,7 @@ pnpm install
 pnpm --filter @lophoc/shared test
 pnpm --filter @lophoc/shared build && ls packages/shared/dist
 ```
+
 Expected: 7 tests PASS; `dist/index.js`, `dist/class-code.js`, `dist/index.d.ts` tồn tại.
 
 - [ ] **Step 6: Commit**
@@ -441,6 +467,7 @@ git add -A && git commit -m "feat(shared): class code utilities with tests"
 ### Task 3: Khung `apps/api` NestJS 12 ESM + env Zod + health (unit test)
 
 **Files:**
+
 - Create: `apps/api/package.json`, `tsconfig.json`, `tsconfig.build.json`, `nest-cli.json`, `vitest.config.ts`, `eslint.config.mjs`, `.env.example`, `src/main.ts`, `src/app.module.ts`, `src/config/env.ts`, `src/modules/health/health.module.ts`, `src/modules/health/health.controller.ts`
 - Test: `apps/api/src/modules/health/health.controller.spec.ts`, `apps/api/src/config/env.spec.ts`
 
@@ -449,6 +476,7 @@ Lưu ý: Task 3 tạo `PrismaService` dạng tối thiểu trong Task 4; ở Tas
 - [ ] **Step 1: Tạo cấu hình package**
 
 `apps/api/package.json`:
+
 ```json
 {
   "name": "@lophoc/api",
@@ -510,6 +538,7 @@ Lưu ý: Task 3 tạo `PrismaService` dạng tối thiểu trong Task 4; ở Tas
 ```
 
 `apps/api/tsconfig.json`:
+
 ```json
 {
   "extends": "../../tsconfig.base.json",
@@ -529,11 +558,19 @@ Lưu ý: Task 3 tạo `PrismaService` dạng tối thiểu trong Task 4; ở Tas
     "strictPropertyInitialization": false,
     "types": ["vitest/globals", "node"]
   },
-  "include": ["src", "test", "prisma", "prisma.config.ts", "vitest.config.ts", "vitest.config.e2e.ts"]
+  "include": [
+    "src",
+    "test",
+    "prisma",
+    "prisma.config.ts",
+    "vitest.config.ts",
+    "vitest.config.e2e.ts"
+  ]
 }
 ```
 
 `apps/api/tsconfig.build.json`:
+
 ```json
 {
   "extends": "./tsconfig.json",
@@ -547,6 +584,7 @@ Lưu ý: Task 3 tạo `PrismaService` dạng tối thiểu trong Task 4; ở Tas
 ```
 
 `apps/api/nest-cli.json`:
+
 ```json
 {
   "$schema": "https://json.schemastore.org/nest-cli",
@@ -560,6 +598,7 @@ Lưu ý: Task 3 tạo `PrismaService` dạng tối thiểu trong Task 4; ở Tas
 ```
 
 `apps/api/vitest.config.ts`:
+
 ```ts
 import swc from 'unplugin-swc';
 import tsconfigPaths from 'vite-tsconfig-paths';
@@ -586,6 +625,7 @@ export default defineConfig({
 ```
 
 `apps/api/eslint.config.mjs`:
+
 ```js
 import js from '@eslint/js';
 import tseslint from 'typescript-eslint';
@@ -603,6 +643,7 @@ export default tseslint.config(
 ```
 
 `apps/api/.env.example`:
+
 ```ini
 NODE_ENV=development
 PORT=4000
@@ -666,6 +707,7 @@ export function validateEnv(config: Record<string, unknown>): Env {
 - [ ] **Step 4: Viết Prisma service tối thiểu (schema thật ở Task 4)**
 
 `src/prisma/prisma.service.ts`:
+
 ```ts
 import { Injectable, type OnModuleDestroy, type OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -692,6 +734,7 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
 ```
 
 `src/prisma/prisma.module.ts`:
+
 ```ts
 import { Global, Module } from '@nestjs/common';
 import { PrismaService } from './prisma.service.js';
@@ -732,6 +775,7 @@ describe('HealthController', () => {
 - [ ] **Step 6: Viết health controller/module, app module, main**
 
 `src/modules/health/health.controller.ts`:
+
 ```ts
 import { Controller, Get } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service.js';
@@ -749,6 +793,7 @@ export class HealthController {
 ```
 
 `src/modules/health/health.module.ts`:
+
 ```ts
 import { Module } from '@nestjs/common';
 import { HealthController } from './health.controller.js';
@@ -760,6 +805,7 @@ export class HealthModule {}
 ```
 
 `src/app.module.ts`:
+
 ```ts
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
@@ -782,6 +828,7 @@ export class AppModule {}
 ```
 
 `src/main.ts`:
+
 ```ts
 import { StandardSchemaValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -809,6 +856,7 @@ await bootstrap();
 - [ ] **Step 7: Tạo schema Prisma tạm để `prisma generate` chạy được** (schema đầy đủ thay ở Task 4)
 
 `apps/api/prisma.config.ts`:
+
 ```ts
 import { config as loadDotenv } from 'dotenv';
 import { defineConfig, env } from 'prisma/config';
@@ -828,6 +876,7 @@ export default defineConfig({
 ```
 
 `apps/api/prisma/schema.prisma` (tạm):
+
 ```prisma
 generator client {
   provider            = "prisma-client"
@@ -855,6 +904,7 @@ pnpm install
 pnpm --filter @lophoc/api test
 pnpm --filter @lophoc/api typecheck
 ```
+
 Expected: 4 tests PASS (3 env + 1 health); typecheck không lỗi.
 
 - [ ] **Step 9: Commit**
@@ -868,6 +918,7 @@ git add -A && git commit -m "feat(api): NestJS 12 ESM skeleton with zod env and 
 ### Task 4: Docker Compose dev + schema Prisma đầy đủ + migration + e2e health
 
 **Files:**
+
 - Create: `infra/docker-compose.dev.yml`, `infra/postgres-init/01-create-test-db.sql`, `apps/api/.env.test`, `apps/api/vitest.config.e2e.ts`, `apps/api/test/setup-e2e.ts`
 - Modify: `apps/api/prisma/schema.prisma` (thay toàn bộ)
 - Test: `apps/api/test/health.e2e-spec.ts`
@@ -875,6 +926,7 @@ git add -A && git commit -m "feat(api): NestJS 12 ESM skeleton with zod env and 
 - [ ] **Step 1: Tạo Compose dev**
 
 `infra/docker-compose.dev.yml`:
+
 ```yaml
 name: lophoc-dev
 
@@ -941,6 +993,7 @@ volumes:
 ```
 
 `infra/postgres-init/01-create-test-db.sql`:
+
 ```sql
 CREATE DATABASE lophoc_test;
 ```
@@ -951,6 +1004,7 @@ CREATE DATABASE lophoc_test;
 pnpm infra:up
 docker compose -f infra/docker-compose.dev.yml ps
 ```
+
 Expected: `postgres`, `redis`, `minio`, `mailpit` ở trạng thái `running`/`healthy`; `minio-init` exited 0.
 
 - [ ] **Step 3: Thay `apps/api/prisma/schema.prisma` bằng schema đầy đủ**
@@ -1380,6 +1434,7 @@ model FeatureFlag {
 ```bash
 pnpm --filter @lophoc/api exec prisma migrate dev --name init
 ```
+
 Expected: thư mục `apps/api/prisma/migrations/<timestamp>_init/migration.sql` được tạo, DB `lophoc` có 22 bảng, client được generate.
 
 - [ ] **Step 5: Thêm migration partial unique index cho tên học sinh**
@@ -1387,22 +1442,28 @@ Expected: thư mục `apps/api/prisma/migrations/<timestamp>_init/migration.sql`
 ```bash
 pnpm --filter @lophoc/api exec prisma migrate dev --create-only --name student_name_unique_active
 ```
+
 Mở file `migration.sql` vừa tạo (rỗng) và ghi:
+
 ```sql
 -- Tên học sinh duy nhất trong lớp, chỉ tính bản ghi chưa xóa mềm
 CREATE UNIQUE INDEX "Student_classId_name_active_key"
   ON "Student" ("classId", "name")
   WHERE "deletedAt" IS NULL;
 ```
+
 Rồi áp dụng:
+
 ```bash
 pnpm --filter @lophoc/api exec prisma migrate dev
 ```
+
 Expected: `Your database is now in sync with your schema.`
 
 - [ ] **Step 6: Tạo `.env.test`, cấu hình e2e và setup**
 
 `apps/api/.env.test`:
+
 ```ini
 NODE_ENV=test
 PORT=4001
@@ -1413,6 +1474,7 @@ API_URL=http://localhost:4001
 ```
 
 `apps/api/vitest.config.e2e.ts`:
+
 ```ts
 import swc from 'unplugin-swc';
 import tsconfigPaths from 'vite-tsconfig-paths';
@@ -1443,6 +1505,7 @@ export default defineConfig({
 ```
 
 `apps/api/test/setup-e2e.ts`:
+
 ```ts
 import { config as loadDotenv } from 'dotenv';
 
@@ -1487,6 +1550,7 @@ describe('GET /api/health (e2e)', () => {
 ```bash
 pnpm --filter @lophoc/api test:e2e
 ```
+
 Expected: migrate deploy lên `lophoc_test` thành công; 1 test PASS.
 
 - [ ] **Step 9: Commit**
@@ -1500,6 +1564,7 @@ git add -A && git commit -m "feat(api): full MVP prisma schema, migrations, dev 
 ### Task 5: Seed dữ liệu demo
 
 **Files:**
+
 - Create: `apps/api/prisma/seed.ts`
 
 - [ ] **Step 1: Viết `apps/api/prisma/seed.ts`**
@@ -1784,6 +1849,7 @@ main()
 pnpm --filter @lophoc/api db:seed
 pnpm --filter @lophoc/api db:seed
 ```
+
 Expected lần 1: `Feature flags: 6 khóa` và `Demo: giáo viên demo@lophoc.app ...`. Lần 2: `Lớp demo đã tồn tại, bỏ qua.`
 
 - [ ] **Step 3: Kiểm tra dữ liệu**
@@ -1791,6 +1857,7 @@ Expected lần 1: `Feature flags: 6 khóa` và `Demo: giáo viên demo@lophoc.ap
 ```bash
 docker compose -f infra/docker-compose.dev.yml exec postgres psql -U lophoc -d lophoc -c 'SELECT (SELECT count(*) FROM "Teacher") teachers, (SELECT count(*) FROM "Student") students, (SELECT count(*) FROM "Question") questions, (SELECT count(*) FROM "QuizQuestion") quiz_questions, (SELECT count(*) FROM "FeatureFlag") flags;'
 ```
+
 Expected: `1 | 12 | 10 | 5 | 6`.
 
 - [ ] **Step 4: Commit**
@@ -1804,11 +1871,13 @@ git add -A && git commit -m "feat(api): demo seed (teacher, class, roster, quest
 ### Task 6: `apps/web` Next.js 16 + Tailwind 4 + next-intl (vi) + landing giữ chỗ
 
 **Files:**
+
 - Create: `apps/web/package.json`, `tsconfig.json`, `next.config.ts`, `postcss.config.mjs`, `eslint.config.mjs`, `.env.example`, `messages/vi.json`, `src/i18n/request.ts`, `src/app/layout.tsx`, `src/app/page.tsx`, `src/app/globals.css`
 
 - [ ] **Step 1: Tạo cấu hình package**
 
 `apps/web/package.json`:
+
 ```json
 {
   "name": "@lophoc/web",
@@ -1842,6 +1911,7 @@ git add -A && git commit -m "feat(api): demo seed (teacher, class, roster, quest
 ```
 
 `apps/web/tsconfig.json`:
+
 ```json
 {
   "compilerOptions": {
@@ -1874,6 +1944,7 @@ git add -A && git commit -m "feat(api): demo seed (teacher, class, roster, quest
 ```
 
 `apps/web/next.config.ts`:
+
 ```ts
 import type { NextConfig } from 'next';
 import createNextIntlPlugin from 'next-intl/plugin';
@@ -1892,6 +1963,7 @@ export default withNextIntl(nextConfig);
 ```
 
 `apps/web/postcss.config.mjs`:
+
 ```js
 const config = {
   plugins: {
@@ -1903,6 +1975,7 @@ export default config;
 ```
 
 `apps/web/eslint.config.mjs`:
+
 ```js
 import { defineConfig, globalIgnores } from 'eslint/config';
 import nextVitals from 'eslint-config-next/core-web-vitals';
@@ -1918,6 +1991,7 @@ export default eslintConfig;
 ```
 
 `apps/web/.env.example`:
+
 ```ini
 NEXT_PUBLIC_API_URL=http://localhost:4000
 ```
@@ -1925,6 +1999,7 @@ NEXT_PUBLIC_API_URL=http://localhost:4000
 - [ ] **Step 2: i18n và messages**
 
 `apps/web/src/i18n/request.ts`:
+
 ```ts
 import { getRequestConfig } from 'next-intl/server';
 
@@ -1938,6 +2013,7 @@ export default getRequestConfig(async () => {
 ```
 
 `apps/web/messages/vi.json`:
+
 ```json
 {
   "Landing": {
@@ -1953,6 +2029,7 @@ export default getRequestConfig(async () => {
 - [ ] **Step 3: Layout, page, CSS**
 
 `apps/web/src/app/globals.css`:
+
 ```css
 @import 'tailwindcss';
 
@@ -1970,6 +2047,7 @@ body {
 ```
 
 `apps/web/src/app/layout.tsx`:
+
 ```tsx
 import type { Metadata } from 'next';
 import { NextIntlClientProvider } from 'next-intl';
@@ -1985,7 +2063,8 @@ const beVietnam = Be_Vietnam_Pro({
 
 export const metadata: Metadata = {
   title: 'Lớp Học – Điểm danh & kiểm tra đầu giờ',
-  description: 'Ứng dụng miễn phí cho giáo viên: điểm danh, ngân hàng câu hỏi, kiểm tra đầu giờ, máy chiếu.',
+  description:
+    'Ứng dụng miễn phí cho giáo viên: điểm danh, ngân hàng câu hỏi, kiểm tra đầu giờ, máy chiếu.',
 };
 
 export default async function RootLayout({ children }: LayoutProps<'/'>) {
@@ -2001,6 +2080,7 @@ export default async function RootLayout({ children }: LayoutProps<'/'>) {
 ```
 
 `apps/web/src/app/page.tsx`:
+
 ```tsx
 import { useTranslations } from 'next-intl';
 
@@ -2036,6 +2116,7 @@ pnpm --filter @lophoc/web typecheck
 pnpm --filter @lophoc/web lint
 pnpm --filter @lophoc/web build
 ```
+
 Expected: không lỗi; build in ra route `/` và tạo `apps/web/.next/standalone`.
 
 - [ ] **Step 5: Chạy thử và kiểm tra bằng curl**
@@ -2043,6 +2124,7 @@ Expected: không lỗi; build in ra route `/` và tạo `apps/web/.next/standalo
 ```bash
 (cd apps/web && pnpm start &) ; sleep 5 ; curl -s http://localhost:3000 | grep -o "Dùng thử miễn phí" ; pkill -f "next start" || true
 ```
+
 Expected: in ra `Dùng thử miễn phí`.
 
 - [ ] **Step 6: Commit**
@@ -2056,6 +2138,7 @@ git add -A && git commit -m "feat(web): Next.js 16 app with Tailwind 4, next-int
 ### Task 7: Dockerfile api/web, CI GitHub Actions, README
 
 **Files:**
+
 - Create: `apps/api/Dockerfile`, `apps/web/Dockerfile`, `.dockerignore`, `.github/workflows/ci.yml`, `README.md`
 
 - [ ] **Step 1: `.dockerignore` ở gốc**
@@ -2206,7 +2289,7 @@ jobs:
 
 - [ ] **Step 5: `README.md`**
 
-```markdown
+````markdown
 # Lớp Học (lophoc) — Điểm danh & kiểm tra đầu giờ
 
 Ứng dụng web miễn phí cho giáo viên (trung tâm gia sư): lớp & danh sách, điểm danh, ngân hàng câu hỏi (dán / Word / ảnh AI), kiểm tra đầu giờ, chế độ máy chiếu, báo cáo.
@@ -2233,6 +2316,7 @@ pnpm db:migrate                    # tạo bảng
 pnpm db:seed                       # dữ liệu demo: demo@lophoc.app / demo1234
 pnpm dev                           # api :4000, web :3000
 ```
+````
 
 - API health: http://localhost:4000/api/health
 - Web: http://localhost:3000
@@ -2254,18 +2338,22 @@ Xem `apps/api/.env.example` và `apps/web/.env.example`. `apps/api/.env.test` d�
 ## Deploy
 
 Sẽ bổ sung ở slice S8 (Docker Compose production + Caddy + backup + Cloudflare).
-```
+
+````
 
 - [ ] **Step 6: Build thử image local**
 
 ```bash
 docker build -f apps/api/Dockerfile -t lophoc-api:dev . && docker build -f apps/web/Dockerfile -t lophoc-web:dev .
-```
+````
+
 Expected: cả hai image build thành công. Kiểm tra api image chạy được:
+
 ```bash
 docker run --rm -e DATABASE_URL=postgresql://lophoc:lophoc@host.docker.internal:5432/lophoc -p 4010:4000 lophoc-api:dev &
 sleep 8 && curl -s http://localhost:4010/api/health && docker stop $(docker ps -q --filter ancestor=lophoc-api:dev)
 ```
+
 Expected: `{"status":"ok","db":"ok","time":"..."}`.
 
 - [ ] **Step 7: Commit**
@@ -2285,6 +2373,7 @@ pnpm format
 pnpm turbo run build lint typecheck test
 pnpm --filter @lophoc/api test:e2e
 ```
+
 Expected: mọi task xanh.
 
 - [ ] **Step 2: Chạy `pnpm dev` thử 20 giây, gọi health**
@@ -2293,6 +2382,7 @@ Expected: mọi task xanh.
 pnpm dev > /tmp/dev.log 2>&1 &
 sleep 20; curl -s http://localhost:4000/api/health; curl -s -o /dev/null -w "%{http_code}\n" http://localhost:3000; kill %1
 ```
+
 Expected: JSON health + `200`.
 
 - [ ] **Step 3: Commit cuối S0**

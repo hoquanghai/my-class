@@ -42,19 +42,19 @@ Dev local: cùng Compose nhưng thay R2 bằng `minio`, SMTP bằng `mailpit`.
 
 **Vì sao chọn phương án này thay vì các phương án khác**
 
-| Phương án | Chi phí giai đoạn thử nghiệm | Đường scale | Nhận xét |
-|---|---|---|---|
-| **Monolith stateless trên 1 VPS + Compose (chọn)** | ≈ 15–30 USD/tháng | Dọc (resize VPS) → ngang (thêm replica `api`, tách DB/Redis sang managed) → K8s nếu cần; không đổi code | Ít nhà cung cấp, kiểm soát được vùng dữ liệu (Singapore), tải đích của MVP nằm gọn trong giai đoạn 1 |
-| Serverless / PaaS nhiều nhà cung cấp (Vercel + Fly/Railway + Neon + Upstash) | Gần 0 khi không dùng, nhưng gói thương mại + server Socket.IO vẫn tốn 20–40 USD | Tự động | 4–5 vendor, hóa đơn khó đoán khi tăng, WebSocket không chạy trên Vercel, khó chứng minh vùng dữ liệu |
-| Kubernetes từ đầu | 60–100+ USD/tháng (control plane + node) | Rất tốt | Quá tay cho giai đoạn nhận phản hồi, tốn công vận hành |
+| Phương án                                                                    | Chi phí giai đoạn thử nghiệm                                                    | Đường scale                                                                                             | Nhận xét                                                                                             |
+| ---------------------------------------------------------------------------- | ------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| **Monolith stateless trên 1 VPS + Compose (chọn)**                           | ≈ 15–30 USD/tháng                                                               | Dọc (resize VPS) → ngang (thêm replica `api`, tách DB/Redis sang managed) → K8s nếu cần; không đổi code | Ít nhà cung cấp, kiểm soát được vùng dữ liệu (Singapore), tải đích của MVP nằm gọn trong giai đoạn 1 |
+| Serverless / PaaS nhiều nhà cung cấp (Vercel + Fly/Railway + Neon + Upstash) | Gần 0 khi không dùng, nhưng gói thương mại + server Socket.IO vẫn tốn 20–40 USD | Tự động                                                                                                 | 4–5 vendor, hóa đơn khó đoán khi tăng, WebSocket không chạy trên Vercel, khó chứng minh vùng dữ liệu |
+| Kubernetes từ đầu                                                            | 60–100+ USD/tháng (control plane + node)                                        | Rất tốt                                                                                                 | Quá tay cho giai đoạn nhận phản hồi, tốn công vận hành                                               |
 
 **Ba giai đoạn mở rộng**
 
-| Giai đoạn | Tín hiệu chuyển | Việc cần làm | Chi phí ước tính |
-|---|---|---|---|
-| 1. Thử nghiệm | 0 → vài trăm giáo viên | 1 VPS 2 vCPU/4 GB tại Singapore, mọi thứ trong Compose. Cloudflare free, R2 free, SMTP free. AI trả theo dùng, quota chặn chi phí. | 15–30 USD/tháng |
+| Giai đoạn      | Tín hiệu chuyển                                                | Việc cần làm                                                                                                                                                                                                                                                                             | Chi phí ước tính |
+| -------------- | -------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------- |
+| 1. Thử nghiệm  | 0 → vài trăm giáo viên                                         | 1 VPS 2 vCPU/4 GB tại Singapore, mọi thứ trong Compose. Cloudflare free, R2 free, SMTP free. AI trả theo dùng, quota chặn chi phí.                                                                                                                                                       | 15–30 USD/tháng  |
 | 2. Tăng trưởng | CPU > 70 % giờ cao điểm hoặc > 2 000 kết nối đồng thời kéo dài | Bước 1: resize VPS lên 4–8 vCPU (5 phút, không đổi gì). Bước 2: tách `worker` thành container riêng; chạy `api` 2–3 replica, Caddy cân bằng tải. Bước 3: chuyển Postgres/Redis sang managed vùng Singapore (DigitalOcean, Supabase, Upstash) bằng cách đổi `DATABASE_URL` / `REDIS_URL`. | 60–150 USD/tháng |
-| 3. Quy mô lớn | Cần nhiều máy, cần HA | Cùng image chạy trên Kubernetes hoặc Docker Swarm nhiều node; Postgres thêm read replica; web đẩy lên CDN. | Theo nhu cầu |
+| 3. Quy mô lớn  | Cần nhiều máy, cần HA                                          | Cùng image chạy trên Kubernetes hoặc Docker Swarm nhiều node; Postgres thêm read replica; web đẩy lên CDN.                                                                                                                                                                               | Theo nhu cầu     |
 
 Ước lượng tải: mục tiêu 50 quiz × 45 học sinh nộp trong 5 giây tương đương khoảng 2 250 kết nối WebSocket và 450 lượt ghi/giây. Một VPS 2 vCPU/4 GB dư sức cho mức này: Node giữ hàng chục nghìn kết nối, Postgres ghi vài nghìn dòng/giây. Load test ở S8 sẽ xác nhận con số này trước khi công bố.
 
@@ -73,11 +73,11 @@ Dev local: cùng Compose nhưng thay R2 bằng `minio`, SMTP bằng `mailpit`.
 
 **A. Nguồn sự thật cho trạng thái quiz đang chạy (QuizRun)**
 
-| Phương án | Ưu | Nhược |
-|---|---|---|
-| **A1 (đề xuất)**: PostgreSQL là nguồn sự thật; Redis chỉ làm Socket.IO adapter + bộ đếm nóng (số câu trả lời/câu hỏi) + hàng đợi. | Refresh/reconnect khôi phục đúng trạng thái; crash không mất dữ liệu; đúng yêu cầu "reconnect-safe". | Mỗi lần submit ghi PG (≈450 ghi/giây ở tải đích, PG chịu tốt). |
-| A2: Redis giữ toàn bộ trạng thái, cuối buổi mới ghi PG. | Nhanh nhất. | Mất dữ liệu nếu Redis restart; logic đồng bộ hai nơi phức tạp. |
-| A3: Chỉ PG, không Redis. | Đơn giản nhất. | Không scale ngang Socket.IO; bộ đếm realtime phải query PG liên tục. |
+| Phương án                                                                                                                         | Ưu                                                                                                   | Nhược                                                                |
+| --------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| **A1 (đề xuất)**: PostgreSQL là nguồn sự thật; Redis chỉ làm Socket.IO adapter + bộ đếm nóng (số câu trả lời/câu hỏi) + hàng đợi. | Refresh/reconnect khôi phục đúng trạng thái; crash không mất dữ liệu; đúng yêu cầu "reconnect-safe". | Mỗi lần submit ghi PG (≈450 ghi/giây ở tải đích, PG chịu tốt).       |
+| A2: Redis giữ toàn bộ trạng thái, cuối buổi mới ghi PG.                                                                           | Nhanh nhất.                                                                                          | Mất dữ liệu nếu Redis restart; logic đồng bộ hai nơi phức tạp.       |
+| A3: Chỉ PG, không Redis.                                                                                                          | Đơn giản nhất.                                                                                       | Không scale ngang Socket.IO; bộ đếm realtime phải query PG liên tục. |
 
 Chọn **A1**. Broadcast bộ đếm được gom theo nhịp 250 ms/phòng để projector cập nhật < 1 s mà không spam.
 
@@ -103,16 +103,16 @@ Chọn **A1**. Broadcast bộ đếm được gom theo nhịp 250 ms/phòng đ�
 
 ### 2.3 Stack chốt
 
-| Thành phần | Chọn |
-|---|---|
-| Backend | NestJS 11, TypeScript, Prisma 6, PostgreSQL 16, Redis 7, Socket.IO 4 + `@socket.io/redis-adapter`, BullMQ (job AI/docx) |
-| Frontend | Next.js 15 App Router, React 19, Tailwind 4, `next-intl` (vi), `@serwist/next` (PWA), KaTeX render LaTeX, `qrcode` |
-| Auth | Passport (google, facebook, local), JWT access 15 phút + refresh 30 ngày (httpOnly cookie); học sinh: token HMAC ký bởi server |
-| Storage | S3 client tương thích R2; dev dùng MinIO |
-| Parse | `mammoth` + đọc XML docx (lấy bold/underline làm đáp án), `exceljs`, `pdf-lib`/`pdfjs` tách trang PDF thành ảnh |
-| AI | `packages/ai-adapter`: interface `extractQuestions(images[]) → JSON schema`, hai implementation Claude / OpenAI, chọn bằng env `AI_PROVIDER` |
-| Test | Jest (api unit + e2e supertest), Vitest (shared), Playwright (web smoke E2E), k6 (load test) |
-| CI/CD | GitHub Actions: lint, typecheck, test, build image lên GHCR; deploy bằng `docker compose pull && up -d` qua SSH |
+| Thành phần          | Chọn                                                                                                                                                           |
+| ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Backend             | NestJS 11, TypeScript, Prisma 6, PostgreSQL 16, Redis 7, Socket.IO 4 + `@socket.io/redis-adapter`, BullMQ (job AI/docx)                                        |
+| Frontend            | Next.js 15 App Router, React 19, Tailwind 4, `next-intl` (vi), `@serwist/next` (PWA), KaTeX render LaTeX, `qrcode`                                             |
+| Auth                | Passport (google, facebook, local), JWT access 15 phút + refresh 30 ngày (httpOnly cookie); học sinh: token HMAC ký bởi server                                 |
+| Storage             | S3 client tương thích R2; dev dùng MinIO                                                                                                                       |
+| Parse               | `mammoth` + đọc XML docx (lấy bold/underline làm đáp án), `exceljs`, `pdf-lib`/`pdfjs` tách trang PDF thành ảnh                                                |
+| AI                  | `packages/ai-adapter`: interface `extractQuestions(images[]) → JSON schema`, hai implementation Claude / OpenAI, chọn bằng env `AI_PROVIDER`                   |
+| Test                | Jest (api unit + e2e supertest), Vitest (shared), Playwright (web smoke E2E), k6 (load test)                                                                   |
+| CI/CD               | GitHub Actions: lint, typecheck, test, build image lên GHCR; deploy bằng `docker compose pull && up -d` qua SSH                                                |
 | Hạ tầng giai đoạn 1 | 1 VPS Singapore 2 vCPU/4 GB; Cloudflare free (DNS, CDN, TLS biên, proxy WebSocket); R2 free; SMTP Brevo hoặc Resend gói free; Sentry free; Uptime Kuma tự host |
 
 ## 3. Cấu trúc monorepo
@@ -462,36 +462,36 @@ Flag được cache trong Redis 60 giây; đổi giá trị bằng SQL/seed, kh�
 
 ## 5. Phân rã module backend (`apps/api/src/modules`)
 
-| Module | Trách nhiệm | Phụ thuộc |
-|---|---|---|
-| `auth` | Google/Facebook OAuth, email+mật khẩu, xác thực email, reset mật khẩu, JWT + refresh, guard giáo viên; `StudentTokenGuard` cho học sinh | teachers, mailer |
-| `teachers` | Hồ sơ, chấp nhận điều khoản, plan | — |
-| `classes` | CRUD lớp, sinh mã lớp + QR, import roster (paste/Excel), sắp xếp, khóa roster, gỡ thiết bị, kiểm tra giới hạn free | feature-flags, storage |
-| `students` | Luồng học sinh: nhập mã → danh sách tên → chọn tên → phát token thiết bị; kiểm tra khóa roster | classes |
-| `sessions` | Bắt đầu/kết thúc buổi, điểm danh (đơn, hàng loạt, hoàn tác, ghi chú), lịch sử điểm danh, tham gia buổi | classes |
-| `questions` | CRUD ngân hàng câu hỏi, lọc theo tag, upload ảnh; `import/paste` (parser shared), `import/docx` (mammoth → parser), `import/ai` (job BullMQ → AI adapter), quota AI | storage, ai-adapter, feature-flags |
-| `quizzes` | CRUD quiz, chọn tay hoặc random N theo bộ lọc | questions |
-| `runs` | Máy trạng thái QuizRun (lobby → in_progress → finished), snapshot câu hỏi, nhận bài, chấm tự động, giáo viên sửa điểm, tổng hợp kết quả | quizzes, sessions, realtime |
-| `realtime` | Socket.IO gateway 3 namespace `/teacher`, `/student`, `/present`; phòng theo `sessionId`; Redis adapter; gửi snapshot trạng thái khi (re)connect | runs |
-| `reports` | Theo buổi (điểm danh + bảng điểm), theo lớp (xu hướng 10 buổi, tỷ lệ chuyên cần); áp `history_days`, `export_enabled` | sessions, runs |
-| `analytics` | Ghi `AnalyticsEvent`; endpoint client gửi event; helper server-side | — |
-| `feedback` | Đánh giá sau buổi | sessions |
-| `feature-flags` | Đọc/cache flag, helper `limit(teacher, key)` | — |
-| `storage` | Presigned upload/download R2 (MinIO ở dev), ghi `MediaFile` | — |
-| `mailer` | Gửi email qua SMTP (Mailpit ở dev), template vi | — |
-| `common` | PrismaService, config/env validation (zod), exception filter, pipes, logger | — |
+| Module          | Trách nhiệm                                                                                                                                                         | Phụ thuộc                          |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------- |
+| `auth`          | Google/Facebook OAuth, email+mật khẩu, xác thực email, reset mật khẩu, JWT + refresh, guard giáo viên; `StudentTokenGuard` cho học sinh                             | teachers, mailer                   |
+| `teachers`      | Hồ sơ, chấp nhận điều khoản, plan                                                                                                                                   | —                                  |
+| `classes`       | CRUD lớp, sinh mã lớp + QR, import roster (paste/Excel), sắp xếp, khóa roster, gỡ thiết bị, kiểm tra giới hạn free                                                  | feature-flags, storage             |
+| `students`      | Luồng học sinh: nhập mã → danh sách tên → chọn tên → phát token thiết bị; kiểm tra khóa roster                                                                      | classes                            |
+| `sessions`      | Bắt đầu/kết thúc buổi, điểm danh (đơn, hàng loạt, hoàn tác, ghi chú), lịch sử điểm danh, tham gia buổi                                                              | classes                            |
+| `questions`     | CRUD ngân hàng câu hỏi, lọc theo tag, upload ảnh; `import/paste` (parser shared), `import/docx` (mammoth → parser), `import/ai` (job BullMQ → AI adapter), quota AI | storage, ai-adapter, feature-flags |
+| `quizzes`       | CRUD quiz, chọn tay hoặc random N theo bộ lọc                                                                                                                       | questions                          |
+| `runs`          | Máy trạng thái QuizRun (lobby → in_progress → finished), snapshot câu hỏi, nhận bài, chấm tự động, giáo viên sửa điểm, tổng hợp kết quả                             | quizzes, sessions, realtime        |
+| `realtime`      | Socket.IO gateway 3 namespace `/teacher`, `/student`, `/present`; phòng theo `sessionId`; Redis adapter; gửi snapshot trạng thái khi (re)connect                    | runs                               |
+| `reports`       | Theo buổi (điểm danh + bảng điểm), theo lớp (xu hướng 10 buổi, tỷ lệ chuyên cần); áp `history_days`, `export_enabled`                                               | sessions, runs                     |
+| `analytics`     | Ghi `AnalyticsEvent`; endpoint client gửi event; helper server-side                                                                                                 | —                                  |
+| `feedback`      | Đánh giá sau buổi                                                                                                                                                   | sessions                           |
+| `feature-flags` | Đọc/cache flag, helper `limit(teacher, key)`                                                                                                                        | —                                  |
+| `storage`       | Presigned upload/download R2 (MinIO ở dev), ghi `MediaFile`                                                                                                         | —                                  |
+| `mailer`        | Gửi email qua SMTP (Mailpit ở dev), template vi                                                                                                                     | —                                  |
+| `common`        | PrismaService, config/env validation (zod), exception filter, pipes, logger                                                                                         | —                                  |
 
 `packages/shared` xuất: kiểu dữ liệu + zod schema cho mọi DTO; `question-parser` (paste/docx text → câu hỏi + đáp án + dòng lỗi); `grading` (chuẩn hóa không dấu, so khớp); `socket-events` (tên event + payload type dùng chung cho api và web).
 
 ## 6. Phân rã frontend (`apps/web/app`)
 
-| Nhóm route | Trang | Đối tượng, thiết bị |
-|---|---|---|
-| `(marketing)` | `/` landing (demo 60s placeholder, "Dùng thử miễn phí", Zalo/Facebook), `/privacy`, `/terms` | Công khai |
-| `(auth)` | `/login`, `/signup`, `/verify-email`, `/forgot-password`, `/reset-password` | Giáo viên |
-| `(teacher)` `/app` | `/app/classes`, `/app/classes/[id]` (tab: Danh sách, Buổi học, Báo cáo, Cài đặt/QR), `/app/sessions/[id]` (điểm danh + nút "Kiểm tra đầu giờ" + điều khiển quiz + kết thúc buổi & feedback), `/app/questions` (bank + bộ lọc), `/app/questions/import` (3 tab: Dán/Docx, Ảnh/PDF AI, Soạn tay → chung lưới preview-and-fix), `/app/quizzes`, `/app/quizzes/[id]` | Giáo viên, desktop-first |
-| `(student)` | `/join` (nhập mã), `/join/[code]` (chọn tên), `/s/[sessionId]` (chờ → làm bài → điểm của mình) | Học sinh, mobile-first, không app chrome |
-| `(present)` | `/present/[sessionId]` (lobby → câu hỏi + bộ đếm → kết quả câu → bảng xếp hạng) | Máy chiếu, tối, chữ lớn, 720p |
+| Nhóm route         | Trang                                                                                                                                                                                                                                                                                                                                                            | Đối tượng, thiết bị                      |
+| ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------- |
+| `(marketing)`      | `/` landing (demo 60s placeholder, "Dùng thử miễn phí", Zalo/Facebook), `/privacy`, `/terms`                                                                                                                                                                                                                                                                     | Công khai                                |
+| `(auth)`           | `/login`, `/signup`, `/verify-email`, `/forgot-password`, `/reset-password`                                                                                                                                                                                                                                                                                      | Giáo viên                                |
+| `(teacher)` `/app` | `/app/classes`, `/app/classes/[id]` (tab: Danh sách, Buổi học, Báo cáo, Cài đặt/QR), `/app/sessions/[id]` (điểm danh + nút "Kiểm tra đầu giờ" + điều khiển quiz + kết thúc buổi & feedback), `/app/questions` (bank + bộ lọc), `/app/questions/import` (3 tab: Dán/Docx, Ảnh/PDF AI, Soạn tay → chung lưới preview-and-fix), `/app/quizzes`, `/app/quizzes/[id]` | Giáo viên, desktop-first                 |
+| `(student)`        | `/join` (nhập mã), `/join/[code]` (chọn tên), `/s/[sessionId]` (chờ → làm bài → điểm của mình)                                                                                                                                                                                                                                                                   | Học sinh, mobile-first, không app chrome |
+| `(present)`        | `/present/[sessionId]` (lobby → câu hỏi + bộ đếm → kết quả câu → bảng xếp hạng)                                                                                                                                                                                                                                                                                  | Máy chiếu, tối, chữ lớn, 720p            |
 
 Thành phần dùng chung: `MarkdownLatex` (react-markdown + KaTeX), `QuestionGrid` (lưới preview/sửa), `QuestionEditor` (soạn tay keyboard-first), `RosterTiles`, `QrCard`, `LockedFeatureButton`, `useSocket(namespace, sessionId)` với hàng đợi retry cho học sinh.
 
@@ -499,12 +499,12 @@ Thành phần dùng chung: `MarkdownLatex` (react-markdown + KaTeX), `QuestionGr
 
 Phòng: `session:{sessionId}`. Mỗi client khi connect gửi `auth` (JWT giáo viên hoặc token thiết bị học sinh; projector không cần auth nhưng chỉ nhận dữ liệu công khai).
 
-| Chiều | Event | Payload |
-|---|---|---|
-| teacher → server | `run:start`, `run:next`, `run:close`, `run:reveal`, `run:finish`, `run:set_deadline` | `{ runId, ... }` |
-| student → server | `session:join`, `answer:submit` | `{ runQuestionId, selectedOptionIds \| textAnswer, clientRequestId }` |
-| server → tất cả | `run:state` (snapshot đầy đủ khi connect/reconnect), `lobby:participants`, `run:question_opened`, `run:answer_count` (gom 250 ms), `run:question_result`, `run:leaderboard`, `run:finished` | — |
-| server → student | `answer:ack` | `{ clientRequestId, accepted, isCorrect? }` |
+| Chiều            | Event                                                                                                                                                                                       | Payload                                                               |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------- |
+| teacher → server | `run:start`, `run:next`, `run:close`, `run:reveal`, `run:finish`, `run:set_deadline`                                                                                                        | `{ runId, ... }`                                                      |
+| student → server | `session:join`, `answer:submit`                                                                                                                                                             | `{ runQuestionId, selectedOptionIds \| textAnswer, clientRequestId }` |
+| server → tất cả  | `run:state` (snapshot đầy đủ khi connect/reconnect), `lobby:participants`, `run:question_opened`, `run:answer_count` (gom 250 ms), `run:question_result`, `run:leaderboard`, `run:finished` | —                                                                     |
+| server → student | `answer:ack`                                                                                                                                                                                | `{ clientRequestId, accepted, isCorrect? }`                           |
 
 `answer:submit` idempotent theo `(runQuestionId, studentId)`; client giữ hàng đợi offline và gửi lại khi có mạng.
 
@@ -526,19 +526,19 @@ Phòng: `session:{sessionId}`. Mỗi client khi connect gửi `auth` (JWT giáo 
 
 ## 10. Thứ tự triển khai
 
-| Slice | Nội dung | Kết quả kiểm chứng được |
-|---|---|---|
-| S0 | Khởi tạo monorepo, docker-compose dev, Prisma schema + migration + seed, CI lint/test | `pnpm dev` chạy api + web, CI xanh |
-| S1 | Auth (email + Google; Facebook để sau, xem câu hỏi 6) + lớp + roster + mã/QR + giới hạn free | Giáo viên tạo lớp, dán roster, in QR |
-| S2 | Buổi học + điểm danh + lịch sử | Điểm danh trên điện thoại |
-| S3a | Parser paste + docx + lưới preview-and-fix + lưu vào bank + bộ lọc | Import đề Word 20 câu, sửa, lưu |
-| S3b | Soạn tay keyboard-first, dán ảnh clipboard, LaTeX live | — |
-| S3c | AI ảnh/PDF qua job nền + quota | Chụp đề giấy → câu hỏi |
-| S4 | Quiz builder + QuizRun + học sinh join/làm bài + chấm | Cả lớp làm bài trên điện thoại |
-| S5 | Projector `/present` + điều khiển realtime + reconnect | Chiếu lên máy chiếu |
-| S6 | Báo cáo buổi/lớp + nút khóa export | — |
-| S7 | Analytics events + feedback sau buổi + landing + privacy/terms | — |
-| S8 | Load test k6, README (local/deploy/env/restore/chuyển managed DB), compose production + Caddy + backup, Cloudflare, workflow deploy, thử `docker-compose.scale.yml` với 2 replica api | Chạy thử trên VPS, load test đạt mục tiêu |
+| Slice | Nội dung                                                                                                                                                                              | Kết quả kiểm chứng được                   |
+| ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------- |
+| S0    | Khởi tạo monorepo, docker-compose dev, Prisma schema + migration + seed, CI lint/test                                                                                                 | `pnpm dev` chạy api + web, CI xanh        |
+| S1    | Auth (email + Google; Facebook để sau, xem câu hỏi 6) + lớp + roster + mã/QR + giới hạn free                                                                                          | Giáo viên tạo lớp, dán roster, in QR      |
+| S2    | Buổi học + điểm danh + lịch sử                                                                                                                                                        | Điểm danh trên điện thoại                 |
+| S3a   | Parser paste + docx + lưới preview-and-fix + lưu vào bank + bộ lọc                                                                                                                    | Import đề Word 20 câu, sửa, lưu           |
+| S3b   | Soạn tay keyboard-first, dán ảnh clipboard, LaTeX live                                                                                                                                | —                                         |
+| S3c   | AI ảnh/PDF qua job nền + quota                                                                                                                                                        | Chụp đề giấy → câu hỏi                    |
+| S4    | Quiz builder + QuizRun + học sinh join/làm bài + chấm                                                                                                                                 | Cả lớp làm bài trên điện thoại            |
+| S5    | Projector `/present` + điều khiển realtime + reconnect                                                                                                                                | Chiếu lên máy chiếu                       |
+| S6    | Báo cáo buổi/lớp + nút khóa export                                                                                                                                                    | —                                         |
+| S7    | Analytics events + feedback sau buổi + landing + privacy/terms                                                                                                                        | —                                         |
+| S8    | Load test k6, README (local/deploy/env/restore/chuyển managed DB), compose production + Caddy + backup, Cloudflare, workflow deploy, thử `docker-compose.scale.yml` với 2 replica api | Chạy thử trên VPS, load test đạt mục tiêu |
 
 Mỗi slice: viết test trước cho logic cốt lõi, ghi log tiến độ, dừng lại báo cáo trước khi sang slice kế tiếp.
 
@@ -555,13 +555,13 @@ Mỗi slice: viết test trước cho logic cốt lõi, ghi log tiến độ, d�
 
 ## 12. Quyết định đã chốt (2026-09-08)
 
-| # | Quyết định |
-|---|---|
-| 1 | Chấm điểm theo mục 8: nhiều lựa chọn đúng hết mới có điểm, không thưởng tốc độ, mặc định 1 điểm/câu. |
-| 2 | Một buổi học chạy được nhiều lượt quiz (0..n QuizRun / ClassSession), mỗi thời điểm chỉ 1 lượt chưa kết thúc. |
-| 3 | `AI_PROVIDER=claude` mặc định, OpenAI qua env. Chưa có key; S3c chạy được với adapter giả lập (`AI_PROVIDER=mock`) cho đến khi có key. |
-| 4 | Dev dùng Mailpit; production nhận SMTP qua env (`SMTP_HOST/PORT/USER/PASS`), chọn nhà cung cấp khi deploy. |
-| 5 | Feature flag chỉnh bằng SQL/seed, không có UI admin. |
-| 6 | S1 làm email + Google. Facebook OAuth để stub sẵn strategy, bật khi có Facebook App. |
-| 7 | Tên tạm `lophoc`: scope npm `@lophoc/*`, image `lophoc-api`, `lophoc-web`. |
-| 8 | Khởi tạo git tại thư mục này, commit theo từng slice. |
+| #   | Quyết định                                                                                                                             |
+| --- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | Chấm điểm theo mục 8: nhiều lựa chọn đúng hết mới có điểm, không thưởng tốc độ, mặc định 1 điểm/câu.                                   |
+| 2   | Một buổi học chạy được nhiều lượt quiz (0..n QuizRun / ClassSession), mỗi thời điểm chỉ 1 lượt chưa kết thúc.                          |
+| 3   | `AI_PROVIDER=claude` mặc định, OpenAI qua env. Chưa có key; S3c chạy được với adapter giả lập (`AI_PROVIDER=mock`) cho đến khi có key. |
+| 4   | Dev dùng Mailpit; production nhận SMTP qua env (`SMTP_HOST/PORT/USER/PASS`), chọn nhà cung cấp khi deploy.                             |
+| 5   | Feature flag chỉnh bằng SQL/seed, không có UI admin.                                                                                   |
+| 6   | S1 làm email + Google. Facebook OAuth để stub sẵn strategy, bật khi có Facebook App.                                                   |
+| 7   | Tên tạm `lophoc`: scope npm `@lophoc/*`, image `lophoc-api`, `lophoc-web`.                                                             |
+| 8   | Khởi tạo git tại thư mục này, commit theo từng slice.                                                                                  |
