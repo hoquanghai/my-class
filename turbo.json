@@ -19,6 +19,9 @@
     "typecheck": {
       "dependsOn": ["^build", "db:generate"]
     },
+    "@lophoc/web#typecheck": {
+      "dependsOn": ["^build", "build"]
+    },
     "test": {
       "dependsOn": ["^build", "db:generate"]
     },
