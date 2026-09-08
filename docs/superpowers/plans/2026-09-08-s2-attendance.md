@@ -1,5 +1,7 @@
 # S2 — Buổi học + Điểm danh: Kế hoạch triển khai
 
+> **Trạng thái: HOÀN THÀNH 2026-09-08.** API e2e 32 test (6 test buổi học), unit 37 test xanh; kiểm thử trình duyệt: bắt đầu buổi → bấm đổi trạng thái → tất cả vắng → hoàn tác → ghi chú → kết thúc → phản hồi 5 sao → danh sách buổi → lịch sử học sinh.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 >
 > Cùng agent thực thi ngay sau khi viết; boilerplate mô tả bằng hợp đồng, logic thuần và test viết đủ mã.
