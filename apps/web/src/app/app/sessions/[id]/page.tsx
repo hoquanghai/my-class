@@ -6,12 +6,13 @@ import {
   type AttendanceUpdateItem,
   nextAttendanceStatus,
 } from '@lophoc/shared';
-import { ArrowLeft, MessageSquare, Star, Undo2 } from 'lucide-react';
+import { ArrowLeft, MessageSquare, Play, Star, Undo2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { useState } from 'react';
 import { STATUS_ORDER, STATUS_STYLES } from '@/components/attendance-status';
+import { LaunchDialog } from '@/components/runs/launch-dialog';
 import { Alert } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/components/ui/cn';
@@ -20,6 +21,7 @@ import { Textarea } from '@/components/ui/input';
 import { Spinner } from '@/components/ui/spinner';
 import { errorMessage } from '@/lib/api';
 import { formatDateTime } from '@/lib/format';
+import { useSessionRuns } from '@/lib/runs';
 import {
   useEndSession,
   useSessionDetail,
@@ -135,7 +137,10 @@ export default function SessionPage() {
   const update = useUpdateAttendance(id);
   const end = useEndSession(id);
   const feedback = useSessionFeedback(id);
+  const runs = useSessionRuns(id);
+  const tr = useTranslations('Runs');
 
+  const [launchOpen, setLaunchOpen] = useState(false);
   const [undoStack, setUndoStack] = useState<AttendanceUpdateItem[][]>([]);
   const [noteFor, setNoteFor] = useState<AttendanceRecordDto | null>(null);
   const [feedbackOpen, setFeedbackOpen] = useState(false);
@@ -210,9 +215,12 @@ export default function SessionPage() {
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
-            <Button variant="secondary" disabled title={t('quizSoon')}>
-              {t('quizSoon')}
-            </Button>
+            {active && (
+              <Button onClick={() => setLaunchOpen(true)}>
+                <Play className="size-4" />
+                {t('launchQuiz')}
+              </Button>
+            )}
             {active && (
               <Button variant="danger" onClick={endSession} loading={end.isPending}>
                 {t('endSession')}
@@ -291,6 +299,45 @@ export default function SessionPage() {
           </div>
         ))}
       </div>
+
+      <section className="rounded-xl border border-slate-200 bg-white p-4">
+        <h2 className="mb-2 font-semibold text-slate-900">{t('runsTitle')}</h2>
+        {runs.data && runs.data.length === 0 ? (
+          <p className="text-sm text-slate-500">{t('runsEmpty')}</p>
+        ) : (
+          <ul className="divide-y divide-slate-100">
+            {runs.data?.map((r) => (
+              <li key={r.id} className="flex items-center justify-between gap-3 py-2 text-sm">
+                <div className="min-w-0">
+                  <p className="truncate font-medium text-slate-900">{r.quizTitle}</p>
+                  <p className="text-xs text-slate-500">
+                    {tr(`modeLabel.${r.mode}`)} · {r.questionCount} câu · {r.participantCount} HS ·{' '}
+                    {formatDateTime(r.createdAt)}
+                  </p>
+                </div>
+                <span
+                  className={cn(
+                    'shrink-0 rounded-md px-2 py-0.5 text-xs font-semibold',
+                    r.status === 'finished'
+                      ? 'bg-slate-100 text-slate-600'
+                      : 'bg-green-100 text-green-800',
+                  )}
+                >
+                  {tr(`status.${r.status}`)}
+                </span>
+                <Link
+                  href={`/app/runs/${r.id}`}
+                  className="shrink-0 text-sm font-medium text-brand-700 hover:underline"
+                >
+                  {t('openRun')}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+
+      {launchOpen && <LaunchDialog sessionId={id} open onClose={() => setLaunchOpen(false)} />}
 
       {noteFor && (
         <NoteDialog

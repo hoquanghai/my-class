@@ -1,7 +1,8 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
-import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { ThrottlerModule } from '@nestjs/throttler';
+import { HttpThrottlerGuard } from './common/http-throttler.guard.js';
 import { validateEnv } from './config/env.js';
 import { AiImportModule } from './modules/ai-import/ai-import.module.js';
 import { AnalyticsModule } from './modules/analytics/analytics.module.js';
@@ -53,6 +54,6 @@ import { PrismaModule } from './prisma/prisma.module.js';
     MediaModule,
     HealthModule,
   ],
-  providers: [{ provide: APP_GUARD, useClass: ThrottlerGuard }],
+  providers: [{ provide: APP_GUARD, useClass: HttpThrottlerGuard }],
 })
 export class AppModule {}

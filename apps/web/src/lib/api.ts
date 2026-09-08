@@ -20,6 +20,8 @@ export interface ApiOptions {
   signal?: AbortSignal;
   /** Tự gọi /auth/refresh một lần khi gặp 401 rồi thử lại. */
   retryOn401?: boolean;
+  /** Header bổ sung (VD: Bearer token thiết bị học sinh). */
+  headers?: Record<string, string>;
 }
 
 const NO_REFRESH_PATHS = ['/auth/login', '/auth/signup', '/auth/refresh', '/auth/logout'];
@@ -47,12 +49,12 @@ export function apiUrl(path: string): string {
 }
 
 export async function apiFetch<T>(path: string, opts: ApiOptions = {}): Promise<T> {
-  const { method = 'GET', body, formData, signal, retryOn401 = true } = opts;
+  const { method = 'GET', body, formData, signal, retryOn401 = true, headers = {} } = opts;
   const res = await fetch(apiUrl(path), {
     method,
     credentials: 'include',
     signal,
-    headers: body !== undefined ? { 'content-type': 'application/json' } : undefined,
+    headers: body !== undefined ? { 'content-type': 'application/json', ...headers } : headers,
     body: formData ?? (body !== undefined ? JSON.stringify(body) : undefined),
   });
 
