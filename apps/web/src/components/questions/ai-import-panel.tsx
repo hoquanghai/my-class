@@ -33,7 +33,9 @@ export function AiImportPanel({ onResult }: { onResult: (result: ParseResult) =>
 
   function addFiles(list: FileList | null) {
     if (!list) return;
-    setFiles((prev) => [...prev, ...Array.from(list)].slice(0, MAX_IMAGES + 1));
+    // Sao chép ngay: FileList gắn với input sẽ rỗng sau khi reset value bên dưới
+    const added = Array.from(list);
+    setFiles((prev) => [...prev, ...added].slice(0, MAX_IMAGES + 1));
     if (fileRef.current) fileRef.current.value = '';
   }
 

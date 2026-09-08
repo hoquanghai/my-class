@@ -1,6 +1,6 @@
 # S3 — Ngân hàng câu hỏi: Kế hoạch triển khai
 
-> **Trạng thái:** S3a HOÀN THÀNH 2026-09-08 (parser 13 fixture, API e2e 5 test, kiểm thử trình duyệt dán đề 5 câu → lưới → lưu → ngân hàng render LaTeX, sửa qua hộp thoại). S3b (soạn tay) và S3c (AI ảnh/PDF) đang làm.
+> **Trạng thái: HOÀN THÀNH 2026-09-09.** S3a: parser 13 fixture, API e2e 5 test, kiểm thử trình duyệt dán đề → lưới → lưu → ngân hàng render LaTeX. S3b: trình soạn tay (Enter/Ctrl+Enter/Tab, dán ảnh) kiểm thử trình duyệt. S3c: `packages/ai-adapter` (claude/openai/mock), job AI + hạn mức 20 trang/tháng + BullMQ (inline khi test), e2e 5 test, kiểm thử trình duyệt qua Redis thật với provider mock. Chưa chạy với API key thật (chưa có key).
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 >
