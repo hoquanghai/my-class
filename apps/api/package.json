@@ -23,6 +23,7 @@
     "db:studio": "prisma studio"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1127.0",
     "@lophoc/shared": "workspace:*",
     "@nestjs/common": "^12.0.1",
     "@nestjs/config": "^12.0.0",
@@ -36,6 +37,8 @@
     "cookie-parser": "^1.4.7",
     "dotenv": "^17.4.2",
     "exceljs": "^4.4.0",
+    "mammoth": "^1.12.2",
+    "node-html-parser": "^9.0.4",
     "nodemailer": "^10.0.1",
     "pg": "^8.23.0",
     "qrcode": "^1.5.4",
@@ -58,6 +61,7 @@
     "@types/supertest": "^7.0.0",
     "cross-env": "^7.0.3",
     "eslint": "^9.0.0",
+    "jszip": "^3.10.1",
     "prisma": "7.10.0",
     "supertest": "^7.2.2",
     "tsx": "^4.23.13",

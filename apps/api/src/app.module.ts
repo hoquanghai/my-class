@@ -9,7 +9,10 @@ import { ClassesModule } from './modules/classes/classes.module.js';
 import { FeatureFlagsModule } from './modules/feature-flags/feature-flags.module.js';
 import { HealthModule } from './modules/health/health.module.js';
 import { MailerModule } from './modules/mailer/mailer.module.js';
+import { MediaModule } from './modules/media/media.module.js';
+import { QuestionsModule } from './modules/questions/questions.module.js';
 import { SessionsModule } from './modules/sessions/sessions.module.js';
+import { StorageModule } from './modules/storage/storage.module.js';
 import { TeachersModule } from './modules/teachers/teachers.module.js';
 import { PrismaModule } from './prisma/prisma.module.js';
 
@@ -28,11 +31,14 @@ import { PrismaModule } from './prisma/prisma.module.js';
     PrismaModule,
     FeatureFlagsModule,
     MailerModule,
+    StorageModule,
     AnalyticsModule,
     AuthModule,
     TeachersModule,
     ClassesModule,
     SessionsModule,
+    QuestionsModule,
+    MediaModule,
     HealthModule,
   ],
   providers: [{ provide: APP_GUARD, useClass: ThrottlerGuard }],

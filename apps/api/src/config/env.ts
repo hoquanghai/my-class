@@ -21,6 +21,17 @@ export const envSchema = z.object({
   MAIL_FROM: z.string().default('Lớp Học <no-reply@lophoc.app>'),
   /** `memory` giữ email trong RAM (dùng cho test), `smtp` gửi thật (Mailpit ở dev). */
   MAIL_TRANSPORT: z.enum(['smtp', 'memory']).default('smtp'),
+
+  /** `s3` = MinIO (dev) hoặc Cloudflare R2 (prod); `memory` chỉ dùng cho test. */
+  STORAGE_DRIVER: z.enum(['s3', 'memory']).default('s3'),
+  S3_ENDPOINT: z.string().optional(),
+  S3_REGION: z.string().default('auto'),
+  S3_BUCKET: z.string().default('lophoc'),
+  S3_ACCESS_KEY: z.string().optional(),
+  S3_SECRET_KEY: z.string().optional(),
+  /** URL công khai của bucket, ví dụ http://localhost:9000/lophoc hoặc https://media.example.com */
+  S3_PUBLIC_URL: z.string().optional(),
+  S3_FORCE_PATH_STYLE: z.stringbool().default(true),
 });
 
 export type Env = z.infer<typeof envSchema>;
