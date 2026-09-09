@@ -525,9 +525,15 @@ Giấy nhớ `{components.sticky-note}` xoay nhẹ −2° đến 2°, dùng đ�
 
 - Token thời lượng: `fast` 150ms (hover, chip), `base` 200ms (nút, input), `slow` 300ms (hộp thoại, khối màu hiện dần), `reveal` 450ms (danh sách xuất hiện lần lượt, cách nhau 40ms).
 - Vào: `ease-out`; ra: `ease-in`, ngắn hơn 30%. Chỉ animate `transform` và `opacity`.
-- Landing: mỗi section hiện dần một lần khi cuộn tới (opacity + translateY 16px). Tối đa 2 phần tử động trong một khung nhìn. Không parallax, không marquee.
+- Landing: mỗi section hiện dần một lần khi cuộn tới (opacity + translateY 16px); phần tử con hiện lần lượt cách nhau 80 ms (`animate-pop` + `animation-delay`).
+- Hero là "sân khấu demo" (`components/marketing/hero-demo.tsx`): vòng lặp 6 bước kể lại một buổi học (vào lớp → câu hỏi + đếm ngược → nộp → phân bố đáp án → bảng xếp hạng), mỗi bước 1.3–2.8 s, dừng khi tab ẩn. Đây là phần tử lặp duy nhất được phép ngoài dải ticker; các section khác chỉ hiện dần một lần.
+- Tiêu đề hero có cụm từ xoay vòng (`RotatingWords`, 2.6 s/từ, trượt dọc 500 ms) trên nền lime như bút dạ quang.
+- Dải ticker nền mực dưới hero (`Ticker`): chạy 48 s/vòng, dừng khi rê chuột, nội dung nhân đôi để lặp liền.
+- Số liệu đếm lên (`CountUp`) 900 ms ease-out khi cuộn tới, một lần.
+- Không parallax, không gradient động, không hiệu ứng theo con trỏ.
+- Từ khóa keyframe dùng chung trong `globals.css`: `pop`, `float`, `ticker`, `sparkle`, `pulse-dot`; lớp tiện ích `animate-pop`, `animate-float`, `animate-ticker`, `animate-sparkle`, `animate-pulse-dot`.
 - Đếm ngược và thanh tiến độ cập nhật mỗi 200ms bằng `transition: width`.
-- `prefers-reduced-motion: reduce` → bỏ mọi chuyển động trang trí, giữ trạng thái cuối.
+- `prefers-reduced-motion: reduce` → bỏ mọi chuyển động trang trí, giữ trạng thái cuối: demo hero đứng ở bước cuối, từ xoay vòng giữ từ đầu, ticker đứng yên, số hiện ngay (`usePrefersReducedMotion`).
 
 ## 9. Khả năng tiếp cận
 

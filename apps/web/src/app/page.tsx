@@ -1,8 +1,18 @@
-import { Camera, ClipboardCheck, FileText, MonitorPlay, Smartphone, Trophy } from 'lucide-react';
+import {
+  ArrowRight,
+  Camera,
+  ClipboardCheck,
+  FileText,
+  MonitorPlay,
+  Smartphone,
+  Trophy,
+} from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import Link from 'next/link';
+import { CountUp } from '@/components/marketing/count-up';
 import { Footer } from '@/components/marketing/footer';
+import { HeroDemo } from '@/components/marketing/hero-demo';
 import {
   AttendanceMock,
   ClassCodeMock,
@@ -12,6 +22,8 @@ import {
 } from '@/components/marketing/mocks';
 import { ColorBlock, Eyebrow, PillLink, StickyNote } from '@/components/marketing/primitives';
 import { Reveal } from '@/components/marketing/reveal';
+import { RotatingWords } from '@/components/marketing/rotating-words';
+import { Ticker } from '@/components/marketing/ticker';
 import { TopNav } from '@/components/marketing/top-nav';
 
 const container = 'mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8';
@@ -27,6 +39,18 @@ function Bullet({ children }: { children: React.ReactNode }) {
 
 export default function LandingPage() {
   const t = useTranslations('Landing');
+  const chips = [
+    [Smartphone, t('hero.chip1')],
+    [FileText, t('hero.chip2')],
+    [MonitorPlay, t('hero.chip3')],
+    [Trophy, t('hero.chip4')],
+  ] as const;
+  const stats = [
+    [30, '', t('stats.attendance')],
+    [3, '', t('stats.import')],
+    [6, '', t('stats.code')],
+    [0, 'đ', t('stats.price')],
+  ] as const;
 
   return (
     <>
@@ -40,81 +64,74 @@ export default function LandingPage() {
 
       <main id="noi-dung" className="flex-1">
         {/* Hero */}
-        <section className={`${container} grid items-center gap-10 py-14 lg:grid-cols-12 lg:py-24`}>
+        <section className={`${container} grid items-center gap-12 py-12 lg:grid-cols-12 lg:py-20`}>
           <div className="lg:col-span-6">
-            <Eyebrow className="text-ink-muted">{t('hero.eyebrow')}</Eyebrow>
-            <h1 className="type-display mt-4 max-w-[16ch] text-ink">{t('hero.title')}</h1>
-            <p className="type-lead mt-5 max-w-xl text-ink">{t('hero.subtitle')}</p>
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <PillLink href="/signup">{t('hero.cta')}</PillLink>
+            <Eyebrow className="text-ink-muted animate-pop">{t('hero.eyebrow')}</Eyebrow>
+            <h1 className="type-display mt-4 text-ink animate-pop [animation-delay:80ms]">
+              {t('hero.prefix')}
+              <br />
+              <RotatingWords words={[t('hero.word1'), t('hero.word2'), t('hero.word3')]} />
+            </h1>
+            <p className="type-lead mt-5 max-w-xl text-ink animate-pop [animation-delay:160ms]">
+              {t('hero.subtitle')}
+            </p>
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row animate-pop [animation-delay:240ms]">
+              <PillLink href="/signup" className="group">
+                {t('hero.cta')}
+                <ArrowRight
+                  className="size-4 transition-transform duration-200 group-hover:translate-x-1"
+                  aria-hidden="true"
+                />
+              </PillLink>
               <PillLink href="#cach-dung" variant="secondary">
                 {t('hero.secondary')}
               </PillLink>
             </div>
-            <p className="mt-5 text-sm text-ink-muted">{t('hero.note')}</p>
+            <ul className="mt-7 flex flex-wrap gap-2">
+              {chips.map(([Icon, text], i) => (
+                <li
+                  key={text}
+                  className="flex items-center gap-1.5 rounded-full border border-hairline bg-canvas px-3 py-1.5 text-sm font-medium text-ink animate-pop"
+                  style={{ animationDelay: `${320 + i * 80}ms` }}
+                >
+                  <Icon className="size-4 text-accent" aria-hidden="true" />
+                  {text}
+                </li>
+              ))}
+            </ul>
+            <p className="mt-5 text-sm text-ink-muted animate-pop [animation-delay:640ms]">
+              {t('hero.note')}
+            </p>
           </div>
 
-          <div className="relative lg:col-span-6">
-            <div className="relative aspect-[3/2] overflow-hidden rounded-block bg-surface-soft">
-              <Image
-                src="/img/hero-classroom.webp"
-                alt={t('imgAlt.hero')}
-                fill
-                priority
-                sizes="(min-width: 1024px) 560px, 100vw"
-                className="object-cover"
-              />
-            </div>
-            <StickyNote
-              tone="lime"
-              rotate={-3}
-              className="absolute -bottom-6 -left-2 w-56 sm:left-6"
-            >
-              <LeaderboardMock />
-            </StickyNote>
-            <StickyNote
-              tone="cream"
-              rotate={2}
-              className="absolute -right-2 -top-4 hidden w-44 sm:block"
-            >
-              <p className="mb-2 type-eyebrow text-[11px]">{t('hero.noteAttendance')}</p>
-              <div className="flex flex-wrap gap-1.5 text-xs font-medium">
-                <span className="rounded-md bg-block-mint px-2 py-1 text-success">
-                  {t('hero.present')}: 27
-                </span>
-                <span className="rounded-md bg-block-cream px-2 py-1 text-warning ring-1 ring-ink/10">
-                  {t('hero.late')}: 2
-                </span>
-                <span className="rounded-md bg-block-pink px-2 py-1 text-danger">
-                  {t('hero.absent')}: 1
-                </span>
-              </div>
-            </StickyNote>
+          <div className="lg:col-span-6">
+            <HeroDemo />
           </div>
         </section>
 
-        {/* Dải bằng chứng */}
+        <Ticker
+          items={[
+            t('ticker.t1'),
+            t('ticker.t2'),
+            t('ticker.t3'),
+            t('ticker.t4'),
+            t('ticker.t5'),
+            t('ticker.t6'),
+          ]}
+        />
+
+        {/* Con số nói lên */}
         <section className="bg-surface-soft">
-          <ul className={`${container} grid gap-4 py-6 sm:grid-cols-3`}>
-            {[
-              [Smartphone, t('proof.join')],
-              [FileText, t('proof.import')],
-              [MonitorPlay, t('proof.project')],
-            ].map(([Icon, text]) => {
-              const I = Icon as typeof Smartphone;
-              return (
-                <li
-                  key={String(text)}
-                  className="flex items-center gap-3 text-sm font-medium text-ink"
-                >
-                  <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-canvas">
-                    <I className="size-5" aria-hidden="true" />
-                  </span>
-                  {String(text)}
-                </li>
-              );
-            })}
-          </ul>
+          <dl className={`${container} grid grid-cols-2 gap-6 py-8 sm:grid-cols-4`}>
+            {stats.map(([value, suffix, label]) => (
+              <div key={label} className="flex flex-col gap-1">
+                <dd className="text-4xl font-bold tracking-[-0.01em] text-ink sm:text-5xl">
+                  <CountUp value={value} suffix={suffix} />
+                </dd>
+                <dt className="text-sm text-ink-muted">{label}</dt>
+              </div>
+            ))}
+          </dl>
         </section>
 
         {/* Cách dùng */}
@@ -129,7 +146,7 @@ export default function LandingPage() {
                 key={n}
                 as="li"
                 delayMs={i * 80}
-                className="rounded-card border border-hairline p-6"
+                className="rounded-card border border-hairline p-6 transition-[transform,box-shadow] duration-200 hover:-translate-y-1 hover:shadow-soft"
               >
                 <span className="type-eyebrow text-ink-muted">0{n}</span>
                 <h3 className="type-h3 mt-3 text-ink">{t(`how.step${n}Title`)}</h3>
@@ -297,9 +314,7 @@ export default function LandingPage() {
                     +
                   </span>
                 </summary>
-                <p className="mt-2 max-w-3xl text-base leading-relaxed text-ink">
-                  {t(`faq.a${n}`)}
-                </p>
+                <p className="type-body mt-2 max-w-3xl text-ink">{t(`faq.a${n}`)}</p>
               </details>
             ))}
           </div>
@@ -311,7 +326,13 @@ export default function LandingPage() {
             <Trophy className="mx-auto size-8 text-ink" aria-hidden="true" />
             <h2 className="type-h2 mx-auto mt-4 max-w-2xl text-ink">{t('final.title')}</h2>
             <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-              <PillLink href="/signup">{t('final.cta')}</PillLink>
+              <PillLink href="/signup" className="group">
+                {t('final.cta')}
+                <ArrowRight
+                  className="size-4 transition-transform duration-200 group-hover:translate-x-1"
+                  aria-hidden="true"
+                />
+              </PillLink>
               <Link
                 href="/login"
                 className="text-base font-medium text-ink underline-offset-4 hover:underline"

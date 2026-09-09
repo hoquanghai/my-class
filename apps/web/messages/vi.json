@@ -13,7 +13,6 @@
     },
     "hero": {
       "eyebrow": "Miễn phí cho giáo viên trung tâm",
-      "title": "Điểm danh, kiểm tra, xếp hạng: xong trong 5 phút đầu giờ.",
       "subtitle": "Nhập đề từ Word, ảnh chụp hay dán văn bản. Học sinh làm bài trên điện thoại bằng mã lớp, không cần cài app. Kết quả hiện ngay trên máy chiếu.",
       "cta": "Dùng thử miễn phí",
       "secondary": "Xem cách dùng",
@@ -21,12 +20,15 @@
       "noteAttendance": "Điểm danh 19:02",
       "present": "Có mặt",
       "late": "Muộn",
-      "absent": "Vắng"
-    },
-    "proof": {
-      "join": "Vào lớp bằng mã 6 ký tự",
-      "import": "Nhập đề từ Word, ảnh, văn bản dán",
-      "project": "Chiếu câu hỏi và bảng xếp hạng"
+      "absent": "Vắng",
+      "prefix": "5 phút đầu giờ:",
+      "word1": "điểm danh xong",
+      "word2": "kiểm tra xong",
+      "word3": "có bảng xếp hạng",
+      "chip1": "Vào lớp bằng mã, không cài app",
+      "chip2": "Nhập đề từ Word, ảnh, văn bản",
+      "chip3": "Chiếu trực tiếp lên máy chiếu",
+      "chip4": "Bảng xếp hạng tự động"
     },
     "how": {
       "eyebrow": "Cách dùng",
@@ -101,6 +103,34 @@
       "hero": "Giáo viên đứng cạnh bảng trắng trong lớp học buổi tối, học sinh cầm điện thoại làm bài",
       "bank": "Tay giáo viên cầm điện thoại chụp đề thi in trên bàn",
       "students": "Học sinh cầm điện thoại trong lớp học đang chiếu bài"
+    },
+    "ticker": {
+      "t1": "Điểm danh 30 giây",
+      "t2": "Phát đề từ Word hoặc ảnh chụp",
+      "t3": "Học sinh vào bằng mã 6 ký tự",
+      "t4": "Bảng xếp hạng trên máy chiếu",
+      "t5": "AI đọc đề chụp ảnh",
+      "t6": "Miễn phí cho giáo viên"
+    },
+    "stats": {
+      "attendance": "giây để điểm danh cả lớp",
+      "import": "cách nhập đề: dán, Word, ảnh chụp",
+      "code": "ký tự để học sinh vào lớp",
+      "price": "chi phí, miễn phí cho giáo viên"
+    },
+    "demo": {
+      "className": "Toán 9A · tối thứ 3",
+      "joined": "{count}/{total} đã vào lớp",
+      "board": "Bảng xếp hạng",
+      "question": "Câu {index}/{total}",
+      "answered": "{count}/{total} đã trả lời",
+      "waiting": "Đang chờ",
+      "waitingBody": "Chờ giáo viên bắt đầu…",
+      "stem": "Nghiệm của phương trình 2x + 3 = 11 là",
+      "submitted": "Đã nộp",
+      "correct": "Chính xác!",
+      "sent": "Đã gửi ✓",
+      "submit": "Nộp"
     }
   },
   "Common": {
