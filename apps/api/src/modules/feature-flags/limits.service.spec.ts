@@ -28,13 +28,31 @@ describe('LimitsService', () => {
     );
   });
 
-  it('cho thêm học sinh khi 48 + 2 = 50', async () => {
-    await expect(makeService(0, 48).assertRosterCapacity('c1', 2)).resolves.toBeUndefined();
+  it('cho thêm học sinh khi 28 + 2 = 30 (giới hạn theo giáo viên)', async () => {
+    await expect(makeService(0, 28).assertRosterCapacity('t1', 'c1', 2)).resolves.toBeUndefined();
   });
 
-  it('chặn khi 48 + 3 > 50 với mã LIMIT_STUDENTS', async () => {
-    await expect(makeService(0, 48).assertRosterCapacity('c1', 3)).rejects.toMatchObject({
-      response: { code: 'LIMIT_STUDENTS' },
+  it('chặn khi 28 + 3 > 30 với mã LIMIT_STUDENTS kèm details', async () => {
+    await expect(makeService(0, 28).assertRosterCapacity('t1', 'c1', 3)).rejects.toMatchObject({
+      response: {
+        code: 'LIMIT_STUDENTS',
+        details: { scope: 'teacher', limit: 30, current: 28, requested: 3, remaining: 2 },
+      },
+    });
+  });
+
+  it('rosterCapacity: chỗ trống là min của giới hạn theo lớp và theo giáo viên', async () => {
+    await expect(makeService(0, 10).rosterCapacity('t1', 'c1')).resolves.toMatchObject({
+      perClass: 50,
+      perTeacher: 30,
+      remaining: 20,
+    });
+  });
+
+  it('getLimitsFor kèm usage', async () => {
+    await expect(makeService(2, 12).getLimitsFor('t1')).resolves.toMatchObject({
+      maxStudentsPerTeacher: 30,
+      usage: { classes: 2, students: 12 },
     });
   });
 
@@ -42,6 +60,7 @@ describe('LimitsService', () => {
     await expect(makeService(0, 0).getLimits()).resolves.toEqual({
       maxClasses: 2,
       maxStudentsPerClass: 50,
+      maxStudentsPerTeacher: 30,
       aiPagesPerMonth: 20,
       historyDays: 30,
       exportEnabled: false,

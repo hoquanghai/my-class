@@ -38,14 +38,34 @@ export interface ClassDetailDto extends ClassSummaryDto {
 export interface RosterImportResultDto {
   students: StudentDto[];
   added: number;
+  /** Số dòng bị bỏ vì hết chỗ khi nhập với `?fit=1`. */
+  skipped: number;
 }
 
-export interface LimitsDto {
+/** Giới hạn gói miễn phí (feature flag `free.*`). */
+export interface FreeLimitsDto {
   maxClasses: number;
   maxStudentsPerClass: number;
+  /** Tổng học sinh trong mọi lớp chưa xóa của một giáo viên. */
+  maxStudentsPerTeacher: number;
   aiPagesPerMonth: number;
   historyDays: number;
   exportEnabled: boolean;
+}
+
+/** `GET /limits`: giới hạn kèm mức đang dùng của giáo viên hiện tại. */
+export interface LimitsDto extends FreeLimitsDto {
+  usage: { classes: number; students: number };
+}
+
+/** `details` của lỗi 403 LIMIT_STUDENTS. */
+export interface StudentLimitDetails {
+  scope: 'teacher' | 'class';
+  limit: number;
+  current: number;
+  requested: number;
+  /** Số học sinh còn có thể thêm; web dùng để đề nghị "chỉ nhập N đầu". */
+  remaining: number;
 }
 
 /** Mã lỗi nghiệp vụ trả về trong `code` của body lỗi API. */
@@ -67,4 +87,6 @@ export interface ApiErrorBody {
   statusCode: number;
   code?: ErrorCode | string;
   message: string;
+  /** Số liệu đi kèm một số lỗi nghiệp vụ (ví dụ LIMIT_STUDENTS). */
+  details?: Record<string, unknown>;
 }

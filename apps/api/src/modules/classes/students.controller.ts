@@ -8,6 +8,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   Res,
   UploadedFile,
   UseInterceptors,
@@ -39,6 +40,11 @@ interface UploadedXlsx {
   mimetype: string;
 }
 
+/** `?fit=1`: chỉ nhập số học sinh còn chỗ thay vì báo lỗi vượt giới hạn. */
+function wantsFit(fit?: string): boolean {
+  return fit === '1' || fit === 'true';
+}
+
 function looksLikeXlsx(file: UploadedXlsx): boolean {
   const zipMagic = file.buffer.length > 2 && file.buffer[0] === 0x50 && file.buffer[1] === 0x4b;
   const byName = /\.xlsx$/i.test(file.originalname);
@@ -56,8 +62,9 @@ export class StudentsController {
     @CurrentTeacher() teacher: TeacherPrincipal,
     @Param('classId') classId: string,
     @Body({ schema: importNamesSchema }) body: ImportNamesInput,
+    @Query('fit') fit?: string,
   ): Promise<RosterImportResultDto> {
-    return this.students.importNames(teacher.id, classId, body.names);
+    return this.students.importNames(teacher.id, classId, body.names, wantsFit(fit));
   }
 
   @Post('import-excel')
@@ -66,11 +73,12 @@ export class StudentsController {
   importExcel(
     @CurrentTeacher() teacher: TeacherPrincipal,
     @Param('classId') classId: string,
+    @Query('fit') fit?: string,
     @UploadedFile() file?: UploadedXlsx,
   ): Promise<RosterImportResultDto> {
     if (!file) throw new BadRequestException('Chưa chọn file Excel');
     if (!looksLikeXlsx(file)) throw new BadRequestException('Chỉ hỗ trợ file .xlsx');
-    return this.students.importExcel(teacher.id, classId, file.buffer);
+    return this.students.importExcel(teacher.id, classId, file.buffer, wantsFit(fit));
   }
 
   /** File Excel mẫu: đủ cột, tiêu đề ghi rõ (bắt buộc)/(tùy chọn), kèm sheet Hướng dẫn. */

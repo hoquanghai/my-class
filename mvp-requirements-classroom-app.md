@@ -85,7 +85,7 @@ Three input paths, all landing on the same **preview-and-fix grid** (parsed ques
 
 ## 4. Free-tier limits (all via feature flags, no deploy to change)
 
-- Max 2 classes, 50 students/class.
+- Max 2 classes; 30 students per teacher across all classes (50/class cap kept). Importing past the limit returns 403 LIMIT_STUDENTS with details and offers two choices: go to the upgrade page, or import only the remaining slots (`?fit=1`).
 - Question bank unlimited; AI extraction 20 pages/month.
 - History 30 days; export off.
 - Attendance, quizzes, projector: unlimited.

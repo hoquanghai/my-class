@@ -23,8 +23,13 @@ export class HttpExceptionFilter implements ExceptionFilter {
 
     if (exception instanceof HttpException) {
       const status = exception.getStatus();
-      const { message, code } = normalizeBody(exception.getResponse(), exception.message);
-      res.status(status).json({ statusCode: status, ...(code ? { code } : {}), message });
+      const { message, code, details } = normalizeBody(exception.getResponse(), exception.message);
+      res.status(status).json({
+        statusCode: status,
+        ...(code ? { code } : {}),
+        message,
+        ...(details ? { details } : {}),
+      });
       return;
     }
 
@@ -41,14 +46,16 @@ export class HttpExceptionFilter implements ExceptionFilter {
 function normalizeBody(
   body: string | object,
   fallback: string,
-): { message: string; code?: string } {
+): { message: string; code?: string; details?: Record<string, unknown> } {
   if (typeof body === 'string') return { message: body };
-  const b = body as { message?: unknown; code?: unknown };
+  const b = body as { message?: unknown; code?: unknown; details?: unknown };
   const message = Array.isArray(b.message)
     ? b.message.map(String).join('; ')
     : typeof b.message === 'string'
       ? b.message
       : fallback;
   const code = typeof b.code === 'string' ? b.code : undefined;
-  return { message, code };
+  const details =
+    b.details && typeof b.details === 'object' ? (b.details as Record<string, unknown>) : undefined;
+  return { message, code, details };
 }

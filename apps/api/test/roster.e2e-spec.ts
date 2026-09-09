@@ -55,13 +55,52 @@ describe('Roster (e2e)', () => {
     expect(last.sortOrder).toBe(3);
   });
 
-  it('tối đa 50 học sinh: 50 OK, thêm 1 → 403 LIMIT_STUDENTS', async () => {
+  it('gói miễn phí 30 học sinh/giáo viên: quá → 403 kèm details; ?fit=1 chỉ nhập phần còn chỗ', async () => {
     const { s, classId } = await setup('roster-limit');
-    const fifty = Array.from({ length: 50 }, (_, i) => `HS ${i + 1}`);
-    const res = await importNames(s, classId, fifty).expect(200);
-    expect(res.body.added).toBe(50);
-    const over = await importNames(s, classId, ['Thêm']).expect(403);
+    const names = (n: number, prefix: string) =>
+      Array.from({ length: n }, (_, i) => `${prefix} ${i + 1}`);
+    expect((await importNames(s, classId, names(25, 'HS')).expect(200)).body.added).toBe(25);
+
+    const over = await importNames(s, classId, names(10, 'Thêm')).expect(403);
     expect(over.body.code).toBe('LIMIT_STUDENTS');
+    expect(over.body.details).toEqual({
+      scope: 'teacher',
+      limit: 30,
+      current: 25,
+      requested: 10,
+      remaining: 5,
+    });
+
+    const fit = await http()
+      .post(`/api/classes/${classId}/students/import?fit=1`)
+      .set('Cookie', ck(s))
+      .send({ names: names(10, 'Thêm') })
+      .expect(200);
+    expect(fit.body.added).toBe(5);
+    expect(fit.body.skipped).toBe(5);
+    expect(fit.body.students.map((x: StudentRow) => x.name).slice(-5)).toEqual(names(5, 'Thêm'));
+
+    // Giới hạn tính theo giáo viên: lớp thứ hai cũng hết chỗ, fit không cứu được khi còn 0
+    const c2 = (
+      await http()
+        .post('/api/classes')
+        .set('Cookie', ck(s))
+        .send({ name: 'Lớp 2', subject: 'toan', grade: '11' })
+        .expect(201)
+    ).body as { id: string };
+    const full = await importNames(s, c2.id, ['Một']).expect(403);
+    expect(full.body.details).toMatchObject({ scope: 'teacher', remaining: 0 });
+    await http()
+      .post(`/api/classes/${c2.id}/students/import?fit=1`)
+      .set('Cookie', ck(s))
+      .send({ names: ['Một'] })
+      .expect(403);
+
+    const limits = await http().get('/api/limits').set('Cookie', ck(s)).expect(200);
+    expect(limits.body).toMatchObject({
+      maxStudentsPerTeacher: 30,
+      usage: { classes: 2, students: 30 },
+    });
   });
 
   it('nhập Excel có tiêu đề và SĐT phụ huynh', async () => {

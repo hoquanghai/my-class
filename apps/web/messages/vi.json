@@ -89,7 +89,7 @@
       "unit": "Không cần thẻ thanh toán",
       "items": [
         "2 lớp học",
-        "Tối đa 50 học sinh mỗi lớp",
+        "Tối đa 30 học sinh cho mỗi giáo viên",
         "20 trang trích xuất bằng AI mỗi tháng",
         "Lưu lịch sử trong 30 ngày",
         "Không giới hạn số buổi học và câu hỏi"
@@ -203,7 +203,8 @@
     "quizzes": "Đề kiểm tra",
     "sessionExpired": "Phiên đăng nhập đã hết hạn",
     "profile": "Hồ sơ giáo viên",
-    "accountMenu": "Tài khoản"
+    "accountMenu": "Tài khoản",
+    "upgrade": "Nâng cấp gói"
   },
   "Classes": {
     "title": "Lớp học của tôi",
@@ -252,7 +253,7 @@
     "excel": "Nhập từ Excel (.xlsx)",
     "excelHint": "Chỉ cột \"Họ và tên\" là bắt buộc. Các cột khác (mã học sinh, ngày sinh, giới tính, SĐT, email, trường, phụ huynh, ghi chú) tùy chọn; tiêu đề trong file mẫu ghi rõ từng cột.",
     "consent": "Bạn chịu trách nhiệm về việc phụ huynh/học sinh đã đồng ý khi đưa thông tin vào hệ thống. Dữ liệu chỉ dùng cho điểm danh, kiểm tra và liên hệ; không chia sẻ cho bên thứ ba.",
-    "capacity": "{count}/{max} học sinh",
+    "capacity": "{count} học sinh trong lớp",
     "empty": "Chưa có học sinh. Dán tên hoặc nhập Excel để bắt đầu.",
     "colIndex": "STT",
     "colName": "Họ và tên",
@@ -267,7 +268,17 @@
     "editHint": "Nhấn vào tên hoặc SĐT để sửa nhanh (Enter lưu, Esc hủy); bấm biểu tượng bút để sửa đầy đủ thông tin.",
     "template": "Tải file mẫu (.xlsx)",
     "downloadFailed": "Không tải được file mẫu, vui lòng thử lại.",
-    "edit": "Sửa thông tin"
+    "edit": "Sửa thông tin",
+    "teacherCapacity": "Gói miễn phí: {count}/{max} học sinh (tính tất cả các lớp)",
+    "upgradeLink": "Nâng cấp gói",
+    "addedSkipped": "Đã thêm {count} học sinh; bỏ qua {skipped} tên cuối vì hết chỗ của gói miễn phí.",
+    "limitTitle": "Vượt giới hạn gói miễn phí",
+    "limitBodyTeacher": "Gói miễn phí cho phép tối đa {limit} học sinh cho mỗi giáo viên, tính tất cả các lớp. Bạn đang có {current} học sinh và muốn thêm {requested}.",
+    "limitBodyClass": "Gói miễn phí cho phép tối đa {limit} học sinh mỗi lớp. Lớp đang có {current} học sinh và bạn muốn thêm {requested}.",
+    "limitRemaining": "Còn {remaining} chỗ trống.",
+    "limitFull": "Đã hết chỗ, không thể thêm học sinh nào nữa.",
+    "limitFit": "Chỉ nhập {remaining} học sinh đầu",
+    "limitUpgrade": "Nâng cấp gói"
   },
   "Sessions": {
     "start": "Bắt đầu buổi học",
@@ -562,5 +573,34 @@
     "currentRequired": "Vui lòng nhập mật khẩu hiện tại",
     "confirmMismatch": "Mật khẩu nhập lại chưa khớp",
     "passwordChanged": "Đã đổi mật khẩu. Các thiết bị khác sẽ phải đăng nhập lại."
+  },
+  "Upgrade": {
+    "title": "Nâng cấp gói",
+    "subtitle": "Gói miễn phí đủ cho một vài lớp nhỏ. Gói Trung tâm mở rộng giới hạn cho giáo viên dạy nhiều lớp và các trung tâm.",
+    "usageTitle": "Mức đang dùng",
+    "usageStudents": "Học sinh (tất cả các lớp)",
+    "usageClasses": "Lớp học",
+    "currentPlan": "Gói hiện tại",
+    "freeName": "Miễn phí",
+    "freePrice": "0đ",
+    "freeItems": {
+      "classes": "{max} lớp học",
+      "students": "Tối đa {max} học sinh cho mỗi giáo viên",
+      "ai": "{max} trang trích xuất bằng AI mỗi tháng",
+      "history": "Lưu lịch sử {max} ngày",
+      "unlimited": "Không giới hạn số buổi học và câu hỏi"
+    },
+    "proName": "Gói Trung tâm",
+    "proPrice": "Sắp công bố",
+    "comingSoon": "Sắp ra mắt",
+    "proItems": {
+      "unlimited": "Không giới hạn lớp và học sinh",
+      "ai": "200 trang trích xuất bằng AI mỗi tháng",
+      "history": "Lưu lịch sử không giới hạn",
+      "export": "Xuất báo cáo điểm danh, điểm số ra Excel",
+      "center": "Nhiều giáo viên trong một trung tâm"
+    },
+    "notifyBody": "Gói Trung tâm đang hoàn thiện. Khi ra mắt, chúng tôi sẽ báo qua email {email} và ưu tiên nâng cấp cho các tài khoản đăng ký sớm.",
+    "back": "Về danh sách lớp"
   }
 }

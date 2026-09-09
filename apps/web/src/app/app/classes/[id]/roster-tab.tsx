@@ -2,9 +2,12 @@
 
 import {
   type ClassDetailDto,
+  ErrorCodes,
   type LimitsDto,
   parseNameLines,
+  type RosterImportResultDto,
   type StudentDto,
+  type StudentLimitDetails,
 } from '@lophoc/shared';
 import {
   ArrowDown,
@@ -17,13 +20,15 @@ import {
   Upload,
 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import Link from 'next/link';
 import { type KeyboardEvent, useMemo, useRef, useState } from 'react';
 import { AttendanceHistoryDialog } from '@/components/attendance-history-dialog';
+import { isStudentLimitDetails, RosterLimitDialog } from '@/components/classes/roster-limit-dialog';
 import { StudentDetailDialog } from '@/components/classes/student-detail-dialog';
 import { Alert } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Input, Textarea } from '@/components/ui/input';
-import { downloadFile, errorMessage } from '@/lib/api';
+import { ApiError, downloadFile, errorMessage } from '@/lib/api';
 import {
   useImportExcel,
   useImportNames,
@@ -56,10 +61,14 @@ export function RosterTab({ klass, limits }: { klass: ClassDetailDto; limits?: L
   const [notice, setNotice] = useState<string | null>(null);
   const [downloading, setDownloading] = useState(false);
   const [downloadError, setDownloadError] = useState<string | null>(null);
+  const [limitPrompt, setLimitPrompt] = useState<{
+    details: StudentLimitDetails;
+    retry: () => Promise<RosterImportResultDto>;
+  } | null>(null);
+  const [fitting, setFitting] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
   const pendingNames = useMemo(() => parseNameLines(text), [text]);
-  const max = limits?.maxStudentsPerClass ?? 50;
   const students = klass.students;
   const error =
     importNames.error ??
@@ -68,18 +77,64 @@ export function RosterTab({ klass, limits }: { klass: ClassDetailDto; limits?: L
     removeStudent.error ??
     reorder.error;
 
-  async function addNames() {
-    if (pendingNames.length === 0) return;
-    const result = await importNames.mutateAsync(pendingNames);
+  function afterImport(result: RosterImportResultDto) {
     setText('');
-    setNotice(t('added', { count: result.added }));
+    setNotice(
+      result.skipped > 0
+        ? t('addedSkipped', { count: result.added, skipped: result.skipped })
+        : t('added', { count: result.added }),
+    );
   }
 
-  async function onFile(file: File | undefined) {
+  /** Chạy nhập; vượt giới hạn gói thì mở hộp thoại chọn nâng cấp hoặc chỉ nhập phần còn chỗ. */
+  async function runImport(
+    run: (fit: boolean) => Promise<RosterImportResultDto>,
+    reset: () => void,
+  ) {
+    try {
+      afterImport(await run(false));
+    } catch (err) {
+      if (
+        err instanceof ApiError &&
+        err.code === ErrorCodes.LIMIT_STUDENTS &&
+        isStudentLimitDetails(err.details)
+      ) {
+        reset();
+        setLimitPrompt({ details: err.details, retry: () => run(true) });
+      }
+      // lỗi khác hiển thị qua mutation.error
+    }
+  }
+
+  function addNames() {
+    if (pendingNames.length === 0) return;
+    const names = pendingNames;
+    void runImport(
+      (fit) => importNames.mutateAsync({ names, fit }),
+      () => importNames.reset(),
+    );
+  }
+
+  function onFile(file: File | undefined) {
     if (!file) return;
-    const result = await importExcel.mutateAsync(file).catch(() => null);
     if (fileRef.current) fileRef.current.value = '';
-    if (result) setNotice(t('added', { count: result.added }));
+    void runImport(
+      (fit) => importExcel.mutateAsync({ file, fit }),
+      () => importExcel.reset(),
+    );
+  }
+
+  async function fitImport() {
+    if (!limitPrompt) return;
+    setFitting(true);
+    try {
+      afterImport(await limitPrompt.retry());
+    } catch {
+      // lỗi hiển thị qua mutation.error
+    } finally {
+      setFitting(false);
+      setLimitPrompt(null);
+    }
   }
 
   async function downloadTemplate() {
@@ -141,9 +196,27 @@ export function RosterTab({ klass, limits }: { klass: ClassDetailDto; limits?: L
     <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_360px]">
       <section className="min-w-0 space-y-4">
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <p className="text-sm font-medium text-slate-700">
-            {t('capacity', { count: students.length, max })}
-          </p>
+          <div>
+            <p className="text-sm font-medium text-slate-700">
+              {t('capacity', { count: students.length })}
+            </p>
+            {limits && (
+              <p className="text-xs text-slate-500">
+                {t('teacherCapacity', {
+                  count: limits.usage.students,
+                  max: limits.maxStudentsPerTeacher,
+                })}
+                {limits.usage.students >= limits.maxStudentsPerTeacher * 0.8 && (
+                  <>
+                    {' · '}
+                    <Link href="/app/upgrade" className="font-medium text-accent hover:underline">
+                      {t('upgradeLink')}
+                    </Link>
+                  </>
+                )}
+              </p>
+            )}
+          </div>
           <div className="flex items-center gap-2">
             <Button variant="secondary" size="sm" onClick={sortAz} disabled={students.length < 2}>
               <ArrowDownAZ className="size-4" />
@@ -295,6 +368,12 @@ export function RosterTab({ klass, limits }: { klass: ClassDetailDto; limits?: L
           classId={klass.id}
           student={detailStudent}
           onClose={() => setDetailStudent(null)}
+        />
+        <RosterLimitDialog
+          details={limitPrompt?.details ?? null}
+          fitting={fitting}
+          onFit={() => void fitImport()}
+          onClose={() => setLimitPrompt(null)}
         />
       </section>
 

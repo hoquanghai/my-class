@@ -1,7 +1,7 @@
 'use client';
 
 import type { TeacherDto } from '@lophoc/shared';
-import { ChevronDown, LogOut, UserRound } from 'lucide-react';
+import { ChevronDown, LogOut, Sparkles, UserRound } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
@@ -97,6 +97,15 @@ export function AccountMenu({
         >
           <UserRound className="size-4" aria-hidden="true" />
           {t('profile')}
+        </Link>
+        <Link
+          href="/app/upgrade"
+          role="menuitem"
+          onClick={() => setOpen(false)}
+          className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-ink hover:bg-surface-soft"
+        >
+          <Sparkles className="size-4" aria-hidden="true" />
+          {t('upgrade')}
         </Link>
         <button
           type="button"

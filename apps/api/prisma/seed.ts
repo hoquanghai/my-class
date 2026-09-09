@@ -16,6 +16,7 @@ const DEMO_CLASS_CODE = 'DEM268';
 const FEATURE_FLAGS: Record<string, unknown> = {
   'free.max_classes': 2,
   'free.max_students_per_class': 50,
+  'free.max_students_per_teacher': 30,
   'free.ai_pages_per_month': 20,
   'free.history_days': 30,
   'free.export_enabled': false,

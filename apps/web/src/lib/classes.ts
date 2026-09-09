@@ -47,6 +47,7 @@ function useInvalidateClass(id?: string) {
   const queryClient = useQueryClient();
   return async () => {
     await queryClient.invalidateQueries({ queryKey: classKeys.all });
+    await queryClient.invalidateQueries({ queryKey: classKeys.limits });
     if (id) await queryClient.invalidateQueries({ queryKey: classKeys.detail(id) });
   };
 }
@@ -97,14 +98,18 @@ function useApplyRoster(id: string) {
       old ? { ...old, students, studentCount: students.length } : old,
     );
     void queryClient.invalidateQueries({ queryKey: classKeys.all });
+    void queryClient.invalidateQueries({ queryKey: classKeys.limits });
   };
 }
+
+/** `fit`: vượt giới hạn gói thì chỉ nhập số học sinh còn chỗ thay vì lỗi LIMIT_STUDENTS. */
+const fitQuery = (fit?: boolean) => (fit ? '?fit=1' : '');
 
 export function useImportNames(id: string) {
   const apply = useApplyRoster(id);
   return useMutation({
-    mutationFn: (names: string[]) =>
-      apiFetch<RosterImportResultDto>(`/classes/${id}/students/import`, {
+    mutationFn: ({ names, fit }: { names: string[]; fit?: boolean }) =>
+      apiFetch<RosterImportResultDto>(`/classes/${id}/students/import${fitQuery(fit)}`, {
         method: 'POST',
         body: { names },
       }),
@@ -115,13 +120,13 @@ export function useImportNames(id: string) {
 export function useImportExcel(id: string) {
   const apply = useApplyRoster(id);
   return useMutation({
-    mutationFn: (file: File) => {
+    mutationFn: ({ file, fit }: { file: File; fit?: boolean }) => {
       const formData = new FormData();
       formData.append('file', file, file.name);
-      return apiFetch<RosterImportResultDto>(`/classes/${id}/students/import-excel`, {
-        method: 'POST',
-        formData,
-      });
+      return apiFetch<RosterImportResultDto>(
+        `/classes/${id}/students/import-excel${fitQuery(fit)}`,
+        { method: 'POST', formData },
+      );
     },
     onSuccess: (r) => apply(r.students),
   });
@@ -157,6 +162,7 @@ export function useRemoveStudent(id: string) {
         return { ...old, students, studentCount: students.length };
       });
       void queryClient.invalidateQueries({ queryKey: classKeys.all });
+      void queryClient.invalidateQueries({ queryKey: classKeys.limits });
     },
   });
 }

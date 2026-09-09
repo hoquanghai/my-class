@@ -47,6 +47,7 @@ export class StudentsService {
     teacherId: string,
     classId: string,
     names: string[],
+    fit = false,
   ): Promise<RosterImportResultDto> {
     await this.classes.findOwned(teacherId, classId);
     const cleaned = names.flatMap((n) => parseNameLines(n));
@@ -55,6 +56,7 @@ export class StudentsService {
       teacherId,
       classId,
       cleaned.map((name) => ({ name })),
+      fit,
     );
   }
 
@@ -62,6 +64,7 @@ export class StudentsService {
     teacherId: string,
     classId: string,
     buffer: Buffer,
+    fit = false,
   ): Promise<RosterImportResultDto> {
     await this.classes.findOwned(teacherId, classId);
     let rows: RosterRow[];
@@ -75,15 +78,27 @@ export class StudentsService {
     if (rows.length === 0) {
       throw new BadRequestException('Không tìm thấy tên học sinh trong file Excel');
     }
-    return this.insert(teacherId, classId, rows);
+    return this.insert(teacherId, classId, rows, fit);
   }
 
+  /**
+   * Thêm học sinh theo thứ tự dòng. Vượt giới hạn gói: mặc định 403 LIMIT_STUDENTS kèm details;
+   * với `fit` thì chỉ nhập số dòng đầu còn chỗ và báo `skipped`.
+   */
   private async insert(
     teacherId: string,
     classId: string,
-    rows: RosterRow[],
+    input: RosterRow[],
+    fit: boolean,
   ): Promise<RosterImportResultDto> {
-    await this.limits.assertRosterCapacity(classId, rows.length);
+    const cap = await this.limits.rosterCapacity(teacherId, classId);
+    let rows = input;
+    let skipped = 0;
+    if (rows.length > cap.remaining) {
+      if (!fit || cap.remaining === 0) throw this.limits.studentLimitError(cap, rows.length);
+      skipped = rows.length - cap.remaining;
+      rows = rows.slice(0, cap.remaining);
+    }
     const existing = await this.prisma.student.findMany({
       where: { classId, deletedAt: null },
       select: { name: true, sortOrder: true },
@@ -103,7 +118,7 @@ export class StudentsService {
     });
     const students = await this.list(classId);
     await this.analytics.track('roster_size', { classId, size: students.length }, teacherId);
-    return { students, added: names.length };
+    return { students, added: names.length, skipped };
   }
 
   /** File Excel mẫu cho lớp: tên file kèm mã lớp, sheet hướng dẫn ghi tên lớp. */

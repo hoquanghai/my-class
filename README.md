@@ -61,6 +61,7 @@ Xem `apps/api/.env.example` và `apps/web/.env.example`. `apps/api/.env.test` d�
 
 - Giáo viên: email + mật khẩu (argon2), Google hoặc Facebook. Access token JWT 15 phút trong cookie `lh_at`, refresh token 30 ngày (xoay vòng, hash trong DB) trong cookie `lh_rt` (path `/api/auth`), cookie gợi ý `lh_session` cho `proxy.ts` của web.
 - Rate limit: 120 req/phút/IP toàn cục, 10 req/phút/IP cho các endpoint auth.
+- Giới hạn gói miễn phí: 2 lớp, 30 học sinh mỗi giáo viên (flag `free.max_students_per_teacher`); nhập quá → 403 `LIMIT_STUDENTS` kèm `details`, thêm `?fit=1` để chỉ nhập phần còn chỗ. Trang `/app/upgrade` hiện mức dùng và gói Trung tâm (sắp ra mắt). File mẫu 20 học sinh: `docs/samples/danh-sach-20-hoc-sinh.xlsx`.
 - Danh sách lớp: `GET /api/classes/:id/students/template.xlsx` tải file Excel mẫu (đủ cột, tiêu đề ghi rõ bắt buộc/tùy chọn, sheet hướng dẫn); `POST .../students/import-excel` đọc mọi cột nhận diện được (mã HS, ngày sinh, giới tính, SĐT, email, trường, phụ huynh, ghi chú), chỉ "Họ và tên" bắt buộc.
 - Hồ sơ giáo viên: `GET/PATCH /api/teachers/me` (tên, điện thoại, trường, cấp dạy, môn), `POST /api/auth/password` (đổi/đặt mật khẩu; nằm dưới /auth để nhận cookie refresh và giữ phiên hiện tại, thu hồi phiên khác), `POST/DELETE /api/teachers/me/avatar` (ảnh ≤ 2 MB).
 - Redirect Google OAuth: `API_URL/api/auth/google/callback` (khai báo trong Google Cloud Console). Redirect Facebook: `API_URL/api/auth/facebook/callback` (Facebook Developers → Facebook Login → Valid OAuth Redirect URIs; app cần quyền `email`).

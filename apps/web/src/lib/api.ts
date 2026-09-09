@@ -7,6 +7,7 @@ export class ApiError extends Error {
     readonly status: number,
     readonly code: string | undefined,
     message: string,
+    readonly details?: Record<string, unknown>,
   ) {
     super(message);
     this.name = 'ApiError';
@@ -88,7 +89,12 @@ export async function apiFetch<T>(path: string, opts: ApiOptions = {}): Promise<
     } catch {
       // body rỗng hoặc không phải JSON
     }
-    throw new ApiError(res.status, parsed.code, parsed.message ?? `Lỗi ${res.status}`);
+    throw new ApiError(
+      res.status,
+      parsed.code,
+      parsed.message ?? `Lỗi ${res.status}`,
+      parsed.details,
+    );
   }
 
   if (res.status === 204) return undefined as T;
