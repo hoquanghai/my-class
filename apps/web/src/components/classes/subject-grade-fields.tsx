@@ -34,6 +34,7 @@ export function SubjectGradeFields({
     <div className="grid grid-cols-2 gap-3">
       <Field label={t('subject')} htmlFor={`${idPrefix}-subject`} error={errors.subject}>
         <Select
+          className="w-full"
           id={`${idPrefix}-subject`}
           value={subject}
           onChange={(e) => onSubjectChange(e.target.value)}
@@ -52,6 +53,7 @@ export function SubjectGradeFields({
       </Field>
       <Field label={t('grade')} htmlFor={`${idPrefix}-grade`} error={errors.grade}>
         <Select
+          className="w-full"
           id={`${idPrefix}-grade`}
           value={grade}
           onChange={(e) => onGradeChange(e.target.value)}

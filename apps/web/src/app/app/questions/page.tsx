@@ -61,8 +61,9 @@ export default function QuestionsPage() {
         </Link>
       </div>
 
-      <div className="flex flex-wrap gap-2">
-        <div className="relative min-w-60 flex-1">
+      {/* Máy tính: ô tìm + 5 ô lọc trên một hàng; màn hình hẹp: 2–3 ô mỗi hàng */}
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-[minmax(14rem,1.6fr)_repeat(5,minmax(0,1fr))]">
+        <div className="relative col-span-2 sm:col-span-3 lg:col-span-1">
           <Search className="pointer-events-none absolute left-3 top-2.5 size-4 text-slate-400" />
           <Input
             aria-label={t('search')}
@@ -77,6 +78,7 @@ export default function QuestionsPage() {
         </div>
         <Select
           aria-label={t('subject')}
+          className="w-full min-w-0"
           value={filter.subject ?? ''}
           onChange={(e) => set({ subject: e.target.value || undefined })}
         >
@@ -91,6 +93,7 @@ export default function QuestionsPage() {
         </Select>
         <Select
           aria-label={t('grade')}
+          className="w-full min-w-0"
           value={filter.grade ?? ''}
           onChange={(e) => set({ grade: e.target.value || undefined })}
         >
@@ -105,6 +108,7 @@ export default function QuestionsPage() {
         </Select>
         <Select
           aria-label={t('topic')}
+          className="w-full min-w-0"
           value={filter.topic ?? ''}
           onChange={(e) => set({ topic: e.target.value || undefined })}
         >
@@ -119,6 +123,7 @@ export default function QuestionsPage() {
         </Select>
         <Select
           aria-label={t('difficulty')}
+          className="w-full min-w-0"
           value={filter.difficulty ?? ''}
           onChange={(e) =>
             set({ difficulty: (e.target.value || undefined) as QuestionFilterInput['difficulty'] })
@@ -135,6 +140,7 @@ export default function QuestionsPage() {
         </Select>
         <Select
           aria-label={t('type')}
+          className="w-full min-w-0"
           value={filter.type ?? ''}
           onChange={(e) =>
             set({ type: (e.target.value || undefined) as QuestionFilterInput['type'] })

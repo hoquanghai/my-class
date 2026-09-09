@@ -65,6 +65,7 @@ export function ClassifyInputs({
     <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
       <Field label={t('subject')} htmlFor={`${id}-subject`} error={missing(value.subject)}>
         <Select
+          className="w-full"
           id={`${id}-subject`}
           value={value.subject}
           onChange={(e) => onChange({ ...value, subject: e.target.value })}
@@ -83,6 +84,7 @@ export function ClassifyInputs({
       </Field>
       <Field label={t('grade')} htmlFor={`${id}-grade`} error={missing(value.grade)}>
         <Select
+          className="w-full"
           id={`${id}-grade`}
           value={value.grade}
           onChange={(e) => onChange({ ...value, grade: e.target.value })}
@@ -130,6 +132,7 @@ export function ClassifyInputs({
       {showDifficulty && (
         <Field label={t('difficulty')} htmlFor={`${id}-difficulty`}>
           <Select
+            className="w-full"
             id={`${id}-difficulty`}
             value={value.difficulty}
             onChange={(e) =>

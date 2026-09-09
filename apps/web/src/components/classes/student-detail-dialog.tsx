@@ -119,6 +119,7 @@ function StudentForm({
           {textField('dateOfBirth', { type: 'date', min: '1990-01-01', max: '2030-12-31' })}
           <Field label={t('gender')} htmlFor="st-gender" error={errors.gender}>
             <Select
+              className="w-full"
               id="st-gender"
               value={form.gender}
               onChange={(e) => set('gender')(e.target.value)}
