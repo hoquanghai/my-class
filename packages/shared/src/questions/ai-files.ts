@@ -1,9 +1,10 @@
 /**
  * Định dạng file giáo viên hay dùng khi nhập đề cho AI.
- * Ảnh và PDF gửi thẳng cho model nhìn; Word (.docx) được trích chữ (mất công thức MathType);
- * .tex/.txt/.md là văn bản gửi nguyên (LaTeX giữ được công thức).
+ * Ảnh và PDF gửi thẳng cho model nhìn; .tex/.txt/.md là văn bản gửi nguyên (LaTeX giữ được công thức).
+ * Word không được nhận: công thức MathType/Equation không nằm trong chữ, model sẽ tự bịa cho đủ câu;
+ * giáo viên lưu PDF từ Word rồi tải PDF lên.
  */
-export type AiFileKind = 'image' | 'pdf' | 'docx' | 'text';
+export type AiFileKind = 'image' | 'pdf' | 'text';
 
 export const AI_FILE_KIND_BY_EXT: Record<string, AiFileKind> = {
   '.png': 'image',
@@ -12,7 +13,6 @@ export const AI_FILE_KIND_BY_EXT: Record<string, AiFileKind> = {
   '.webp': 'image',
   '.gif': 'image',
   '.pdf': 'pdf',
-  '.docx': 'docx',
   '.tex': 'text',
   '.txt': 'text',
   '.md': 'text',
@@ -27,6 +27,11 @@ export const AI_IMPORT_ACCEPT = [
   'image/gif',
   'application/pdf',
 ].join(',');
+
+/** File Word (.doc/.docx): không nhận, nhưng nhắc riêng cách chuyển sang PDF. */
+export function isWordFileName(name: string): boolean {
+  return /\.docx?$/i.test(name);
+}
 
 export function aiFileKindByName(name: string): AiFileKind | null {
   const ext = name.toLowerCase().match(/\.[a-z0-9]+$/)?.[0];

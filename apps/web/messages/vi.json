@@ -392,15 +392,15 @@
     "disabled": "Trích xuất bằng AI chưa được bật.",
     "disabledHint": "Quản trị viên cần cấu hình nhà cung cấp AI (Gemini, Claude hoặc OpenAI) trên máy chủ.",
     "select": "Chọn file đề",
-    "selectHint": "Ảnh chụp (PNG/JPG/WebP, tối đa 10 ảnh), PDF, Word (.docx), LaTeX (.tex) hoặc văn bản (.txt/.md); mỗi lần một tài liệu hoặc nhiều ảnh. Mỗi ảnh/trang PDF trừ 1 trang hạn mức; văn bản tính 3.000 ký tự một trang.",
-    "mixError": "Chọn một tài liệu (PDF, Word, LaTeX hoặc văn bản), hoặc chỉ chọn ảnh.",
+    "selectHint": "Ảnh chụp (PNG/JPG/WebP, tối đa 10 ảnh), PDF, LaTeX (.tex) hoặc văn bản (.txt/.md); mỗi lần một tài liệu hoặc nhiều ảnh. Đề Word: mở Word, Lưu dạng PDF rồi tải PDF lên. Mỗi ảnh/trang PDF trừ 1 trang hạn mức; văn bản tính 3.000 ký tự một trang.",
+    "mixError": "Chọn một tài liệu (PDF, LaTeX hoặc văn bản), hoặc chỉ chọn ảnh.",
     "tooMany": "Tối đa {max} ảnh mỗi lần.",
     "extract": "Trích xuất bằng AI",
     "pagesNote": "Sẽ dùng {count} trang hạn mức.",
     "processing": "Đang trích xuất… {seconds}s (thường 20–90 giây)",
     "reviewNote": "Kết quả AI luôn hiện trong lưới xem trước để bạn kiểm tra và sửa trước khi lưu, không tự lưu.",
-    "unsupported": "Không hỗ trợ: {names}. Hãy chuyển sang PDF hoặc ảnh.",
-    "wordHint": "Với file Word, AI chỉ đọc được chữ; công thức MathType/Equation sẽ bị mất. Đề có công thức: mở Word, Lưu dạng PDF rồi tải PDF lên."
+    "unsupported": "Không hỗ trợ: {names}. Chọn ảnh, PDF, LaTeX hoặc văn bản.",
+    "wordHint": "File Word không được nhận vì công thức MathType/Equation sẽ bị mất và AI sẽ tự đoán sai. Mở file trong Word, chọn Lưu dạng PDF rồi tải PDF lên."
   },
   "Manual": {
     "question": "Câu {n}",

@@ -13,10 +13,10 @@ import {
   type AiFileKind,
   aiFileKindByName,
   ErrorCodes,
+  isWordFileName,
   type ParseResult,
   textPageCount,
 } from '@lophoc/shared';
-import mammoth from 'mammoth';
 import { PDFDocument } from 'pdf-lib';
 import type { Prisma } from '../../generated/prisma/client.js';
 import { PrismaService } from '../../prisma/prisma.service.js';
@@ -46,14 +46,13 @@ export interface AiHints {
   grade?: string | null;
 }
 
-/** Nhận diện theo nội dung (ảnh, PDF, zip của Word) rồi mới theo đuôi tên file (.tex/.txt/.md). */
+/** Nhận diện theo nội dung (ảnh, PDF) rồi mới theo đuôi tên file (.tex/.txt/.md phải là văn bản thuần). */
 function classifyAiFile(file: IncomingFile): AiFileKind | null {
   if (isPdf(file.buffer)) return 'pdf';
   if (sniffImageMime(file.buffer) !== null) return 'image';
-  const byName = aiFileKindByName(file.originalname);
-  const isZip = file.buffer.length > 2 && file.buffer[0] === 0x50 && file.buffer[1] === 0x4b;
-  if (byName === 'docx') return isZip ? 'docx' : null;
-  if (byName === 'text') return file.buffer.subarray(0, 4096).includes(0) ? null : 'text';
+  if (aiFileKindByName(file.originalname) === 'text') {
+    return file.buffer.subarray(0, 4096).includes(0) ? null : 'text';
+  }
   return null;
 }
 
@@ -116,15 +115,19 @@ export class AiImportService {
     const classified = files.map((file) => ({ file, kind: classifyAiFile(file) }));
     const unsupported = classified.filter((c) => c.kind === null).map((c) => c.file.originalname);
     if (unsupported.length > 0) {
+      // Word: công thức MathType/Equation không nằm trong chữ, AI sẽ tự bịa → không nhận, chỉ dẫn lưu PDF
+      const word = unsupported.some(isWordFileName)
+        ? ' File Word không được nhận vì công thức sẽ bị mất: mở file trong Word, chọn Lưu dạng PDF rồi tải PDF lên.'
+        : '';
       throw new BadRequestException(
-        `Không hỗ trợ file ${unsupported.join(', ')}. Chọn ảnh (PNG/JPG/WebP/GIF), PDF, Word (.docx), LaTeX (.tex) hoặc văn bản (.txt/.md).`,
+        `Không hỗ trợ file ${unsupported.join(', ')}. Chọn ảnh (PNG/JPG/WebP/GIF), PDF, LaTeX (.tex) hoặc văn bản (.txt/.md).${word}`,
       );
     }
     const images = classified.filter((c) => c.kind === 'image');
     const docs = classified.filter((c) => c.kind !== 'image');
     if (docs.length > 1 || (docs.length === 1 && images.length > 0)) {
       throw new BadRequestException(
-        `Chọn một tài liệu (PDF, Word, LaTeX hoặc văn bản) hoặc tối đa ${MAX_AI_IMAGES} ảnh`,
+        `Chọn một tài liệu (PDF, LaTeX hoặc văn bản) hoặc tối đa ${MAX_AI_IMAGES} ảnh`,
       );
     }
     if (images.length > MAX_AI_IMAGES) {
@@ -159,10 +162,7 @@ export class AiImportService {
         filename: doc.file.originalname,
       });
     } else if (doc) {
-      const text =
-        doc.kind === 'docx'
-          ? await this.docxText(doc.file.buffer, warnings)
-          : doc.file.buffer.toString('utf8').replace(/^\uFEFF/, '');
+      const text = doc.file.buffer.toString('utf8').replace(/^\uFEFF/, '');
       if (text.trim().length === 0) {
         throw new BadRequestException(`File ${doc.file.originalname} không có chữ để đọc`);
       }
@@ -214,28 +214,6 @@ export class AiImportService {
     });
     await this.queue.enqueue(job.id);
     return { jobId: job.id, pageCount, status: 'pending', warnings };
-  }
-
-  /**
-   * Chữ trong file Word (mammoth). Công thức MathType là đối tượng nhúng nên không có trong chữ:
-   * đếm số đối tượng để cảnh báo giáo viên lưu PDF rồi tải lại.
-   */
-  private async docxText(buffer: Buffer, warnings: string[]): Promise<string> {
-    let text: string;
-    try {
-      text = (await mammoth.extractRawText({ buffer })).value;
-    } catch {
-      throw new BadRequestException('Không đọc được file Word. Hãy lưu lại dạng .docx hoặc PDF.');
-    }
-    const mathType = new Set(
-      buffer.toString('latin1').match(/word\/embeddings\/oleObject\d+\.bin/g) ?? [],
-    ).size;
-    if (mathType > 0) {
-      warnings.push(
-        `File Word có ${mathType} công thức MathType; AI không đọc được công thức từ Word nên các câu có công thức sẽ thiếu. Để giữ công thức, hãy lưu file thành PDF rồi tải lại.`,
-      );
-    }
-    return text;
   }
 
   async getJob(teacherId: string, id: string): Promise<AiJobDto> {

@@ -4,6 +4,7 @@ import {
   AI_IMPORT_ACCEPT,
   aiFileKindByName,
   type AiJobDto,
+  isWordFileName,
   type ParseResult,
 } from '@lophoc/shared';
 import { Sparkles, Upload, X } from 'lucide-react';
@@ -47,7 +48,7 @@ export function AiImportPanel({
   const unsupported = files.filter((_, i) => kinds[i] === null).map((f) => f.name);
   const invalidMix = docs > 1 || (docs === 1 && images > 0);
   const tooMany = images > MAX_IMAGES;
-  const hasWord = kinds.includes('docx');
+  const hasWord = files.some((f) => isWordFileName(f.name));
   const estimatedPages = docs === 0 ? images : null;
 
   function addFiles(list: FileList | null) {
@@ -142,7 +143,7 @@ export function AiImportPanel({
       )}
       {invalidMix && <Alert variant="error">{t('mixError')}</Alert>}
       {tooMany && <Alert variant="error">{t('tooMany', { max: MAX_IMAGES })}</Alert>}
-      {hasWord && <Alert variant="info">{t('wordHint')}</Alert>}
+      {hasWord && <Alert variant="warning">{t('wordHint')}</Alert>}
 
       <div className="flex flex-wrap items-center gap-3">
         <Button

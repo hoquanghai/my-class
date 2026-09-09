@@ -118,7 +118,7 @@ describe('AI import (e2e, provider mock, queue inline)', () => {
     await http().post('/api/questions/import/ai').set('Cookie', ck(s)).expect(400);
   });
 
-  it('LaTeX .tex và Word .docx được nhận như văn bản; Word có MathType thì cảnh báo', async () => {
+  it('LaTeX .tex được nhận như văn bản; Word bị từ chối kèm hướng dẫn lưu PDF', async () => {
     const s = await signup(app, 'ai-text');
     const tex = Buffer.from(
       '\\begin{enumerate}\\item Tính $\\int_0^1 x\\,dx$. \\item Đạo hàm của $x^2$?\\end{enumerate}',
@@ -136,40 +136,21 @@ describe('AI import (e2e, provider mock, queue inline)', () => {
     expect(job.result.questions.length).toBeGreaterThan(0);
     expect(job.warnings).toEqual([]);
 
+    // Word không được nhận (công thức MathType bị mất): 400 kèm hướng dẫn lưu PDF
     const zip = new JSZip();
     zip.file(
-      '[Content_Types].xml',
-      '<?xml version="1.0" encoding="UTF-8"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>',
-    );
-    zip.file(
-      '_rels/.rels',
-      '<?xml version="1.0" encoding="UTF-8"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>',
-    );
-    zip.file(
       'word/document.xml',
-      '<?xml version="1.0" encoding="UTF-8"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body><w:p><w:r><w:t>Câu 1. Tính đạo hàm của hàm số tại điểm đã cho.</w:t></w:r></w:p></w:body></w:document>',
+      '<?xml version="1.0" encoding="UTF-8"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body><w:p><w:r><w:t>Câu 1.</w:t></w:r></w:p></w:body></w:document>',
     );
-    zip.file('word/embeddings/oleObject1.bin', Buffer.from('mt'));
-    zip.file('word/embeddings/oleObject2.bin', Buffer.from('mt'));
-    const docx = await zip.generateAsync({ type: 'nodebuffer' });
-    const word = await http()
+    const rejected = await http()
       .post('/api/questions/import/ai')
       .set('Cookie', ck(s))
-      .attach('files', docx, 'de.docx')
-      .expect(202);
-    expect(word.body.pageCount).toBe(1);
-    expect(word.body.warnings).toHaveLength(1);
-    expect(word.body.warnings[0]).toContain('2 công thức MathType');
-    const wordJob = await waitForJob(s, word.body.jobId);
-    expect(wordJob.status).toBe('done');
-    expect(wordJob.warnings[0]).toContain('MathType');
-
-    // .docx nhưng không phải zip → 400; .tex + ảnh → 400
-    await http()
-      .post('/api/questions/import/ai')
-      .set('Cookie', ck(s))
-      .attach('files', Buffer.from('khong phai zip'), 'x.docx')
+      .attach('files', await zip.generateAsync({ type: 'nodebuffer' }), 'de.docx')
       .expect(400);
+    expect(rejected.body.message).toContain('Word');
+    expect(rejected.body.message).toContain('PDF');
+
+    // .tex + ảnh → 400
     await http()
       .post('/api/questions/import/ai')
       .set('Cookie', ck(s))
