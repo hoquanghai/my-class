@@ -43,7 +43,12 @@ export function QuestionGrid({ rows, onChange, batch, source }: QuestionGridProp
               <tr key={row.localId} className={cn('align-top', invalid && 'bg-red-50/60')}>
                 <td className="px-3 py-3 font-semibold text-slate-500">{i + 1}</td>
                 <td className="px-3 py-3">
-                  <QuestionFields value={row} onChange={(q) => update(row.localId, q)} compact />
+                  <QuestionFields
+                    value={row}
+                    onChange={(q) => update(row.localId, q)}
+                    compact
+                    defaultPreview
+                  />
                 </td>
                 <td className="px-3 py-3">
                   {invalid ? (

@@ -385,7 +385,9 @@
     "editRaw": "Sửa",
     "classify": "Phân loại câu hỏi",
     "classifyHint": "Môn, khối và chủ đề áp dụng cho mọi câu của đợt này. Khi tạo đề kiểm tra bạn sẽ lọc nhanh theo khối và chủ đề.",
-    "classifyRequired": "Chọn môn, khối và nhập chủ đề trước khi tạo câu hỏi."
+    "classifyRequired": "Chọn môn, khối và nhập chủ đề trước khi tạo câu hỏi.",
+    "aiAnswersMarked": "AI đã đánh dấu đáp án cho {marked}/{count} câu theo bảng đáp án trong đề. Hãy kiểm tra lại trước khi lưu.",
+    "aiAnswersMissing": "AI không thấy đáp án trong đề: hãy bấm chọn đáp án đúng cho từng câu."
   },
   "Ai": {
     "quota": "Hạn mức AI tháng {month}: còn {remaining}/{limit} trang.",

@@ -59,6 +59,9 @@ export default function ImportQuestionsPage() {
 
   const validRows = rows.filter((r) => validateEditable(r, source, batch).length === 0);
   const invalidCount = rows.length - validRows.length;
+  const markedCount = rows.filter(
+    (r) => r.options.some((o) => o.isCorrect) || r.acceptedAnswers.length > 0,
+  ).length;
 
   async function saveAll() {
     if (!classified) {
@@ -137,8 +140,10 @@ export default function ImportQuestionsPage() {
             <span className="font-medium text-slate-800">
               {t('parsed', { count: rows.length, invalid: invalidCount })}
             </span>
-            <span className={meta.answerKeyFound ? 'text-green-700' : 'text-amber-700'}>
-              {meta.answerKeyFound ? t('answerKeyFound') : t('answerKeyMissing')}
+            <span className={markedCount > 0 ? 'text-green-700' : 'text-amber-700'}>
+              {markedCount > 0
+                ? t('aiAnswersMarked', { marked: markedCount, count: rows.length })
+                : t('aiAnswersMissing')}
             </span>
             {meta.skipped > 0 && (
               <span className="text-slate-500">{t('skipped', { count: meta.skipped })}</span>

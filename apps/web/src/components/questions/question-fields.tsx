@@ -18,11 +18,19 @@ export interface QuestionFieldsProps {
   /** Hiện các ô thẻ (môn/khối/chủ đề/mức độ) — dùng trong hộp thoại sửa. */
   showTags?: boolean;
   compact?: boolean;
+  /** Mở ở chế độ xem (công thức đã render); bấm Sửa mới hiện mã LaTeX. Lưới xem trước dùng true. */
+  defaultPreview?: boolean;
 }
 
-export function QuestionFields({ value, onChange, showTags, compact }: QuestionFieldsProps) {
+export function QuestionFields({
+  value,
+  onChange,
+  showTags,
+  compact,
+  defaultPreview = false,
+}: QuestionFieldsProps) {
   const t = useTranslations('Questions');
-  const [preview, setPreview] = useState(false);
+  const [preview, setPreview] = useState(defaultPreview);
   const isChoice = value.type !== 'short_text';
 
   return (
