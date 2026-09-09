@@ -402,7 +402,11 @@
     "processing": "Đang trích xuất… {seconds}s (thường 20–90 giây)",
     "reviewNote": "Kết quả AI luôn hiện trong lưới xem trước để bạn kiểm tra và sửa trước khi lưu, không tự lưu.",
     "unsupported": "Không hỗ trợ: {names}. Chọn ảnh, PDF, LaTeX hoặc văn bản.",
-    "wordHint": "File Word không được nhận vì công thức MathType/Equation sẽ bị mất và AI sẽ tự đoán sai. Mở file trong Word, chọn Lưu dạng PDF rồi tải PDF lên."
+    "wordHint": "File Word không được nhận vì công thức MathType/Equation sẽ bị mất và AI sẽ tự đoán sai. Mở file trong Word, chọn Lưu dạng PDF rồi tải PDF lên.",
+    "recent": "Kết quả AI gần đây",
+    "recentHint": "Kết quả đã lưu trên máy chủ. Mở lại không tốn hạn mức, không cần chạy lại.",
+    "recentCount": "{count} câu · {pages} trang",
+    "reopen": "Mở lại"
   },
   "Manual": {
     "question": "Câu {n}",

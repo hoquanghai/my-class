@@ -13,7 +13,7 @@ import { useRef, useState } from 'react';
 import { Alert } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { errorMessage } from '@/lib/api';
-import { useAiImport, useAiQuota } from '@/lib/questions';
+import { useAiImport, useAiJob, useAiJobs, useAiQuota } from '@/lib/questions';
 
 const MAX_IMAGES = 10;
 
@@ -35,6 +35,8 @@ export function AiImportPanel({
   const t = useTranslations('Ai');
   const quota = useAiQuota();
   const run = useAiImport();
+  const recent = useAiJobs();
+  const reopen = useAiJob();
   const [files, setFiles] = useState<File[]>([]);
   const [warnings, setWarnings] = useState<string[]>([]);
   const [progress, setProgress] = useState<{ status: AiJobDto['status']; seconds: number } | null>(
@@ -173,6 +175,7 @@ export function AiImportPanel({
       </div>
 
       {run.isError && <Alert variant="error">{errorMessage(run.error)}</Alert>}
+      {reopen.isError && <Alert variant="error">{errorMessage(reopen.error)}</Alert>}
       {warnings.length > 0 && (
         <Alert variant="warning">
           <ul className="space-y-1">
@@ -183,6 +186,48 @@ export function AiImportPanel({
         </Alert>
       )}
       <p className="text-xs text-slate-500">{t('reviewNote')}</p>
+
+      {recent.data && recent.data.some((j) => j.status === 'done' && j.questionCount > 0) && (
+        <section className="border-t border-slate-100 pt-3">
+          <h3 className="text-sm font-semibold text-slate-800">{t('recent')}</h3>
+          <p className="mb-2 text-xs text-slate-500">{t('recentHint')}</p>
+          <ul className="divide-y divide-slate-100 rounded-lg border border-slate-200">
+            {recent.data
+              .filter((j) => j.status === 'done' && j.questionCount > 0)
+              .slice(0, 5)
+              .map((j) => (
+                <li
+                  key={j.id}
+                  className="flex flex-wrap items-center justify-between gap-2 px-3 py-2 text-sm"
+                >
+                  <span className="min-w-0 truncate text-slate-700">
+                    {new Date(j.createdAt).toLocaleString('vi-VN', {
+                      hour: '2-digit',
+                      minute: '2-digit',
+                      day: '2-digit',
+                      month: '2-digit',
+                    })}
+                    {' · '}
+                    {j.filename ?? '—'}
+                    {' · '}
+                    {t('recentCount', { count: j.questionCount, pages: j.pageCount })}
+                  </span>
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    loading={reopen.isPending && reopen.variables === j.id}
+                    onClick={async () => {
+                      const job = await reopen.mutateAsync(j.id);
+                      if (job.result) onResult(job.result);
+                    }}
+                  >
+                    {t('reopen')}
+                  </Button>
+                </li>
+              ))}
+          </ul>
+        </section>
+      )}
     </div>
   );
 }

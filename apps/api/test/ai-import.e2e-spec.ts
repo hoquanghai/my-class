@@ -136,6 +136,17 @@ describe('AI import (e2e, provider mock, queue inline)', () => {
     expect(job.result.questions.length).toBeGreaterThan(0);
     expect(job.warnings).toEqual([]);
 
+    const recent = await http()
+      .get('/api/questions/import/ai/jobs')
+      .set('Cookie', ck(s))
+      .expect(200);
+    expect(recent.body[0]).toMatchObject({
+      id: created.body.jobId,
+      status: 'done',
+      filename: 'de.tex',
+      questionCount: job.result.questions.length,
+    });
+
     // Word không được nhận (công thức MathType bị mất): 400 kèm hướng dẫn lưu PDF
     const zip = new JSZip();
     zip.file(

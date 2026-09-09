@@ -71,6 +71,17 @@ export interface AiJobCreatedDto {
   warnings: string[];
 }
 
+/** Một dòng trong danh sách "Kết quả AI gần đây" để mở lại mà không chạy lại. */
+export interface AiJobSummaryDto {
+  id: string;
+  status: AiJobStatus;
+  pageCount: number;
+  filename: string | null;
+  questionCount: number;
+  estimatedUsd: number | null;
+  createdAt: string;
+}
+
 export interface AiJobDto {
   id: string;
   status: AiJobStatus;

@@ -3,6 +3,7 @@
 import type {
   AiJobCreatedDto,
   AiJobDto,
+  AiJobSummaryDto,
   AiQuotaDto,
   BulkCreateQuestionsInput,
   BulkCreateResultDto,
@@ -27,6 +28,7 @@ export const questionKeys = {
   facets: ['questions', 'facets'] as const,
   detail: (id: string) => ['questions', id] as const,
   aiQuota: ['questions', 'ai', 'quota'] as const,
+  aiJobs: ['questions', 'ai', 'jobs'] as const,
 };
 
 function toQuery(filter: QuestionFilterInput): string {
@@ -125,6 +127,21 @@ export function useAiQuota() {
   });
 }
 
+/** Các lần chạy AI gần đây (kết quả đã lưu trên máy chủ, mở lại không tốn hạn mức). */
+export function useAiJobs() {
+  return useQuery({
+    queryKey: questionKeys.aiJobs,
+    queryFn: () => apiFetch<AiJobSummaryDto[]>('/questions/import/ai/jobs'),
+    staleTime: 15_000,
+  });
+}
+
+export function useAiJob() {
+  return useMutation({
+    mutationFn: (id: string) => apiFetch<AiJobDto>(`/questions/import/ai/jobs/${id}`),
+  });
+}
+
 export interface AiImportRequest {
   files: File[];
   subject?: string;
@@ -166,6 +183,9 @@ export function useAiImport() {
         await sleep(2000);
       }
     },
-    onSettled: () => queryClient.invalidateQueries({ queryKey: questionKeys.aiQuota }),
+    onSettled: () => {
+      void queryClient.invalidateQueries({ queryKey: questionKeys.aiQuota });
+      void queryClient.invalidateQueries({ queryKey: questionKeys.aiJobs });
+    },
   });
 }

@@ -9,7 +9,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
-import type { AiJobCreatedDto, AiJobDto, AiQuotaDto } from '@lophoc/shared';
+import type { AiJobCreatedDto, AiJobDto, AiJobSummaryDto, AiQuotaDto } from '@lophoc/shared';
 import {
   CurrentTeacher,
   type TeacherPrincipal,
@@ -42,6 +42,11 @@ export class AiImportController {
       subject: body?.subject,
       grade: body?.grade,
     });
+  }
+
+  @Get('jobs')
+  jobs(@CurrentTeacher() teacher: TeacherPrincipal): Promise<AiJobSummaryDto[]> {
+    return this.ai.listJobs(teacher.id);
   }
 
   @Get('jobs/:id')

@@ -9,6 +9,7 @@ import {
   type AiJobCreatedDto,
   type AiJobDto,
   type AiJobStatus,
+  type AiJobSummaryDto,
   type AiQuotaDto,
   type AiFileKind,
   aiFileKindByName,
@@ -214,6 +215,28 @@ export class AiImportService {
     });
     await this.queue.enqueue(job.id);
     return { jobId: job.id, pageCount, status: 'pending', warnings };
+  }
+
+  /** Các lần chạy AI gần đây của giáo viên; kết quả đã lưu nên mở lại được, không tốn hạn mức. */
+  async listJobs(teacherId: string, limit = 10): Promise<AiJobSummaryDto[]> {
+    const jobs = await this.prisma.importJob.findMany({
+      where: { teacherId, source: 'image_ai' },
+      orderBy: { createdAt: 'desc' },
+      take: limit,
+    });
+    return jobs.map((job) => {
+      const input = job.inputKeys as unknown as AiJobInput;
+      const result = job.status === 'done' ? (job.result as unknown as ParseResult) : null;
+      return {
+        id: job.id,
+        status: job.status as AiJobStatus,
+        pageCount: job.pageCount,
+        filename: input.files?.[0]?.filename ?? null,
+        questionCount: result?.questions.length ?? 0,
+        estimatedUsd: result?.meta?.estimatedUsd ?? null,
+        createdAt: job.createdAt.toISOString(),
+      };
+    });
   }
 
   async getJob(teacherId: string, id: string): Promise<AiJobDto> {
