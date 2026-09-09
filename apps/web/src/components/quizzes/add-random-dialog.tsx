@@ -6,6 +6,7 @@ import {
   QUESTION_TYPE_LABELS,
   QUESTION_TYPES,
   type QuizRandomFilter,
+  subjectLabel,
 } from '@lophoc/shared';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
@@ -69,7 +70,7 @@ export function AddRandomDialog({
             </option>
             {facets.data?.subjects.map((s) => (
               <option key={s} value={s}>
-                {s}
+                {subjectLabel(s)}
               </option>
             ))}
           </Select>
@@ -83,7 +84,7 @@ export function AddRandomDialog({
             </option>
             {facets.data?.grades.map((s) => (
               <option key={s} value={s}>
-                {s}
+                {tq('gradeLabel', { grade: s })}
               </option>
             ))}
           </Select>

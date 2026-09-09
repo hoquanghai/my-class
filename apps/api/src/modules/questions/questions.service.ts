@@ -5,6 +5,7 @@ import {
   type Difficulty,
   type QuestionDto,
   type QuestionFacetsDto,
+  type QuestionFacetsQuery,
   type QuestionFilter,
   type QuestionInput,
   questionInputSchema,
@@ -107,8 +108,15 @@ export class QuestionsService {
     return { items: rows.map(toQuestionDto), total, page: filter.page, pageSize: filter.pageSize };
   }
 
-  async facets(teacherId: string): Promise<QuestionFacetsDto> {
+  /** Môn/khối đã dùng; chủ đề lọc theo môn/khối nếu truyền (ô chọn chủ đề khi nhập câu hỏi). */
+  async facets(teacherId: string, query: QuestionFacetsQuery = {}): Promise<QuestionFacetsDto> {
     const base = { teacherId, deletedAt: null };
+    const topicWhere = {
+      ...base,
+      topic: { not: null },
+      ...(query.subject && { subject: query.subject }),
+      ...(query.grade && { grade: query.grade }),
+    };
     const [subjects, grades, topics] = await Promise.all([
       this.prisma.question.findMany({
         where: { ...base, subject: { not: null } },
@@ -123,7 +131,7 @@ export class QuestionsService {
         orderBy: { grade: 'asc' },
       }),
       this.prisma.question.findMany({
-        where: { ...base, topic: { not: null } },
+        where: topicWhere,
         distinct: ['topic'],
         select: { topic: true },
         orderBy: { topic: 'asc' },

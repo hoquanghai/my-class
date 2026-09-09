@@ -16,6 +16,9 @@ import {
 const single = {
   type: 'single_choice',
   stemMd: 'Nghiệm của $2x+3=11$?',
+  subject: 'toan',
+  grade: '12',
+  topic: 'Phương trình',
   source: 'manual',
   options: [
     { label: 'A', contentMd: '3', isCorrect: false },
@@ -27,6 +30,9 @@ const single = {
 const short = {
   type: 'short_text',
   stemMd: 'Tính 15×4',
+  subject: 'toan',
+  grade: '12',
+  topic: 'Số học',
   source: 'manual',
   options: [],
   acceptedAnswers: ['60'],

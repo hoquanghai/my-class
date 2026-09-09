@@ -1,6 +1,11 @@
 'use client';
 
-import { DIFFICULTY_LABELS, QUESTION_TYPE_LABELS, type QuestionDto } from '@lophoc/shared';
+import {
+  DIFFICULTY_LABELS,
+  QUESTION_TYPE_LABELS,
+  type QuestionDto,
+  subjectLabel,
+} from '@lophoc/shared';
 import { Pencil, Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { MarkdownLatex } from '@/components/markdown-latex';
@@ -20,8 +25,8 @@ export function QuestionCard({
 }) {
   const t = useTranslations('Questions');
   const tags = [
-    question.subject,
-    question.grade && `Khối ${question.grade}`,
+    subjectLabel(question.subject),
+    question.grade && `Lớp ${question.grade}`,
     question.topic,
   ].filter(Boolean);
   return (

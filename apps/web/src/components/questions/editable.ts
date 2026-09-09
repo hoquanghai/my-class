@@ -1,11 +1,13 @@
 import {
   type Difficulty,
+  type Grade,
   type ParsedQuestion,
   type QuestionDto,
   type QuestionInput,
   questionInputSchema,
   type QuestionSource,
   type QuestionType,
+  type Subject,
 } from '@lophoc/shared';
 
 export interface EditableOption {
@@ -99,21 +101,24 @@ export function fromDto(q: QuestionDto): EditableQuestion {
   };
 }
 
-/** Chuyển sang payload API; thẻ trống trong câu được thay bằng thẻ của đợt. */
+/**
+ * Chuyển sang payload API; phân loại trống trong câu được thay bằng phân loại của đợt.
+ * Môn/khối/chủ đề là bắt buộc: giá trị rỗng sẽ bị schema báo lỗi khi kiểm tra.
+ */
 export function toInput(
   q: EditableQuestion,
   source: QuestionSource,
   batch?: BatchTags,
 ): QuestionInput {
-  const pick = (own: string, shared?: string) => (own.trim() ? own.trim() : shared?.trim() || null);
+  const pick = (own: string, shared?: string) => (own.trim() ? own.trim() : shared?.trim() || '');
   const difficulty = q.difficulty || batch?.difficulty || null;
   return {
     type: q.type,
     stemMd: q.stemMd.trim(),
     explanationMd: q.explanationMd.trim() || null,
     imageKey: null,
-    subject: pick(q.subject, batch?.subject),
-    grade: pick(q.grade, batch?.grade),
+    subject: pick(q.subject, batch?.subject) as Subject,
+    grade: pick(q.grade, batch?.grade) as Grade,
     topic: pick(q.topic, batch?.topic),
     difficulty,
     source,
@@ -131,8 +136,12 @@ export function toInput(
 }
 
 /** Lỗi kiểm tra ở client (cùng schema với server). Trả [] nếu hợp lệ. */
-export function validateEditable(q: EditableQuestion, source: QuestionSource = 'manual'): string[] {
-  const result = questionInputSchema.safeParse(toInput(q, source));
+export function validateEditable(
+  q: EditableQuestion,
+  source: QuestionSource = 'manual',
+  batch?: BatchTags,
+): string[] {
+  const result = questionInputSchema.safeParse(toInput(q, source, batch));
   if (result.success) return [];
   const seen = new Set<string>();
   for (const issue of result.error.issues) seen.add(issue.message);

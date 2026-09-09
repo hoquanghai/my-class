@@ -36,7 +36,7 @@ async function buildDocx(paragraphs: { text: string; bold?: boolean }[]): Promis
 const singleChoice = (stem: string, topic = 'Đại số') => ({
   type: 'single_choice',
   stemMd: stem,
-  subject: 'Toán',
+  subject: 'toan',
   grade: '9',
   topic,
   difficulty: 'nhan_biet',
@@ -87,15 +87,59 @@ describe('Questions (e2e)', () => {
     await http()
       .post('/api/questions')
       .set('Cookie', ck(s))
-      .send({ type: 'short_text', stemMd: 'Tính 15×4', source: 'manual', acceptedAnswers: [] })
+      .send({
+        type: 'short_text',
+        stemMd: 'Tính 15×4',
+        subject: 'toan',
+        grade: '9',
+        topic: 'Số học',
+        source: 'manual',
+        acceptedAnswers: [],
+      })
       .expect(400);
     const short = await http()
       .post('/api/questions')
       .set('Cookie', ck(s))
-      .send({ type: 'short_text', stemMd: 'Tính 15×4', source: 'manual', acceptedAnswers: ['60'] })
+      .send({
+        type: 'short_text',
+        stemMd: 'Tính 15×4',
+        subject: 'toan',
+        grade: '9',
+        topic: 'Số học',
+        source: 'manual',
+        acceptedAnswers: ['60'],
+      })
       .expect(201);
     expect(short.body.acceptedAnswers).toEqual(['60']);
     expect(short.body.options).toEqual([]);
+  });
+
+  it('môn/khối/chủ đề bắt buộc theo danh mục; chủ đề gọn khoảng trắng; facets lọc chủ đề theo môn/khối', async () => {
+    const s = await signup(app, 'questions-classify');
+    const post = (body: Record<string, unknown>) =>
+      http().post('/api/questions').set('Cookie', ck(s)).send(body);
+    const { subject: _subject, ...noSubject } = singleChoice('thiếu môn');
+    void _subject;
+    await post(noSubject).expect(400);
+    await post({ ...singleChoice('môn lạ'), subject: 'Toán' }).expect(400);
+    await post({ ...singleChoice('khối lạ'), grade: '13' }).expect(400);
+    await post({ ...singleChoice('thiếu chủ đề'), topic: '   ' }).expect(400);
+    const ok = await post({
+      ...singleChoice('ok'),
+      topic: '  Các   phương pháp  tính tích phân ',
+    }).expect(201);
+    expect(ok.body.topic).toBe('Các phương pháp tính tích phân');
+
+    const same = await http()
+      .get('/api/questions/facets?subject=toan&grade=9')
+      .set('Cookie', ck(s))
+      .expect(200);
+    expect(same.body.topics).toEqual(['Các phương pháp tính tích phân']);
+    const other = await http()
+      .get('/api/questions/facets?subject=toan&grade=12')
+      .set('Cookie', ck(s))
+      .expect(200);
+    expect(other.body.topics).toEqual([]);
   });
 
   it('bulk tạo, liệt kê phân trang, lọc, tìm, facets', async () => {
@@ -108,7 +152,7 @@ describe('Questions (e2e)', () => {
         questions: [
           singleChoice('Căn bậc hai của 49', 'Căn bậc hai'),
           singleChoice('Hệ số góc của $y=-3x+2$', 'Hàm số'),
-          { ...singleChoice('Tổng ba góc tam giác', 'Tam giác'), subject: 'Toán', grade: '7' },
+          { ...singleChoice('Tổng ba góc tam giác', 'Tam giác'), subject: 'toan', grade: '7' },
         ],
       })
       .expect(201);
@@ -132,7 +176,7 @@ describe('Questions (e2e)', () => {
     expect(search.body.total).toBe(1);
 
     const facets = await http().get('/api/questions/facets').set('Cookie', ck(s)).expect(200);
-    expect(facets.body.subjects).toEqual(['Toán']);
+    expect(facets.body.subjects).toEqual(['toan']);
     expect(facets.body.grades).toEqual(['7', '9']);
     expect(facets.body.topics).toEqual(['Căn bậc hai', 'Hàm số', 'Tam giác']);
   });

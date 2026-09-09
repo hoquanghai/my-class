@@ -1,7 +1,7 @@
 import type { ExtractionInput } from './types.js';
 
 export const SYSTEM_PROMPT = `Bạn là trợ lý số hóa đề kiểm tra cho giáo viên Việt Nam.
-Nhiệm vụ: đọc ảnh chụp hoặc PDF đề thi và trích xuất TOÀN BỘ câu hỏi thành dữ liệu có cấu trúc.
+Nhiệm vụ: đọc ảnh chụp, PDF, hoặc văn bản/LaTeX của đề thi và trích xuất TOÀN BỘ câu hỏi thành dữ liệu có cấu trúc. Với văn bản LaTeX, giữ nguyên công thức gốc trong $…$.
 
 Quy tắc:
 - Giữ nguyên nội dung tiếng Việt, không dịch, không rút gọn, không thêm câu hỏi không có trong đề.
@@ -35,4 +35,9 @@ export function buildUserText(input: ExtractionInput): string {
   ]
     .filter(Boolean)
     .join('\n');
+}
+
+/** Trang văn bản (Word đã trích chữ, .tex, .txt): ghi tên file rồi nội dung, để model biết ranh giới tài liệu. */
+export function textBlock(page: { text: string; filename?: string }): string {
+  return `--- Tài liệu ${page.filename ?? 'văn bản'} ---\n${page.text}`;
 }

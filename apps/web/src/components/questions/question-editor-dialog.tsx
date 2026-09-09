@@ -7,7 +7,7 @@ import { Alert } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
 import { errorMessage } from '@/lib/api';
-import { useQuestionFacets, useUpdateQuestion } from '@/lib/questions';
+import { useUpdateQuestion } from '@/lib/questions';
 import { fromDto, toInput, validateEditable } from './editable';
 import { QuestionFields } from './question-fields';
 
@@ -21,7 +21,6 @@ export function QuestionEditorDialog({
   const t = useTranslations('Questions');
   const tc = useTranslations('Common');
   const update = useUpdateQuestion();
-  const facets = useQuestionFacets();
   const [draft, setDraft] = useState(() => (question ? fromDto(question) : null));
   const errors = draft ? validateEditable(draft, question?.source ?? 'manual') : [];
 
@@ -49,7 +48,7 @@ export function QuestionEditorDialog({
     <Dialog open={question !== null} onClose={onClose} title={t('editTitle')} className="max-w-2xl">
       {draft && (
         <div className="space-y-4">
-          <QuestionFields value={draft} onChange={setDraft} showTags facets={facets.data} />
+          <QuestionFields value={draft} onChange={setDraft} showTags />
           {errors.length > 0 && (
             <Alert variant="warning">
               <ul>

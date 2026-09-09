@@ -216,7 +216,7 @@ async function seedDemo(): Promise<void> {
           type: q.type,
           stemMd: q.stemMd,
           explanationMd: q.explanationMd,
-          subject: 'Toán',
+          subject: 'toan',
           grade: '12',
           topic: q.topic,
           difficulty: q.difficulty,

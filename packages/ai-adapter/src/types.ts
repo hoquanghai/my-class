@@ -4,7 +4,9 @@ export type ImageMime = 'image/png' | 'image/jpeg' | 'image/webp' | 'image/gif';
 
 export type ExtractionPage =
   | { kind: 'image'; mime: ImageMime; data: Buffer }
-  | { kind: 'pdf'; data: Buffer; filename?: string };
+  | { kind: 'pdf'; data: Buffer; filename?: string }
+  /** Văn bản thuần hoặc LaTeX (từ .tex/.txt/.md hoặc chữ trích từ Word). */
+  | { kind: 'text'; text: string; filename?: string };
 
 export interface ExtractionInput {
   pages: ExtractionPage[];

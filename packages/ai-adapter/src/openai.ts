@@ -1,7 +1,7 @@
 import { extractionOutputSchema } from '@lophoc/shared';
 import OpenAI from 'openai';
 import { z } from 'zod';
-import { buildUserText, SYSTEM_PROMPT } from './prompt.js';
+import { buildUserText, SYSTEM_PROMPT, textBlock } from './prompt.js';
 import {
   ExtractionError,
   type ExtractionInput,
@@ -45,19 +45,21 @@ export class OpenAIExtractor implements QuestionExtractor {
   }
 
   async extract(input: ExtractionInput): Promise<ExtractionResult> {
-    const content: OpenAI.Responses.ResponseInputContent[] = input.pages.map((page) =>
-      page.kind === 'pdf'
-        ? {
-            type: 'input_file',
-            filename: page.filename ?? 'de.pdf',
-            file_data: `data:application/pdf;base64,${page.data.toString('base64')}`,
-          }
-        : {
-            type: 'input_image',
-            image_url: `data:${page.mime};base64,${page.data.toString('base64')}`,
-            detail: 'auto',
-          },
-    );
+    const content: OpenAI.Responses.ResponseInputContent[] = input.pages.map((page) => {
+      if (page.kind === 'text') return { type: 'input_text', text: textBlock(page) };
+      if (page.kind === 'pdf') {
+        return {
+          type: 'input_file',
+          filename: page.filename ?? 'de.pdf',
+          file_data: `data:application/pdf;base64,${page.data.toString('base64')}`,
+        };
+      }
+      return {
+        type: 'input_image',
+        image_url: `data:${page.mime};base64,${page.data.toString('base64')}`,
+        detail: 'auto',
+      };
+    });
     content.push({ type: 'input_text', text: buildUserText(input) });
 
     let response;

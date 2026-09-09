@@ -21,7 +21,7 @@ export async function splitPdf(data: Buffer): Promise<Buffer[]> {
 export async function explodePages(pages: ExtractionPage[]): Promise<ExtractionPage[]> {
   const out: ExtractionPage[] = [];
   for (const page of pages) {
-    if (page.kind === 'image') {
+    if (page.kind !== 'pdf') {
       out.push(page);
       continue;
     }

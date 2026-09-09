@@ -10,6 +10,7 @@ export * from './questions/schemas.js';
 export * from './questions/types.js';
 export * from './questions/parser/types.js';
 export * from './questions/parser/question-parser.js';
+export * from './questions/ai-files.js';
 export * from './questions/extracted.js';
 export * from './questions/noise.js';
 export * from './roster/dates.js';

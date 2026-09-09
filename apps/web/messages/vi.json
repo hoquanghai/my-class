@@ -327,7 +327,7 @@
   "Questions": {
     "title": "Ngân hàng câu hỏi",
     "import": "Nhập câu hỏi",
-    "empty": "Chưa có câu hỏi nào. Nhập từ văn bản, file Word hoặc soạn tay.",
+    "empty": "Chưa có câu hỏi nào. Tạo bằng AI từ ảnh/PDF hoặc soạn tay.",
     "search": "Tìm theo nội dung…",
     "all": "Tất cả",
     "subject": "Môn",
@@ -348,24 +348,22 @@
     "page": "Trang {page}/{pages}",
     "prev": "Trước",
     "next": "Sau",
-    "answer": "Đáp án"
+    "answer": "Đáp án",
+    "required": "Bắt buộc",
+    "selectSubject": "Chọn môn",
+    "selectGrade": "Chọn khối",
+    "gradeLabel": "Lớp {grade}",
+    "topicPlaceholder": "Ví dụ: Các phương pháp tính tích phân",
+    "topicHint": "Gõ tên chủ đề mới; chủ đề đã dùng sẽ hiện ra để chọn lại.",
+    "topicHintExisting": "{count} chủ đề đã có cho môn/khối này: chọn trong danh sách hoặc gõ tên mới.",
+    "difficultyAny": "Chưa xếp mức độ"
   },
   "Import": {
     "title": "Nhập câu hỏi",
     "tabs": {
-      "paste": "Dán văn bản",
-      "docx": "File Word",
-      "ai": "Ảnh / PDF (AI)",
+      "ai": "Tạo bằng AI",
       "manual": "Soạn tay"
     },
-    "pasteLabel": "Dán đề từ Word, PDF hoặc trang web",
-    "pastePlaceholder": "Câu 1. Nghiệm của phương trình $2x + 3 = 11$ là:\nA. 3\nB. 4\nC. 5\nD. 7\n…\nĐÁP ÁN\n1B 2C 3A",
-    "pasteHint": "Nhận dạng Câu n / Bài n / 1. / 1); phương án A. B. C. D.; đáp án từ bảng đáp án (1B 2C), dòng \"Đáp án: B\" hoặc dấu * trước phương án đúng.",
-    "parse": "Nhận dạng",
-    "docxLabel": "Chọn file .docx",
-    "docxHint": "Giữ nguyên định dạng Word: đáp án in đậm hoặc gạch chân được nhận là đáp án đúng; ảnh được giữ lại.",
-    "aiSoon": "Chụp ảnh đề giấy hoặc tải PDF, AI trích xuất câu hỏi. Sẽ có ở bước tiếp theo (miễn phí 20 trang/tháng).",
-    "manualSoon": "Soạn nhanh bằng bàn phím: gõ đề, Enter sang phương án, Tab sang câu mới. Sẽ có ở bước tiếp theo.",
     "parsed": "Nhận dạng được {count} câu, {invalid} câu cần sửa",
     "answerKeyFound": "Đã đọc bảng đáp án",
     "answerKeyMissing": "Không thấy bảng đáp án: hãy bấm chọn đáp án đúng cho từng câu",
@@ -384,20 +382,25 @@
     "nothingValid": "Chưa có câu hợp lệ để lưu",
     "clear": "Nhập đợt khác",
     "preview": "Xem trước",
-    "editRaw": "Sửa"
+    "editRaw": "Sửa",
+    "classify": "Phân loại câu hỏi",
+    "classifyHint": "Môn, khối và chủ đề áp dụng cho mọi câu của đợt này. Khi tạo đề kiểm tra bạn sẽ lọc nhanh theo khối và chủ đề.",
+    "classifyRequired": "Chọn môn, khối và nhập chủ đề trước khi tạo câu hỏi."
   },
   "Ai": {
     "quota": "Hạn mức AI tháng {month}: còn {remaining}/{limit} trang.",
     "disabled": "Trích xuất bằng AI chưa được bật.",
-    "disabledHint": "Quản trị viên cần cấu hình nhà cung cấp AI (Claude hoặc OpenAI) trên máy chủ.",
-    "select": "Chọn ảnh hoặc PDF",
-    "selectHint": "Tối đa 10 ảnh (PNG/JPG/WebP) hoặc 1 file PDF ≤ 20 trang. Mỗi ảnh/trang trừ 1 trang hạn mức.",
-    "mixError": "Chỉ chọn một file PDF, hoặc chỉ chọn ảnh.",
+    "disabledHint": "Quản trị viên cần cấu hình nhà cung cấp AI (Gemini, Claude hoặc OpenAI) trên máy chủ.",
+    "select": "Chọn file đề",
+    "selectHint": "Ảnh chụp (PNG/JPG/WebP, tối đa 10 ảnh), PDF, Word (.docx), LaTeX (.tex) hoặc văn bản (.txt/.md); mỗi lần một tài liệu hoặc nhiều ảnh. Mỗi ảnh/trang PDF trừ 1 trang hạn mức; văn bản tính 3.000 ký tự một trang.",
+    "mixError": "Chọn một tài liệu (PDF, Word, LaTeX hoặc văn bản), hoặc chỉ chọn ảnh.",
     "tooMany": "Tối đa {max} ảnh mỗi lần.",
     "extract": "Trích xuất bằng AI",
     "pagesNote": "Sẽ dùng {count} trang hạn mức.",
     "processing": "Đang trích xuất… {seconds}s (thường 20–90 giây)",
-    "reviewNote": "Kết quả AI luôn hiện trong lưới xem trước để bạn kiểm tra và sửa trước khi lưu, không tự lưu."
+    "reviewNote": "Kết quả AI luôn hiện trong lưới xem trước để bạn kiểm tra và sửa trước khi lưu, không tự lưu.",
+    "unsupported": "Không hỗ trợ: {names}. Hãy chuyển sang PDF hoặc ảnh.",
+    "wordHint": "Với file Word, AI chỉ đọc được chữ; công thức MathType/Equation sẽ bị mất. Đề có công thức: mở Word, Lưu dạng PDF rồi tải PDF lên."
   },
   "Manual": {
     "question": "Câu {n}",

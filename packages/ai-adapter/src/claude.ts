@@ -1,7 +1,7 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { zodOutputFormat } from '@anthropic-ai/sdk/helpers/zod';
 import { extractionOutputSchema } from '@lophoc/shared';
-import { buildUserText, SYSTEM_PROMPT } from './prompt.js';
+import { buildUserText, SYSTEM_PROMPT, textBlock } from './prompt.js';
 import {
   ExtractionError,
   type ExtractionInput,
@@ -25,21 +25,23 @@ export class ClaudeExtractor implements QuestionExtractor {
   }
 
   async extract(input: ExtractionInput): Promise<ExtractionResult> {
-    const content: Anthropic.ContentBlockParam[] = input.pages.map((page) =>
-      page.kind === 'pdf'
-        ? {
-            type: 'document',
-            source: {
-              type: 'base64',
-              media_type: 'application/pdf',
-              data: page.data.toString('base64'),
-            },
-          }
-        : {
-            type: 'image',
-            source: { type: 'base64', media_type: page.mime, data: page.data.toString('base64') },
+    const content: Anthropic.ContentBlockParam[] = input.pages.map((page) => {
+      if (page.kind === 'text') return { type: 'text', text: textBlock(page) };
+      if (page.kind === 'pdf') {
+        return {
+          type: 'document',
+          source: {
+            type: 'base64',
+            media_type: 'application/pdf',
+            data: page.data.toString('base64'),
           },
-    );
+        };
+      }
+      return {
+        type: 'image',
+        source: { type: 'base64', media_type: page.mime, data: page.data.toString('base64') },
+      };
+    });
     content.push({ type: 'text', text: buildUserText(input) });
 
     let response;

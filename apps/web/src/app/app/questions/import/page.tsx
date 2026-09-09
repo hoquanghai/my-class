@@ -1,10 +1,18 @@
 'use client';
 
-import { type ParseResult, parseQuestions, type QuestionSource } from '@lophoc/shared';
-import { ArrowLeft, FileText, Upload } from 'lucide-react';
+import {
+  type ParseResult,
+  type QuestionSource,
+  SUBJECT_LABELS,
+  type Subject,
+} from '@lophoc/shared';
+import { ArrowLeft } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
-import { useRef, useState } from 'react';
+import { useState } from 'react';
+import { AiImportPanel } from '@/components/questions/ai-import-panel';
+import { BatchTagsFields } from '@/components/questions/batch-tags';
+import { isClassified } from '@/components/questions/classify-fields';
 import {
   type BatchTags,
   type EditableQuestion,
@@ -12,38 +20,35 @@ import {
   toInput,
   validateEditable,
 } from '@/components/questions/editable';
-import { AiImportPanel } from '@/components/questions/ai-import-panel';
 import { ManualEditor } from '@/components/questions/manual-editor';
 import { QuestionGrid } from '@/components/questions/question-grid';
 import { Alert } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/input';
 import { Tabs } from '@/components/ui/tabs';
 import { errorMessage } from '@/lib/api';
-import { useBulkCreateQuestions, useImportDocx, useQuestionFacets } from '@/lib/questions';
+import { useBulkCreateQuestions } from '@/lib/questions';
 
-type TabId = 'paste' | 'docx' | 'ai' | 'manual';
+type TabId = 'ai' | 'manual';
 
+/** Nhập câu hỏi: phân loại (môn, khối, chủ đề) một lần cho cả đợt, rồi tạo bằng AI hoặc soạn tay. */
 export default function ImportQuestionsPage() {
   const t = useTranslations('Import');
   const tq = useTranslations('Questions');
-  const [tab, setTab] = useState<TabId>('paste');
-  const [text, setText] = useState('');
+  const [tab, setTab] = useState<TabId>('ai');
   const [rows, setRows] = useState<EditableQuestion[]>([]);
   const [meta, setMeta] = useState<{ answerKeyFound: boolean; skipped: number } | null>(null);
-  const [source, setSource] = useState<QuestionSource>('paste');
+  const [source, setSource] = useState<QuestionSource>('image_ai');
   const [batch, setBatch] = useState<BatchTags>({
     subject: '',
     grade: '',
     topic: '',
     difficulty: '',
   });
+  const [showClassifyErrors, setShowClassifyErrors] = useState(false);
   const [savedCount, setSavedCount] = useState<number | null>(null);
-  const fileRef = useRef<HTMLInputElement>(null);
-
-  const facets = useQuestionFacets();
-  const importDocx = useImportDocx();
   const bulk = useBulkCreateQuestions();
+
+  const classified = isClassified(batch);
 
   function applyResult(result: ParseResult, src: QuestionSource) {
     setRows(result.questions.map(fromParsed));
@@ -52,17 +57,14 @@ export default function ImportQuestionsPage() {
     setMeta({ answerKeyFound: result.answerKeyFound, skipped: result.skippedLines });
   }
 
-  async function onDocx(file: File | undefined) {
-    if (!file) return;
-    const result = await importDocx.mutateAsync(file).catch(() => null);
-    if (fileRef.current) fileRef.current.value = '';
-    if (result) applyResult(result, 'docx');
-  }
-
-  const validRows = rows.filter((r) => validateEditable(r, source).length === 0);
+  const validRows = rows.filter((r) => validateEditable(r, source, batch).length === 0);
   const invalidCount = rows.length - validRows.length;
 
   async function saveAll() {
+    if (!classified) {
+      setShowClassifyErrors(true);
+      return;
+    }
     if (validRows.length === 0) return;
     const result = await bulk.mutateAsync({
       source,
@@ -74,12 +76,10 @@ export default function ImportQuestionsPage() {
   }
 
   const tabs = [
-    { id: 'paste' as const, label: t('tabs.paste') },
-    { id: 'docx' as const, label: t('tabs.docx') },
     { id: 'ai' as const, label: t('tabs.ai') },
     { id: 'manual' as const, label: t('tabs.manual') },
   ];
-  const showGrid = tab !== 'manual' && rows.length > 0 && meta !== null;
+  const showGrid = tab === 'ai' && rows.length > 0 && meta !== null;
 
   return (
     <div className="space-y-5">
@@ -94,64 +94,34 @@ export default function ImportQuestionsPage() {
         <h1 className="text-2xl font-bold text-slate-900">{t('title')}</h1>
       </div>
 
+      <BatchTagsFields batch={batch} onChange={setBatch} showErrors={showClassifyErrors} />
+      {showClassifyErrors && !classified && (
+        <Alert variant="warning">{t('classifyRequired')}</Alert>
+      )}
+
       <Tabs tabs={tabs} value={tab} onChange={setTab} />
 
-      {tab === 'paste' && (
-        <div className="space-y-3 rounded-xl border border-slate-200 bg-white p-4">
-          <label htmlFor="paste-text" className="block text-sm font-medium text-slate-700">
-            {t('pasteLabel')}
-          </label>
-          <Textarea
-            id="paste-text"
-            rows={10}
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            placeholder={t('pastePlaceholder')}
-            className="font-mono text-sm"
-          />
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <p className="text-xs text-slate-500">{t('pasteHint')}</p>
-            <Button
-              onClick={() => applyResult(parseQuestions(text), 'paste')}
-              disabled={text.trim().length === 0}
-            >
-              <FileText className="size-4" />
-              {t('parse')}
-            </Button>
-          </div>
-        </div>
+      {tab === 'ai' && (
+        <AiImportPanel
+          hints={{
+            subject: batch.subject ? SUBJECT_LABELS[batch.subject as Subject] : '',
+            grade: batch.grade,
+          }}
+          ready={classified}
+          onBlocked={() => setShowClassifyErrors(true)}
+          onResult={(r) => applyResult(r, 'image_ai')}
+        />
       )}
-
-      {tab === 'docx' && (
-        <div className="space-y-3 rounded-xl border border-slate-200 bg-white p-4">
-          <input
-            ref={fileRef}
-            type="file"
-            accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-            className="hidden"
-            onChange={(e) => onDocx(e.target.files?.[0])}
-          />
-          <Button
-            variant="secondary"
-            size="lg"
-            loading={importDocx.isPending}
-            onClick={() => fileRef.current?.click()}
-          >
-            <Upload className="size-4" />
-            {t('docxLabel')}
-          </Button>
-          <p className="text-xs text-slate-500">{t('docxHint')}</p>
-          {importDocx.isError && <Alert variant="error">{errorMessage(importDocx.error)}</Alert>}
-        </div>
-      )}
-
-      {tab === 'ai' && <AiImportPanel onResult={(r) => applyResult(r, 'image_ai')} />}
 
       {tab === 'manual' && (
-        <ManualEditor batch={batch} onBatchChange={setBatch} facets={facets.data} />
+        <ManualEditor
+          batch={batch}
+          ready={classified}
+          onBlocked={() => setShowClassifyErrors(true)}
+        />
       )}
 
-      {tab !== 'manual' && savedCount !== null && (
+      {tab === 'ai' && savedCount !== null && (
         <Alert variant="success">
           {t('saved', { count: savedCount })}{' '}
           {rows.length > 0 && t('remaining', { count: rows.length })}{' '}
@@ -175,14 +145,7 @@ export default function ImportQuestionsPage() {
             )}
           </div>
 
-          <QuestionGrid
-            rows={rows}
-            onChange={setRows}
-            batch={batch}
-            onBatchChange={setBatch}
-            source={source}
-            facets={facets.data}
-          />
+          <QuestionGrid rows={rows} onChange={setRows} batch={batch} source={source} />
 
           {bulk.isError && <Alert variant="error">{errorMessage(bulk.error)}</Alert>}
 

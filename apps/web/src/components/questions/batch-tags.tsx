@@ -1,62 +1,25 @@
 'use client';
 
-import { DIFFICULTIES, DIFFICULTY_LABELS } from '@lophoc/shared';
 import { useTranslations } from 'next-intl';
-import { Input } from '@/components/ui/input';
-import { Select } from '@/components/ui/select';
+import { ClassifyInputs } from './classify-fields';
 import type { BatchTags } from './editable';
-import { FacetDatalists } from './question-fields';
 
-/** Thẻ (môn/khối/chủ đề/mức độ) áp dụng cho cả đợt nhập. */
+/** Khối phân loại áp dụng cho cả đợt nhập (AI hoặc soạn tay): môn, khối, chủ đề bắt buộc; mức độ tùy chọn. */
 export function BatchTagsFields({
   batch,
   onChange,
-  facets,
+  showErrors,
 }: {
   batch: BatchTags;
   onChange: (b: BatchTags) => void;
-  facets?: { subjects: string[]; grades: string[]; topics: string[] };
+  showErrors?: boolean;
 }) {
   const t = useTranslations('Import');
-  const tq = useTranslations('Questions');
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-4">
-      <p className="mb-2 text-sm font-medium text-slate-700">{t('batchTags')}</p>
-      <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-        <Input
-          list="facet-subjects"
-          placeholder={tq('subject')}
-          value={batch.subject}
-          onChange={(e) => onChange({ ...batch, subject: e.target.value })}
-        />
-        <Input
-          list="facet-grades"
-          placeholder={tq('grade')}
-          value={batch.grade}
-          onChange={(e) => onChange({ ...batch, grade: e.target.value })}
-        />
-        <Input
-          list="facet-topics"
-          placeholder={tq('topic')}
-          value={batch.topic}
-          onChange={(e) => onChange({ ...batch, topic: e.target.value })}
-        />
-        <Select
-          aria-label={tq('difficulty')}
-          value={batch.difficulty}
-          onChange={(e) =>
-            onChange({ ...batch, difficulty: e.target.value as BatchTags['difficulty'] })
-          }
-        >
-          <option value="">{tq('difficulty')}</option>
-          {DIFFICULTIES.map((d) => (
-            <option key={d} value={d}>
-              {DIFFICULTY_LABELS[d]}
-            </option>
-          ))}
-        </Select>
-        <FacetDatalists facets={facets} />
-      </div>
-    </div>
+    <section className="rounded-xl border border-slate-200 bg-white p-4">
+      <h2 className="text-sm font-semibold text-slate-800">{t('classify')}</h2>
+      <p className="mb-3 text-xs text-slate-500">{t('classifyHint')}</p>
+      <ClassifyInputs value={batch} onChange={onChange} showErrors={showErrors} />
+    </section>
   );
 }

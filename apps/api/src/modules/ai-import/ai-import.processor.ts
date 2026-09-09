@@ -12,8 +12,10 @@ import { StorageService } from '../storage/storage.service.js';
 import { ExtractorFactory } from './extractor.factory.js';
 
 export interface AiJobInput {
-  files: { key: string; kind: 'image' | 'pdf'; mime: string; filename: string }[];
+  files: { key: string; kind: 'image' | 'pdf' | 'text'; mime: string; filename: string }[];
   hints: { subject: string | null; grade: string | null };
+  /** Cảnh báo lúc chuẩn bị file, trả lại cho web cùng kết quả. */
+  warnings?: string[];
 }
 
 /** Xử lý một ImportJob nguồn AI: tải file, gọi extractor, lưu kết quả dạng ParseResult. */
@@ -38,11 +40,13 @@ export class AiImportProcessor {
       for (const file of input.files) {
         const stored = await this.storage.get(file.key);
         if (!stored) throw new Error(`Không tìm thấy file ${file.key}`);
-        pages.push(
-          file.kind === 'pdf'
-            ? { kind: 'pdf', data: stored.body, filename: file.filename }
-            : { kind: 'image', mime: file.mime as ImageMime, data: stored.body },
-        );
+        if (file.kind === 'text') {
+          pages.push({ kind: 'text', text: stored.body.toString('utf8'), filename: file.filename });
+        } else if (file.kind === 'pdf') {
+          pages.push({ kind: 'pdf', data: stored.body, filename: file.filename });
+        } else {
+          pages.push({ kind: 'image', mime: file.mime as ImageMime, data: stored.body });
+        }
       }
 
       const result = await this.extractors.get().extract({ pages, hints: input.hints });

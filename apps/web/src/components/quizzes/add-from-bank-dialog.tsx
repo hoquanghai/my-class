@@ -6,6 +6,7 @@ import {
   QUESTION_TYPE_LABELS,
   QUESTION_TYPES,
   type QuizDetailDto,
+  subjectLabel,
 } from '@lophoc/shared';
 import { Search } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -85,7 +86,7 @@ export function AddFromBankDialog({
             <option value="">{tq('subject')}</option>
             {facets.data?.subjects.map((s) => (
               <option key={s} value={s}>
-                {s}
+                {subjectLabel(s)}
               </option>
             ))}
           </Select>

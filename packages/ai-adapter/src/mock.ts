@@ -10,7 +10,8 @@ export class MockExtractor implements QuestionExtractor {
     const questions: ExtractedQuestion[] = [];
     input.pages.forEach((page, i) => {
       const n = i + 1;
-      const label = page.kind === 'pdf' ? `PDF` : `ảnh ${n}`;
+      const label =
+        page.kind === 'pdf' ? `PDF` : page.kind === 'text' ? `văn bản ${n}` : `ảnh ${n}`;
       questions.push({
         number: questions.length + 1,
         page: n,

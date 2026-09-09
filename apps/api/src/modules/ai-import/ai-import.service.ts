@@ -10,9 +10,13 @@ import {
   type AiJobDto,
   type AiJobStatus,
   type AiQuotaDto,
+  type AiFileKind,
+  aiFileKindByName,
   ErrorCodes,
   type ParseResult,
+  textPageCount,
 } from '@lophoc/shared';
+import mammoth from 'mammoth';
 import { PDFDocument } from 'pdf-lib';
 import type { Prisma } from '../../generated/prisma/client.js';
 import { PrismaService } from '../../prisma/prisma.service.js';
@@ -40,6 +44,25 @@ export interface IncomingFile {
 export interface AiHints {
   subject?: string | null;
   grade?: string | null;
+}
+
+/** Nhận diện theo nội dung (ảnh, PDF, zip của Word) rồi mới theo đuôi tên file (.tex/.txt/.md). */
+function classifyAiFile(file: IncomingFile): AiFileKind | null {
+  if (isPdf(file.buffer)) return 'pdf';
+  if (sniffImageMime(file.buffer) !== null) return 'image';
+  const byName = aiFileKindByName(file.originalname);
+  const isZip = file.buffer.length > 2 && file.buffer[0] === 0x50 && file.buffer[1] === 0x4b;
+  if (byName === 'docx') return isZip ? 'docx' : null;
+  if (byName === 'text') return file.buffer.subarray(0, 4096).includes(0) ? null : 'text';
+  return null;
+}
+
+interface PreparedFile {
+  buffer: Buffer;
+  mime: string;
+  ext: string;
+  kind: AiJobInput['files'][number]['kind'];
+  filename: string;
 }
 
 function monthKey(date: Date): string {
@@ -88,28 +111,74 @@ export class AiImportService {
         message: 'Trích xuất bằng AI chưa được bật trên hệ thống này',
       });
     }
-    if (files.length === 0) throw new BadRequestException('Chưa chọn ảnh hoặc PDF');
+    if (files.length === 0) throw new BadRequestException('Chưa chọn file đề');
 
-    const pdfs = files.filter((f) => isPdf(f.buffer));
-    const images = files.filter((f) => sniffImageMime(f.buffer) !== null);
-    if (pdfs.length + images.length !== files.length) {
-      throw new BadRequestException('Chỉ hỗ trợ ảnh (PNG/JPG/WebP/GIF) hoặc file PDF');
+    const classified = files.map((file) => ({ file, kind: classifyAiFile(file) }));
+    const unsupported = classified.filter((c) => c.kind === null).map((c) => c.file.originalname);
+    if (unsupported.length > 0) {
+      throw new BadRequestException(
+        `Không hỗ trợ file ${unsupported.join(', ')}. Chọn ảnh (PNG/JPG/WebP/GIF), PDF, Word (.docx), LaTeX (.tex) hoặc văn bản (.txt/.md).`,
+      );
     }
-    if (pdfs.length > 1 || (pdfs.length === 1 && images.length > 0)) {
-      throw new BadRequestException(`Chọn một file PDF hoặc tối đa ${MAX_AI_IMAGES} ảnh`);
+    const images = classified.filter((c) => c.kind === 'image');
+    const docs = classified.filter((c) => c.kind !== 'image');
+    if (docs.length > 1 || (docs.length === 1 && images.length > 0)) {
+      throw new BadRequestException(
+        `Chọn một tài liệu (PDF, Word, LaTeX hoặc văn bản) hoặc tối đa ${MAX_AI_IMAGES} ảnh`,
+      );
     }
     if (images.length > MAX_AI_IMAGES) {
       throw new BadRequestException(`Tối đa ${MAX_AI_IMAGES} ảnh mỗi lần`);
     }
 
+    const warnings: string[] = [];
+    const prepared: PreparedFile[] = images.map(({ file }) => {
+      const mime = sniffImageMime(file.buffer) as string;
+      return {
+        buffer: file.buffer,
+        mime,
+        ext: IMAGE_MIME_EXT[mime] as string,
+        kind: 'image',
+        filename: file.originalname,
+      };
+    });
     let pageCount = images.length;
-    if (pdfs.length === 1) {
-      pageCount = await this.countPdfPages(pdfs[0]!.buffer);
+    const doc = docs[0];
+    if (doc?.kind === 'pdf') {
+      pageCount = await this.countPdfPages(doc.file.buffer);
       if (pageCount > MAX_AI_PDF_PAGES) {
         throw new BadRequestException(
           `PDF tối đa ${MAX_AI_PDF_PAGES} trang (file có ${pageCount} trang)`,
         );
       }
+      prepared.push({
+        buffer: doc.file.buffer,
+        mime: 'application/pdf',
+        ext: 'pdf',
+        kind: 'pdf',
+        filename: doc.file.originalname,
+      });
+    } else if (doc) {
+      const text =
+        doc.kind === 'docx'
+          ? await this.docxText(doc.file.buffer, warnings)
+          : doc.file.buffer.toString('utf8').replace(/^\uFEFF/, '');
+      if (text.trim().length === 0) {
+        throw new BadRequestException(`File ${doc.file.originalname} không có chữ để đọc`);
+      }
+      pageCount = textPageCount(text.length);
+      if (pageCount > MAX_AI_PDF_PAGES) {
+        throw new BadRequestException(
+          `Văn bản quá dài (khoảng ${pageCount} trang), tối đa ${MAX_AI_PDF_PAGES} trang mỗi lần`,
+        );
+      }
+      prepared.push({
+        buffer: Buffer.from(text, 'utf8'),
+        mime: 'text/plain',
+        ext: 'txt',
+        kind: 'text',
+        filename: doc.file.originalname,
+      });
     }
 
     if (quota.used + pageCount > quota.limit) {
@@ -120,20 +189,19 @@ export class AiImportService {
     }
 
     const stored: AiJobInput['files'] = [];
-    for (const f of files) {
-      const pdf = isPdf(f.buffer);
-      const mime = pdf ? 'application/pdf' : (sniffImageMime(f.buffer) as string);
-      const key = this.storage.buildKey(teacherId, pdf ? 'pdf' : (IMAGE_MIME_EXT[mime] as string));
-      await this.storage.put(key, f.buffer, mime);
+    for (const p of prepared) {
+      const key = this.storage.buildKey(teacherId, p.ext);
+      await this.storage.put(key, p.buffer, p.mime);
       await this.prisma.mediaFile.create({
-        data: { teacherId, key, mime, sizeBytes: f.size },
+        data: { teacherId, key, mime: p.mime, sizeBytes: p.buffer.length },
       });
-      stored.push({ key, kind: pdf ? 'pdf' : 'image', mime, filename: f.originalname });
+      stored.push({ key, kind: p.kind, mime: p.mime, filename: p.filename });
     }
 
     const input: AiJobInput = {
       files: stored,
       hints: { subject: hints.subject?.trim() || null, grade: hints.grade?.trim() || null },
+      warnings,
     };
     const job = await this.prisma.importJob.create({
       data: {
@@ -145,7 +213,29 @@ export class AiImportService {
       },
     });
     await this.queue.enqueue(job.id);
-    return { jobId: job.id, pageCount, status: 'pending' };
+    return { jobId: job.id, pageCount, status: 'pending', warnings };
+  }
+
+  /**
+   * Chữ trong file Word (mammoth). Công thức MathType là đối tượng nhúng nên không có trong chữ:
+   * đếm số đối tượng để cảnh báo giáo viên lưu PDF rồi tải lại.
+   */
+  private async docxText(buffer: Buffer, warnings: string[]): Promise<string> {
+    let text: string;
+    try {
+      text = (await mammoth.extractRawText({ buffer })).value;
+    } catch {
+      throw new BadRequestException('Không đọc được file Word. Hãy lưu lại dạng .docx hoặc PDF.');
+    }
+    const mathType = new Set(
+      buffer.toString('latin1').match(/word\/embeddings\/oleObject\d+\.bin/g) ?? [],
+    ).size;
+    if (mathType > 0) {
+      warnings.push(
+        `File Word có ${mathType} công thức MathType; AI không đọc được công thức từ Word nên các câu có công thức sẽ thiếu. Để giữ công thức, hãy lưu file thành PDF rồi tải lại.`,
+      );
+    }
+    return text;
   }
 
   async getJob(teacherId: string, id: string): Promise<AiJobDto> {
@@ -159,6 +249,7 @@ export class AiImportService {
       pageCount: job.pageCount,
       result: job.status === 'done' ? (job.result as unknown as ParseResult) : null,
       error: job.error,
+      warnings: (job.inputKeys as unknown as AiJobInput).warnings ?? [],
       createdAt: job.createdAt.toISOString(),
       finishedAt: job.finishedAt?.toISOString() ?? null,
     };

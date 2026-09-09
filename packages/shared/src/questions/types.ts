@@ -67,6 +67,8 @@ export interface AiJobCreatedDto {
   jobId: string;
   pageCount: number;
   status: AiJobStatus;
+  /** Cảnh báo khi chuẩn bị file (ví dụ Word có công thức MathType không đọc được). */
+  warnings: string[];
 }
 
 export interface AiJobDto {
@@ -75,6 +77,7 @@ export interface AiJobDto {
   pageCount: number;
   result: ParseResult | null;
   error: string | null;
+  warnings: string[];
   createdAt: string;
   finishedAt: string | null;
 }

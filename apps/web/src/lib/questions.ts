@@ -10,6 +10,7 @@ import type {
   ParseResult,
   QuestionDto,
   QuestionFacetsDto,
+  QuestionFacetsQuery,
   QuestionFilter,
   QuestionInput,
   QuestionListDto,
@@ -45,10 +46,11 @@ export function useQuestions(filter: QuestionFilterInput) {
   });
 }
 
-export function useQuestionFacets() {
+/** Môn/khối/chủ đề đã dùng; truyền `subject`/`grade` để chỉ lấy chủ đề của môn/khối đó. */
+export function useQuestionFacets(query: QuestionFacetsQuery = {}) {
   return useQuery({
-    queryKey: questionKeys.facets,
-    queryFn: () => apiFetch<QuestionFacetsDto>('/questions/facets'),
+    queryKey: [...questionKeys.facets, query] as const,
+    queryFn: () => apiFetch<QuestionFacetsDto>(`/questions/facets${toQuery(query)}`),
     staleTime: 60_000,
   });
 }

@@ -1,11 +1,6 @@
 'use client';
 
-import {
-  DIFFICULTIES,
-  DIFFICULTY_LABELS,
-  QUESTION_TYPE_LABELS,
-  QUESTION_TYPES,
-} from '@lophoc/shared';
+import { QUESTION_TYPE_LABELS, QUESTION_TYPES } from '@lophoc/shared';
 import { Eye, Pencil, Plus, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
@@ -14,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/components/ui/cn';
 import { Input, Textarea } from '@/components/ui/input';
 import { Select } from '@/components/ui/select';
+import { ClassifyInputs } from './classify-fields';
 import { applyType, type EditableQuestion, nextLabel, relabel, toggleCorrect } from './editable';
 
 export interface QuestionFieldsProps {
@@ -22,16 +18,9 @@ export interface QuestionFieldsProps {
   /** Hiện các ô thẻ (môn/khối/chủ đề/mức độ) — dùng trong hộp thoại sửa. */
   showTags?: boolean;
   compact?: boolean;
-  facets?: { subjects: string[]; grades: string[]; topics: string[] };
 }
 
-export function QuestionFields({
-  value,
-  onChange,
-  showTags,
-  compact,
-  facets,
-}: QuestionFieldsProps) {
+export function QuestionFields({ value, onChange, showTags, compact }: QuestionFieldsProps) {
   const t = useTranslations('Questions');
   const [preview, setPreview] = useState(false);
   const isChoice = value.type !== 'short_text';
@@ -195,70 +184,17 @@ export function QuestionFields({
       )}
 
       {showTags && (
-        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-          <Input
-            list="facet-subjects"
-            placeholder={t('subject')}
-            value={value.subject}
-            onChange={(e) => onChange({ ...value, subject: e.target.value })}
-          />
-          <Input
-            list="facet-grades"
-            placeholder={t('grade')}
-            value={value.grade}
-            onChange={(e) => onChange({ ...value, grade: e.target.value })}
-          />
-          <Input
-            list="facet-topics"
-            placeholder={t('topic')}
-            value={value.topic}
-            onChange={(e) => onChange({ ...value, topic: e.target.value })}
-          />
-          <Select
-            aria-label={t('difficulty')}
-            value={value.difficulty}
-            onChange={(e) =>
-              onChange({ ...value, difficulty: e.target.value as EditableQuestion['difficulty'] })
-            }
-          >
-            <option value="">{t('difficulty')}</option>
-            {DIFFICULTIES.map((d) => (
-              <option key={d} value={d}>
-                {DIFFICULTY_LABELS[d]}
-              </option>
-            ))}
-          </Select>
-          <FacetDatalists facets={facets} />
-        </div>
+        <ClassifyInputs
+          value={{
+            subject: value.subject,
+            grade: value.grade,
+            topic: value.topic,
+            difficulty: value.difficulty,
+          }}
+          onChange={(c) => onChange({ ...value, ...c })}
+          showErrors
+        />
       )}
     </div>
-  );
-}
-
-export function FacetDatalists({
-  facets,
-}: {
-  facets?: { subjects: string[]; grades: string[]; topics: string[] };
-}) {
-  return (
-    <>
-      <datalist id="facet-subjects">
-        {(
-          facets?.subjects ?? ['Toán', 'Ngữ văn', 'Tiếng Anh', 'Vật lý', 'Hóa học', 'Sinh học']
-        ).map((s) => (
-          <option key={s} value={s} />
-        ))}
-      </datalist>
-      <datalist id="facet-grades">
-        {(facets?.grades ?? ['6', '7', '8', '9', '10', '11', '12']).map((g) => (
-          <option key={g} value={g} />
-        ))}
-      </datalist>
-      <datalist id="facet-topics">
-        {(facets?.topics ?? []).map((tp) => (
-          <option key={tp} value={tp} />
-        ))}
-      </datalist>
-    </>
   );
 }

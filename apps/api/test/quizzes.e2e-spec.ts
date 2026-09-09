@@ -5,7 +5,7 @@ import { cleanupE2eData, cookieHeader, createTestApp, type Session, signup } fro
 const q = (stem: string, topic: string, type = 'single_choice') => ({
   type,
   stemMd: stem,
-  subject: 'Toán',
+  subject: 'toan',
   grade: '9',
   topic,
   difficulty: 'nhan_biet',

@@ -20,6 +20,8 @@ import {
   type ParseResult,
   type QuestionDto,
   type QuestionFacetsDto,
+  type QuestionFacetsQuery,
+  questionFacetsQuerySchema,
   type QuestionFilter,
   questionFilterSchema,
   type QuestionInput,
@@ -58,8 +60,11 @@ export class QuestionsController {
   }
 
   @Get('facets')
-  facets(@CurrentTeacher() teacher: TeacherPrincipal): Promise<QuestionFacetsDto> {
-    return this.questions.facets(teacher.id);
+  facets(
+    @CurrentTeacher() teacher: TeacherPrincipal,
+    @Query({ schema: questionFacetsQuerySchema }) query: QuestionFacetsQuery,
+  ): Promise<QuestionFacetsDto> {
+    return this.questions.facets(teacher.id, query);
   }
 
   @Post()

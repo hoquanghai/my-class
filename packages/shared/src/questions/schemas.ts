@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { GRADES, SUBJECTS } from '../education.js';
 
 export const QUESTION_TYPES = [
   'single_choice',
@@ -17,13 +18,15 @@ export const QUESTION_SOURCES = ['paste', 'docx', 'image_ai', 'manual'] as const
 export const questionSourceSchema = z.enum(QUESTION_SOURCES);
 export type QuestionSource = z.infer<typeof questionSourceSchema>;
 
-const tagSchema = z
+/** Môn và khối theo danh mục chung (education.ts); chủ đề do giáo viên đặt. */
+export const questionSubjectSchema = z.enum(SUBJECTS, { error: 'Vui lòng chọn môn' });
+export const questionGradeSchema = z.enum(GRADES, { error: 'Vui lòng chọn khối' });
+export const topicSchema = z
   .string()
   .trim()
-  .max(60)
-  .transform((v) => (v === '' ? null : v))
-  .nullable()
-  .optional();
+  .min(1, 'Vui lòng nhập chủ đề')
+  .max(80, 'Chủ đề tối đa 80 ký tự')
+  .transform((v) => v.replace(/\s+/g, ' '));
 
 const mdSchema = (max: number, message: string) => z.string().trim().min(1, message).max(max);
 
@@ -47,9 +50,9 @@ export const questionInputSchema = z
       .nullable()
       .optional(),
     imageKey: z.string().max(300).nullable().optional(),
-    subject: tagSchema,
-    grade: tagSchema,
-    topic: tagSchema,
+    subject: questionSubjectSchema,
+    grade: questionGradeSchema,
+    topic: topicSchema,
     difficulty: difficultySchema.nullable().optional(),
     source: questionSourceSchema,
     options: z.array(questionOptionInputSchema).max(8).default([]),
@@ -103,9 +106,9 @@ export const updateQuestionSchema = z.object({
     .nullable()
     .optional(),
   imageKey: z.string().max(300).nullable().optional(),
-  subject: tagSchema,
-  grade: tagSchema,
-  topic: tagSchema,
+  subject: questionSubjectSchema.optional(),
+  grade: questionGradeSchema.optional(),
+  topic: topicSchema.optional(),
   difficulty: difficultySchema.nullable().optional(),
   options: z.array(questionOptionInputSchema).max(8).optional(),
   acceptedAnswers: z.array(z.string().trim().min(1).max(200)).max(10).optional(),
@@ -123,3 +126,10 @@ export const questionFilterSchema = z.object({
   pageSize: z.coerce.number().int().min(1).max(100).default(20),
 });
 export type QuestionFilter = z.infer<typeof questionFilterSchema>;
+
+/** `GET /questions/facets`: lọc danh sách chủ đề theo môn/khối đang chọn. */
+export const questionFacetsQuerySchema = z.object({
+  subject: z.string().trim().max(60).optional(),
+  grade: z.string().trim().max(60).optional(),
+});
+export type QuestionFacetsQuery = z.infer<typeof questionFacetsQuerySchema>;

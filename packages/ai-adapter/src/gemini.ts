@@ -1,7 +1,7 @@
 import { GoogleGenAI, type Part, type ThinkingLevel } from '@google/genai';
 import { extractionOutputSchema } from '@lophoc/shared';
 import { z } from 'zod';
-import { buildUserText, SYSTEM_PROMPT } from './prompt.js';
+import { buildUserText, SYSTEM_PROMPT, textBlock } from './prompt.js';
 import {
   ExtractionError,
   type ExtractionInput,
@@ -50,12 +50,16 @@ export class GeminiExtractor implements QuestionExtractor {
   }
 
   async extract(input: ExtractionInput): Promise<ExtractionResult> {
-    const parts: Part[] = input.pages.map((page) => ({
-      inlineData: {
-        mimeType: page.kind === 'pdf' ? 'application/pdf' : page.mime,
-        data: page.data.toString('base64'),
-      },
-    }));
+    const parts: Part[] = input.pages.map((page) =>
+      page.kind === 'text'
+        ? { text: textBlock(page) }
+        : {
+            inlineData: {
+              mimeType: page.kind === 'pdf' ? 'application/pdf' : page.mime,
+              data: page.data.toString('base64'),
+            },
+          },
+    );
     parts.push({ text: buildUserText(input) });
 
     let response;

@@ -24,7 +24,6 @@ import { cn } from '@/components/ui/cn';
 import { Textarea } from '@/components/ui/input';
 import { errorMessage } from '@/lib/api';
 import { useBulkCreateQuestions, useUploadImage } from '@/lib/questions';
-import { BatchTagsFields } from './batch-tags';
 import {
   type BatchTags,
   type EditableQuestion,
@@ -44,7 +43,10 @@ interface Card {
 }
 
 /** Chuyển nội dung một ô soạn thành câu hỏi (dùng lại parser của phần dán). */
-function cardToQuestion(text: string): { q: EditableQuestion; issues: string[] } | null {
+function cardToQuestion(
+  text: string,
+  batch: BatchTags,
+): { q: EditableQuestion; issues: string[] } | null {
   if (!text.trim()) return null;
   const body = text.replace(/^\s*(?:câu|bài)\s*\d+\s*[:.)\-]*\s*/i, '');
   const parsed = parseQuestions(`Câu 1. ${body}`).questions[0];
@@ -52,7 +54,7 @@ function cardToQuestion(text: string): { q: EditableQuestion; issues: string[] }
   const q = fromParsed(parsed);
   const issues = [
     ...parsed.issues.filter((i) => i !== 'no_options').map((i) => PARSE_ISSUE_LABELS[i]),
-    ...validateEditable(q, SOURCE),
+    ...validateEditable(q, SOURCE, batch),
   ];
   return { q, issues: [...new Set(issues)] };
 }
@@ -75,6 +77,7 @@ function currentLineRange(value: string, caret: number): { start: number; end: n
 function CardEditor({
   card,
   index,
+  batch,
   onChange,
   onRemove,
   onNext,
@@ -84,6 +87,7 @@ function CardEditor({
 }: {
   card: Card;
   index: number;
+  batch: BatchTags;
   onChange: (text: string) => void;
   onRemove: () => void;
   onNext: () => void;
@@ -95,7 +99,7 @@ function CardEditor({
   const ref = useRef<HTMLTextAreaElement>(null);
   const caretRef = useRef<number | null>(null);
   const upload = useUploadImage();
-  const parsed = useMemo(() => cardToQuestion(card.text), [card.text]);
+  const parsed = useMemo(() => cardToQuestion(card.text, batch), [card.text, batch]);
 
   useEffect(() => {
     if (focusRequested && ref.current) {
@@ -243,14 +247,15 @@ function CardEditor({
   );
 }
 
+/** Soạn tay từng câu; phân loại (`batch`) lấy từ khối phân loại của trang, chưa đủ thì không cho lưu. */
 export function ManualEditor({
   batch,
-  onBatchChange,
-  facets,
+  ready,
+  onBlocked,
 }: {
   batch: BatchTags;
-  onBatchChange: (b: BatchTags) => void;
-  facets?: { subjects: string[]; grades: string[]; topics: string[] };
+  ready: boolean;
+  onBlocked: () => void;
 }) {
   const t = useTranslations('Manual');
   const ti = useTranslations('Import');
@@ -259,7 +264,7 @@ export function ManualEditor({
   const [savedCount, setSavedCount] = useState<number | null>(null);
   const bulk = useBulkCreateQuestions();
 
-  const parsedCards = cards.map((c) => ({ card: c, parsed: cardToQuestion(c.text) }));
+  const parsedCards = cards.map((c) => ({ card: c, parsed: cardToQuestion(c.text, batch) }));
   const valid = parsedCards.filter((p) => p.parsed && p.parsed.issues.length === 0);
 
   function addCard(afterIndex?: number) {
@@ -277,6 +282,10 @@ export function ManualEditor({
   }
 
   async function saveAll() {
+    if (!ready) {
+      onBlocked();
+      return;
+    }
     if (valid.length === 0) return;
     const result = await bulk.mutateAsync({
       source: SOURCE,
@@ -299,8 +308,6 @@ export function ManualEditor({
         </ul>
       </Alert>
 
-      <BatchTagsFields batch={batch} onChange={onBatchChange} facets={facets} />
-
       {savedCount !== null && (
         <Alert variant="success">
           {ti('saved', { count: savedCount })}{' '}
@@ -316,6 +323,7 @@ export function ManualEditor({
             key={card.localId}
             card={card}
             index={i}
+            batch={batch}
             onChange={(text) =>
               setCards((cs) => cs.map((c) => (c.localId === card.localId ? { ...c, text } : c)))
             }

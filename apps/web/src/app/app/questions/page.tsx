@@ -3,9 +3,10 @@
 import {
   DIFFICULTIES,
   DIFFICULTY_LABELS,
-  type QuestionDto,
   QUESTION_TYPE_LABELS,
   QUESTION_TYPES,
+  type QuestionDto,
+  subjectLabel,
 } from '@lophoc/shared';
 import { Plus, Search } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -84,7 +85,7 @@ export default function QuestionsPage() {
           </option>
           {facets.data?.subjects.map((s) => (
             <option key={s} value={s}>
-              {s}
+              {subjectLabel(s)}
             </option>
           ))}
         </Select>
@@ -98,7 +99,7 @@ export default function QuestionsPage() {
           </option>
           {facets.data?.grades.map((g) => (
             <option key={g} value={g}>
-              {g}
+              {t('gradeLabel', { grade: g })}
             </option>
           ))}
         </Select>
