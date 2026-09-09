@@ -515,7 +515,7 @@ Giấy nhớ `{components.sticky-note}` xoay nhẹ −2° đến 2°, dùng đ�
 
 ## 7. Hình ảnh và minh họa
 
-- **Ảnh**: lớp học Việt Nam thật, ánh sáng tự nhiên ấm, góc máy ngang tầm mắt, không cười kiểu ảnh stock. Giáo viên 25–45 tuổi, học sinh cấp 2–3 mặc đồng phục hoặc áo thường. Màn hình điện thoại và máy chiếu trong ảnh để trống hoặc sáng nhẹ, **giao diện thật được dựng bằng CSS đè lên**, không để AI vẽ chữ.
+- **Ảnh**: lớp học Việt Nam thật, ánh sáng tự nhiên ấm, góc máy ngang tầm mắt, không cười kiểu ảnh stock. Giáo viên 25–45 tuổi. Học sinh là **THPT, 16–18 tuổi (lớp 10–12)**: gương mặt và vóc dáng thanh niên, đồng phục sơ mi trắng với quần sẫm hoặc váy xếp ly; không dùng ảnh trẻ em cấp 1–2 vì sản phẩm nhắm tới giáo viên và học sinh cấp 3, lứa tuổi được dùng điện thoại trong học tập. Dữ liệu minh họa (tên lớp, câu hỏi) cũng ở mức THPT: "Toán 12A1", đạo hàm, lượng giác. Màn hình điện thoại và máy chiếu trong ảnh để trống hoặc sáng nhẹ, **giao diện thật được dựng bằng CSS đè lên**, không để AI vẽ chữ.
 - Khung ảnh bo `{rounded.xl}` ở hero, `{rounded.lg}` trong khối màu. Tỷ lệ 16:10 hero, 4:5 cột trong khối màu.
 - Xuất WebP, đặt trong `apps/web/public/img/`, dùng `next/image` với `width`/`height` cố định; ảnh hero có `priority`. Ảnh dưới màn hình đầu `loading="lazy"`.
 - Video demo (nếu có) 6–8 giây, không tiếng, `muted autoplay loop playsinline`, có poster; tắt khi `prefers-reduced-motion`.

@@ -87,10 +87,10 @@ export function PhoneQuizMock({
   className?: string;
 }) {
   const options = [
-    ['A', '3'],
-    ['B', '4'],
-    ['C', '5'],
-    ['D', '6'],
+    ['A', 'x²'],
+    ['B', '3x²'],
+    ['C', '3x'],
+    ['D', 'x³ / 3'],
   ];
   return (
     <div
@@ -106,9 +106,7 @@ export function PhoneQuizMock({
           0:18
         </span>
       </div>
-      <p className="mb-3 text-[15px] font-semibold leading-snug">
-        Nghiệm của phương trình 2x + 3 = 11 là
-      </p>
+      <p className="mb-3 text-[15px] font-semibold leading-snug">Đạo hàm của hàm số y = x³ là</p>
       <ul className="space-y-2">
         {options.map(([label, text]) => {
           const selected = label === 'B';
@@ -137,7 +135,7 @@ export function PhoneQuizMock({
               >
                 {label}
               </span>
-              <span className="flex-1">x = {text}</span>
+              <span className="flex-1">{text}</span>
               {correct && <Check className="size-4 text-success" />}
             </li>
           );

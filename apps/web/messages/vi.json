@@ -12,7 +12,7 @@
       "cta": "Dùng thử miễn phí"
     },
     "hero": {
-      "eyebrow": "Miễn phí cho giáo viên trung tâm",
+      "eyebrow": "Miễn phí cho giáo viên THPT và trung tâm luyện thi",
       "subtitle": "Nhập đề từ Word, ảnh chụp hay dán văn bản. Học sinh làm bài trên điện thoại bằng mã lớp, không cần cài app. Kết quả hiện ngay trên máy chiếu.",
       "cta": "Dùng thử miễn phí",
       "secondary": "Xem cách dùng",
@@ -64,7 +64,7 @@
       "b1": "Đánh cả lớp có mặt một chạm, chỉ sửa vài trường hợp",
       "b2": "Ghi chú nhanh cho từng học sinh, hoàn tác khi bấm nhầm",
       "b3": "Lịch sử chuyên cần 30 ngày của từng học sinh",
-      "mockTitle": "Toán 9A · Buổi tối thứ 3"
+      "mockTitle": "Toán 12A1 · Buổi tối thứ 3"
     },
     "students": {
       "eyebrow": "Học sinh của bạn",
@@ -100,9 +100,9 @@
       "contact": "Liên hệ qua Zalo / Facebook"
     },
     "imgAlt": {
-      "hero": "Giáo viên đứng cạnh bảng trắng trong lớp học buổi tối, học sinh cầm điện thoại làm bài",
+      "hero": "Giáo viên đứng cạnh bảng trắng trong lớp học buổi tối, học sinh THPT cầm điện thoại làm bài",
       "bank": "Tay giáo viên cầm điện thoại chụp đề thi in trên bàn",
-      "students": "Ba nữ sinh reo hò trong lớp học sáng, một bạn giơ điện thoại lên"
+      "students": "Ba học sinh THPT reo hò trong lớp học sáng, một bạn giơ điện thoại lên"
     },
     "stats": {
       "attendance": "giây để điểm danh cả lớp",
@@ -111,14 +111,14 @@
       "price": "chi phí, miễn phí cho giáo viên"
     },
     "demo": {
-      "className": "Toán 9A · tối thứ 3",
+      "className": "Toán 12A1 · tối thứ 3",
       "joined": "{count}/{total} đã vào lớp",
       "board": "Bảng xếp hạng",
       "question": "Câu {index}/{total}",
       "answered": "{count}/{total} đã trả lời",
       "waiting": "Đang chờ",
       "waitingBody": "Chờ giáo viên bắt đầu…",
-      "stem": "Nghiệm của phương trình 2x + 3 = 11 là",
+      "stem": "Đạo hàm của hàm số y = x³ là",
       "submitted": "Đã nộp",
       "correct": "Chính xác!",
       "sent": "Đã gửi ✓",
@@ -208,7 +208,7 @@
     "studentsCount": "{count} học sinh",
     "code": "Mã lớp",
     "name": "Tên lớp",
-    "namePlaceholder": "VD: Toán 9A tối thứ 2-5",
+    "namePlaceholder": "VD: Toán 12A1 tối thứ 2-5",
     "subject": "Môn",
     "grade": "Khối / lớp",
     "schedule": "Lịch học",

@@ -192,9 +192,9 @@ async function seedDemo(): Promise<void> {
   const klass = await prisma.class.create({
     data: {
       teacherId: teacher.id,
-      name: 'Toán 9A (demo)',
+      name: 'Toán 12A1 (demo)',
       subject: 'Toán',
-      grade: '9',
+      grade: '12',
       code: DEMO_CLASS_CODE,
       schedule: [
         { weekday: 2, start: '18:00', end: '19:30' },
@@ -216,7 +216,7 @@ async function seedDemo(): Promise<void> {
           stemMd: q.stemMd,
           explanationMd: q.explanationMd,
           subject: 'Toán',
-          grade: '9',
+          grade: '12',
           topic: q.topic,
           difficulty: q.difficulty,
           source: 'manual',

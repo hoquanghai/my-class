@@ -32,10 +32,10 @@ const NAMES = [
   'Thư',
 ];
 const OPTIONS: [string, string][] = [
-  ['A', 'x = 3'],
-  ['B', 'x = 4'],
-  ['C', 'x = 5'],
-  ['D', 'x = 6'],
+  ['A', 'x²'],
+  ['B', '3x²'],
+  ['C', '3x'],
+  ['D', 'x³ / 3'],
 ];
 const DIST = [3, 18, 6, 3];
 const BOARD: [string, number][] = [
