@@ -108,12 +108,7 @@ function LoginForm() {
           </div>
         </Field>
 
-        <Button
-          type="submit"
-          size="lg"
-          className="w-full rounded-full bg-ink hover:bg-ink/85 disabled:bg-ink/50"
-          loading={loading}
-        >
+        <Button type="submit" size="lg" className="w-full rounded-full" loading={loading}>
           {t('loginButton')}
         </Button>
       </form>

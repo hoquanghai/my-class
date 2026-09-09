@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react';
 import { cn } from '@/components/ui/cn';
 import { PillLink } from './primitives';
 
-const SECTIONS = ['tinh-nang', 'cach-dung', 'hoc-sinh', 'faq'] as const;
+const SECTIONS = ['tinh-nang', 'cach-dung', 'mien-phi', 'faq'] as const;
 type SectionId = (typeof SECTIONS)[number];
 
 /** Theo dõi section đang ở giữa màn hình để tô đậm mục menu tương ứng. */
@@ -51,8 +51,8 @@ export function TopNav() {
   const active = useActiveSection();
   const links: { id: SectionId; label: string }[] = [
     { id: 'tinh-nang', label: t('features') },
-    { id: 'cach-dung', label: t('howItWorks') },
-    { id: 'hoc-sinh', label: t('students') },
+    { id: 'cach-dung', label: t('showcase') },
+    { id: 'mien-phi', label: t('pricing') },
     { id: 'faq', label: t('faq') },
   ];
 
@@ -92,7 +92,7 @@ export function TopNav() {
           >
             {t('login')}
           </Link>
-          <PillLink href="/signup" className="h-10 px-5 text-[15px]">
+          <PillLink href="/signup" className="h-10 px-4 text-sm">
             {t('cta')}
           </PillLink>
           <button

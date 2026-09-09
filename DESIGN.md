@@ -384,9 +384,10 @@ components:
 
 ### Màu nhấn tương tác
 
-- **Accent** `{colors.accent}` — liên kết, vòng focus, tab đang chọn, thanh tiến độ, phương án học sinh đang chọn. Tương phản trên trắng 6.2:1.
+- **Accent** `{colors.accent}` — nút hành động chính, liên kết, vòng focus, tab đang chọn, thanh tiến độ, phương án học sinh đang chọn. Tương phản chữ trắng trên accent 6.2:1.
+- **Accent strong** `{colors.accent-strong}` — hover/pressed của nút chính.
 - **Accent soft** `{colors.accent-soft}` — nền trạng thái chọn và nền vòng focus.
-- Không dùng accent làm nền nút hành động chính. Nút chính là mực đen.
+- Mỗi khung nhìn chỉ một nút accent đặc; nút thứ hai là viền mảnh. Mực đen không dùng làm nút, chỉ cho chữ, wordmark và mục menu đang chọn.
 
 ### Khối màu gắn với tính năng
 
@@ -472,11 +473,11 @@ Giấy nhớ `{components.sticky-note}` xoay nhẹ −2° đến 2°, dùng đ�
 
 ### Nút
 
-- `{components.button-primary}` viên thuốc đen, cao 48px — hành động chính trên marketing và trang xác thực. Mỗi khung nhìn chỉ một nút chính.
+- `{components.button-primary}` viên thuốc accent xanh, cao 48px — hành động chính trên marketing và trang xác thực. Mỗi khung nhìn chỉ một nút chính.
 - `{components.button-secondary}` viên thuốc trắng viền mảnh — hành động thứ hai ("Đăng nhập", "Học sinh vào lớp").
 - `{components.button-inverse}` viên thuốc trắng chữ đen — trên khối navy.
-- Trong app: `{components.button-app-primary}` (đen, bo 12px, cao 40px), `{components.button-app-secondary}`, `{components.button-app-danger}` (đỏ, tách xa nút chính), `ghost` (chỉ chữ). Cỡ `sm` 32px chỉ cho hàng bảng.
-- Học sinh: nút nộp bài viên thuốc đen cao 56px, toàn bề rộng.
+- Trong app: `{components.button-app-primary}` (accent, bo 12px, cao 40px), `{components.button-app-secondary}`, `{components.button-app-danger}` (đỏ, tách xa nút chính), `ghost` (chỉ chữ). Cỡ `sm` 32px chỉ cho hàng bảng.
+- Học sinh: nút nộp bài viên thuốc accent cao 56px, toàn bề rộng.
 - Trạng thái: hover tối/sáng 6%, pressed scale 0.98, disabled opacity 0.5 + `cursor-not-allowed`, loading giữ nguyên kích thước và hiện spinner.
 
 ### Form
@@ -515,7 +516,7 @@ Giấy nhớ `{components.sticky-note}` xoay nhẹ −2° đến 2°, dùng đ�
 
 ## 7. Hình ảnh và minh họa
 
-- **Ảnh**: lớp học Việt Nam thật, ánh sáng tự nhiên ấm, góc máy ngang tầm mắt, không cười kiểu ảnh stock. Giáo viên 25–45 tuổi. Học sinh là **THPT, 16–18 tuổi (lớp 10–12)**: gương mặt và vóc dáng thanh niên, đồng phục sơ mi trắng với quần sẫm hoặc váy xếp ly; không dùng ảnh trẻ em cấp 1–2 vì sản phẩm nhắm tới giáo viên và học sinh cấp 3, lứa tuổi được dùng điện thoại trong học tập. Dữ liệu minh họa (tên lớp, câu hỏi) cũng ở mức THPT: "Toán 12A1", tích phân, đạo hàm; công thức render thật bằng KaTeX (`components/tex.tsx`) và có hình minh họa vẽ bằng SVG khi câu hỏi có đồ thị hoặc hình (`components/marketing/cubic-figure.tsx`). Màn hình điện thoại và máy chiếu trong ảnh để trống hoặc sáng nhẹ, **giao diện thật được dựng bằng CSS đè lên**, không để AI vẽ chữ.
+- **Ảnh**: lớp học Việt Nam thật, ánh sáng tự nhiên ấm, góc máy ngang tầm mắt, không cười kiểu ảnh stock. Giáo viên 25–45 tuổi. Học sinh là **THPT, 16–18 tuổi (lớp 10–12)**: gương mặt và vóc dáng thanh niên, đồng phục sơ mi trắng với quần sẫm hoặc váy xếp ly; không dùng ảnh trẻ em cấp 1–2 vì sản phẩm nhắm tới giáo viên và học sinh cấp 3, lứa tuổi được dùng điện thoại trong học tập. Dữ liệu minh họa (tên lớp, câu hỏi) cũng ở mức THPT: "Toán 12A1", tích phân, đạo hàm; công thức trong giao diện thật render bằng KaTeX (`MarkdownLatex`). Màn hình điện thoại và máy chiếu trong ảnh để trống hoặc sáng nhẹ, **giao diện thật được dựng bằng CSS đè lên**, không để AI vẽ chữ.
 - Khung ảnh bo `{rounded.xl}` ở hero, `{rounded.lg}` trong khối màu. Tỷ lệ 16:10 hero, 4:5 cột trong khối màu.
 - Xuất WebP, đặt trong `apps/web/public/img/`, dùng `next/image` với `width`/`height` cố định; ảnh hero có `priority`. Ảnh dưới màn hình đầu `loading="lazy"`.
 - Video demo (nếu có) 6–8 giây, không tiếng, `muted autoplay loop playsinline`, có poster; tắt khi `prefers-reduced-motion`.
@@ -525,14 +526,10 @@ Giấy nhớ `{components.sticky-note}` xoay nhẹ −2° đến 2°, dùng đ�
 
 - Token thời lượng: `fast` 150ms (hover, chip), `base` 200ms (nút, input), `slow` 300ms (hộp thoại, khối màu hiện dần), `reveal` 450ms (danh sách xuất hiện lần lượt, cách nhau 40ms).
 - Vào: `ease-out`; ra: `ease-in`, ngắn hơn 30%. Chỉ animate `transform` và `opacity`.
-- Landing: mỗi section hiện dần một lần khi cuộn tới (opacity + translateY 16px); phần tử con hiện lần lượt cách nhau 80 ms (`animate-pop` + `animation-delay`).
-- Hero là "sân khấu demo" (`components/marketing/hero-demo.tsx`): vòng lặp 6 bước kể lại một buổi học (vào lớp → câu hỏi + đếm ngược → nộp → phân bố đáp án → bảng xếp hạng), mỗi bước 1.3–2.8 s, dừng khi tab ẩn. Đây là phần tử lặp duy nhất được phép trên trang; các section khác chỉ hiện dần một lần.
-- Tiêu đề hero có cụm từ xoay vòng (`RotatingWords`, 2.6 s/từ, trượt dọc 500 ms) trên nền lime như bút dạ quang.
-- Số liệu đếm lên (`CountUp`) 900 ms ease-out khi cuộn tới, một lần.
+- Landing (bản 2026-09-09): không có phần tử lặp hay hiện dần; chuyển động chỉ ở hover nút, đổi tab "Lớp học mẫu" và thanh phân bố đáp án. Nếu thêm lại chuyển động trang trí, tối đa một phần tử lặp trên trang và phải dừng khi tab ẩn.
 - Không parallax, không gradient động, không hiệu ứng theo con trỏ.
-- Từ khóa keyframe dùng chung trong `globals.css`: `pop`, `float`, `sparkle`, `pulse-dot`; lớp tiện ích `animate-pop`, `animate-float`, `animate-sparkle`, `animate-pulse-dot`.
 - Đếm ngược và thanh tiến độ cập nhật mỗi 200ms bằng `transition: width`.
-- `prefers-reduced-motion: reduce` → bỏ mọi chuyển động trang trí, giữ trạng thái cuối: demo hero đứng ở bước cuối, từ xoay vòng giữ từ đầu, số hiện ngay (`usePrefersReducedMotion`).
+- `prefers-reduced-motion: reduce` → bỏ mọi chuyển động trang trí, giữ trạng thái cuối (`usePrefersReducedMotion` cho thành phần client có chuyển động).
 
 ## 9. Khả năng tiếp cận
 
@@ -549,7 +546,7 @@ Giấy nhớ `{components.sticky-note}` xoay nhẹ −2° đến 2°, dùng đ�
 
 - Mở đầu section bằng eyebrow mono in hoa, rồi tiêu đề, rồi thân bài.
 - Chọn **một** khối màu theo tính năng của section, để trang quay về trắng trước khối tiếp theo.
-- Dùng mực đen cho nút chính, accent cho liên kết và trạng thái chọn.
+- Dùng accent cho nút chính, liên kết và trạng thái chọn; mực đen cho chữ và wordmark.
 - Đưa mã lớp và đường dẫn vào lớp vào mọi màn hình chờ (lobby, máy chiếu).
 - Viết chữ tiếng Việt có dấu, câu ngắn, động từ ở đầu nút ("Phát đề", "Nộp").
 

@@ -30,3 +30,7 @@ apps/web/next-env.d.ts
 # Công cụ cục bộ (skill cache, chỉ mục codegraph)
 .claude/
 .codegraph/
+
+# File môi trường cá nhân khác (ví dụ .env.dev), không đẩy lên repo
+.env.dev
+.env.*.local

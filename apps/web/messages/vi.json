@@ -5,73 +5,20 @@
       "primary": "Điều hướng chính",
       "menu": "Mở menu",
       "features": "Tính năng",
-      "howItWorks": "Cách dùng",
-      "students": "Học sinh",
+      "showcase": "Lớp học mẫu",
+      "pricing": "Gói miễn phí",
       "faq": "Hỏi đáp",
       "login": "Đăng nhập",
-      "cta": "Dùng thử miễn phí"
+      "cta": "Bắt đầu miễn phí"
     },
     "hero": {
-      "eyebrow": "Miễn phí cho giáo viên THPT và trung tâm luyện thi",
-      "subtitle": "Nhập đề từ Word, ảnh chụp hay dán văn bản. Học sinh làm bài trên điện thoại bằng mã lớp, không cần cài app. Kết quả hiện ngay trên máy chiếu.",
-      "cta": "Dùng thử miễn phí",
-      "secondary": "Xem cách dùng",
-      "note": "Không cần thẻ · Không cần cài đặt · Học sinh không cần tài khoản",
-      "noteAttendance": "Điểm danh 19:02",
-      "present": "Có mặt",
-      "late": "Muộn",
-      "absent": "Vắng",
-      "prefix": "5 phút đầu giờ:",
-      "word1": "điểm danh xong",
-      "word2": "kiểm tra xong",
-      "word3": "có bảng xếp hạng",
-      "chip1": "Vào lớp bằng mã, không cài app",
-      "chip2": "Nhập đề từ Word, ảnh, văn bản",
-      "chip3": "Chiếu trực tiếp lên máy chiếu",
-      "chip4": "Bảng xếp hạng tự động"
-    },
-    "how": {
-      "eyebrow": "Cách dùng",
-      "title": "Ba bước cho buổi học đầu tiên",
-      "step1Title": "Tạo lớp, dán danh sách tên",
-      "step1Body": "Dán danh sách từ Zalo hoặc Excel, hệ thống tự tách tên và tạo mã lớp. In mã QR dán lên bảng.",
-      "step2Title": "Phát đề, học sinh vào bằng mã",
-      "step2Body": "Chọn đề từ ngân hàng câu hỏi, chọn chế độ từng câu hoặc tự làm. Học sinh mở trình duyệt, nhập mã, chọn tên.",
-      "step3Title": "Chiếu kết quả, xem báo cáo",
-      "step3Body": "Bảng xếp hạng hiện ngay khi kết thúc. Điểm danh và điểm số lưu theo buổi để xem lại."
-    },
-    "quiz": {
-      "eyebrow": "Kiểm tra đầu giờ",
-      "title": "Cả lớp làm cùng một câu, thầy cô bấm chuyển.",
-      "body": "Mỗi câu có đếm ngược riêng. Học sinh nộp xong thấy ngay đúng sai khi giáo viên công bố. Kết thúc là có bảng xếp hạng, không phải chấm tay.",
-      "b1": "Chế độ từng câu để chiếu lên bảng, hoặc tự làm với thời gian chung",
-      "b2": "Xáo thứ tự câu và phương án cho từng lượt",
-      "b3": "Mất mạng giữa chừng, bài vẫn tự gửi lại khi có kết nối",
-      "cta": "Tạo đề đầu tiên"
-    },
-    "bank": {
-      "eyebrow": "Ngân hàng câu hỏi",
-      "title": "Dán đề từ Word, chụp ảnh đề in, có ngay câu hỏi.",
-      "body": "Trình nhận diện hiểu định dạng đề Việt Nam: Câu 1, A. B. C. D., đáp án in đậm, công thức toán. Xem lại trong lưới, sửa chỗ sai rồi lưu vào ngân hàng riêng của bạn.",
-      "b1": "Dán văn bản hoặc tải file Word, kể cả ảnh trong đề",
-      "b2": "Chụp ảnh hoặc PDF, AI trích xuất 20 trang mỗi tháng miễn phí",
-      "b3": "Gắn thẻ môn, khối, chủ đề, mức độ để chọn ngẫu nhiên"
-    },
-    "attendance": {
-      "eyebrow": "Điểm danh",
-      "title": "Điểm danh 30 giây bằng ô chạm.",
-      "body": "Mỗi học sinh là một ô. Chạm để đổi có mặt, muộn, vắng, có phép. Học sinh vào lớp bằng điện thoại được tự đánh có mặt.",
-      "b1": "Đánh cả lớp có mặt một chạm, chỉ sửa vài trường hợp",
-      "b2": "Ghi chú nhanh cho từng học sinh, hoàn tác khi bấm nhầm",
-      "b3": "Lịch sử chuyên cần 30 ngày của từng học sinh",
-      "mockTitle": "Toán 12A1 · Buổi tối thứ 3"
-    },
-    "students": {
-      "eyebrow": "Học sinh của bạn",
-      "title": "Học sinh không cần tài khoản: nhập mã lớp, chọn tên, làm bài.",
-      "body": "Học sinh mở trình duyệt trên bất kỳ điện thoại nào, vào địa chỉ riêng của lớp và chọn tên mình. Thiết bị nhớ tên cho những buổi sau. Chữ to, nút to, làm được bằng một tay.",
-      "codeHint": "Mã lớp do giáo viên đưa, 6 ký tự",
-      "hostNote": "Trang học sinh chạy ở địa chỉ riêng, tách khỏi trang giáo viên, nên học sinh không thể tự tạo tài khoản giáo viên hay xem đề của lớp khác."
+      "eyebrow": "Dành cho giáo viên THPT và trung tâm luyện thi",
+      "prefix": "Bớt thời gian chấm bài.",
+      "headline": "Biết ngay cả lớp hiểu đến đâu.",
+      "subtitle": "Đưa đề có sẵn từ Word, ảnh hoặc văn bản vào Lớp Học. Học sinh trả lời trên điện thoại, thầy cô xem kết quả ngay và lưu điểm theo từng buổi.",
+      "cta": "Tạo tài khoản miễn phí",
+      "secondary": "Xem lớp học mẫu",
+      "note": "Không cần thẻ · Học sinh không cần tài khoản hay cài ứng dụng"
     },
     "faq": {
       "eyebrow": "Hỏi đáp",
@@ -83,12 +30,13 @@
       "q3": "Dữ liệu lớp của tôi ai xem được?",
       "a3": "Chỉ bạn. Học sinh chỉ thấy bài của mình và bảng xếp hạng của lớp. Bạn có thể xóa lớp và toàn bộ dữ liệu bất cứ lúc nào.",
       "q4": "Mạng ở trung tâm yếu thì sao?",
-      "a4": "Bài nộp được giữ trên điện thoại và tự gửi lại khi có mạng. Trang máy chiếu tự kết nối lại mà không cần tải lại."
+      "a4": "Bài nộp được giữ trên điện thoại và tự gửi lại khi có mạng. Trang máy chiếu tự kết nối lại mà không cần tải lại.",
+      "q5": "Học sinh có vào được trang giáo viên không?",
+      "a5": "Không. Học sinh vào lớp bằng địa chỉ riêng, tách khỏi trang giáo viên, nên không thể tự tạo tài khoản giáo viên hay xem đề của lớp khác."
     },
     "final": {
       "title": "Buổi học tới, thử 5 phút đầu giờ với Lớp Học.",
-      "cta": "Tạo tài khoản miễn phí",
-      "login": "Đã có tài khoản? Đăng nhập"
+      "cta": "Tạo tài khoản miễn phí"
     },
     "footer": {
       "tagline": "Điểm danh, kiểm tra đầu giờ và bảng xếp hạng cho lớp học của bạn.",
@@ -99,30 +47,88 @@
       "copyright": "© {year} Lớp Học",
       "contact": "Liên hệ qua Zalo / Facebook"
     },
-    "imgAlt": {
-      "hero": "Giáo viên đứng cạnh bảng trắng trong lớp học buổi tối, học sinh THPT cầm điện thoại làm bài",
-      "bank": "Tay giáo viên cầm điện thoại chụp đề thi in trên bàn",
-      "students": "Ba học sinh THPT reo hò trong lớp học sáng, một bạn giơ điện thoại lên"
+    "workflow": {
+      "eyebrow": "Từ đề có sẵn đến kết quả cả lớp",
+      "title": "Một quy trình gọn cho mỗi buổi dạy.",
+      "subtitle": "Chuẩn bị trước giờ học, cùng học sinh làm bài, rồi dành thời gian cho những câu cần giảng lại.",
+      "steps": [
+        {
+          "label": "Trước giờ học",
+          "title": "Dùng lại đề thầy cô đã có",
+          "body": "Dán văn bản, tải Word hoặc trích xuất từ ảnh. Xem lại câu hỏi, chỉnh sửa rồi lưu vào ngân hàng riêng.",
+          "detail": "Word / ảnh / văn bản → Câu hỏi sẵn sàng"
+        },
+        {
+          "label": "Trong giờ học",
+          "title": "Cả lớp cùng tham gia",
+          "body": "Học sinh nhập mã lớp, chọn tên và trả lời trên điện thoại. Câu hỏi hiện trên máy chiếu, thầy cô bấm chuyển từng câu hoặc cho các em tự làm.",
+          "detail": "Mã lớp → Chọn tên → Làm bài trên điện thoại"
+        },
+        {
+          "label": "Sau khi làm bài",
+          "title": "Biết câu nào cần giảng lại",
+          "body": "Công bố kết quả là máy chiếu hiện phân bố đáp án và bảng xếp hạng. Điểm số lưu theo buổi để thầy cô biết câu nào cần giảng lại.",
+          "detail": "Đáp án → Máy chiếu → Ôn tập"
+        }
+      ]
     },
-    "stats": {
-      "attendance": "giây để điểm danh cả lớp",
-      "import": "cách nhập đề: dán, Word, ảnh chụp",
-      "code": "ký tự để học sinh vào lớp",
-      "price": "chi phí, miễn phí cho giáo viên"
+    "extras": {
+      "eyebrow": "Những việc nhỏ, đã có chỗ",
+      "title": "Quản lý lớp cũng nhẹ nhàng hơn.",
+      "attendanceTitle": "Điểm danh ngay trong buổi học",
+      "attendanceBody": "Chạm để đổi có mặt, muộn, vắng hoặc có phép. Học sinh vào lớp bằng điện thoại được tự đánh có mặt.",
+      "historyTitle": "Mỗi buổi học, một nơi để xem lại",
+      "historyBody": "Lưu điểm số và chuyên cần theo buổi. Ngân hàng câu hỏi có thẻ môn, khối và chủ đề để dùng lại cho lớp sau.",
+      "historyNote": "Lịch sử 30 ngày trong gói miễn phí"
     },
-    "demo": {
-      "className": "Toán 12A1 · tối thứ 3",
-      "joined": "{count}/{total} đã vào lớp",
-      "board": "Bảng xếp hạng",
-      "question": "Câu {index}/{total}",
-      "answered": "{count}/{total} đã trả lời",
-      "waiting": "Đang chờ",
-      "waitingBody": "Chờ giáo viên bắt đầu…",
-      "stem": "Tính tích phân",
-      "submitted": "Đã nộp",
-      "correct": "Chính xác!",
-      "sent": "Đã gửi ✓",
-      "submit": "Nộp"
+    "pricing": {
+      "eyebrow": "Gói miễn phí",
+      "title": "Bắt đầu với chính lớp học của thầy cô.",
+      "body": "Tạo lớp, đưa đề vào và tổ chức buổi học đầu tiên. Các công cụ thiết yếu đã có trong gói miễn phí.",
+      "price": "0đ",
+      "unit": "Không cần thẻ thanh toán",
+      "items": [
+        "2 lớp học",
+        "Tối đa 50 học sinh mỗi lớp",
+        "20 trang trích xuất bằng AI mỗi tháng",
+        "Lưu lịch sử trong 30 ngày",
+        "Không giới hạn số buổi học và câu hỏi"
+      ],
+      "cta": "Tạo tài khoản miễn phí"
+    },
+    "showcase": {
+      "eyebrow": "Lớp học mẫu",
+      "title": "Một buổi kiểm tra diễn ra như thế nào?",
+      "body": "Chọn từng bước để khám phá. Đây là dữ liệu minh họa, thầy cô không cần đăng ký.",
+      "steps": ["Nhập đề", "Làm bài", "Kết quả"],
+      "className": "Toán 12A1",
+      "sample": "Dữ liệu minh họa",
+      "resultTitle": "Câu nào cả lớp còn băn khoăn?",
+      "resultBody": "Câu 3 · Cho hàm số f(x) = x³ − 3x² + 2. Giá trị f′(1) bằng bao nhiêu?",
+      "answered": "Đã trả lời",
+      "correct": "Trả lời đúng",
+      "review": "12 học sinh chọn đáp án khác. Thầy cô có thể dành thêm thời gian ôn lại câu này.",
+      "distribution": "Phân bố đáp án",
+      "importTitle": "Từ đề có sẵn đến câu hỏi trong lớp",
+      "importBody": "Chọn nguồn đề minh họa. Sau khi nhập, thầy cô xem lại và sửa trước khi lưu.",
+      "sources": ["Word", "Ảnh / PDF", "Văn bản"],
+      "file": "Ôn tập hàm số và đạo hàm · Toán THPT · 3 câu hỏi",
+      "ready": "Câu hỏi sau khi nhập",
+      "questions": [
+        "Cho hàm số f(x) = x³ − 3x + 2. Tính đạo hàm f′(x).",
+        "Hàm số y = x³ − 3x² + 2 đồng biến trên những khoảng nào?",
+        "Cho hàm số f(x) = x³ − 3x² + 2. Giá trị f′(1) bằng bao nhiêu?"
+      ],
+      "joinTitle": "Học sinh vào lớp bằng mã",
+      "joinBody": "Mở trình duyệt, nhập mã lớp và chọn tên. Không cần cài ứng dụng.",
+      "question": "Thử chọn một đáp án",
+      "submit": "Nộp câu trả lời mẫu",
+      "sent": "Đã ghi nhận lựa chọn trong bản minh họa.",
+      "resultLink": "Xem kết quả mẫu",
+      "phone": "Góc nhìn học sinh",
+      "phoneNote": "Đáp án được hiển thị khi giáo viên công bố.",
+      "sourcePreview": "Hàm số bậc ba · Khoảng đồng biến · Đạo hàm tại một điểm",
+      "submitted": "Đã nộp ✓"
     }
   },
   "Common": {

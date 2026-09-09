@@ -2,10 +2,13 @@ import Link from 'next/link';
 import type { ComponentProps, ReactNode } from 'react';
 import { cn } from '@/components/ui/cn';
 
-type PillVariant = 'primary' | 'secondary' | 'inverse';
+type PillVariant = 'primary' | 'ink' | 'secondary' | 'inverse';
 
 const PILL: Record<PillVariant, string> = {
-  primary: 'bg-ink text-white hover:bg-ink/85',
+  /** Hành động chính toàn trang (DESIGN.md §2): accent xanh */
+  primary: 'bg-accent text-white hover:bg-accent-strong',
+  /** Mực đen: chỉ cho trạng thái đang chọn trên nền sáng, không dùng làm CTA */
+  ink: 'bg-ink text-white hover:bg-ink/85',
   secondary: 'border border-hairline bg-canvas text-ink hover:bg-surface-soft',
   inverse: 'bg-white text-ink hover:bg-white/90',
 };
