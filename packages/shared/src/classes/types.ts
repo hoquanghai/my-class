@@ -1,10 +1,18 @@
-import type { ScheduleItem } from './schemas.js';
+import type { Gender, ScheduleItem } from './schemas.js';
 
 export interface StudentDto {
   id: string;
   name: string;
   studentCode: string | null;
+  /** YYYY-MM-DD */
+  dateOfBirth: string | null;
+  gender: Gender | null;
+  phone: string | null;
+  email: string | null;
+  school: string | null;
+  parentName: string | null;
   parentPhone: string | null;
+  note: string | null;
   sortOrder: number;
 }
 

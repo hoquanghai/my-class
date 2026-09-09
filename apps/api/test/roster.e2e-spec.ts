@@ -87,6 +87,83 @@ describe('Roster (e2e)', () => {
     ]);
   });
 
+  it('tải file mẫu rồi nhập lại với đủ cột; sửa từng trường', async () => {
+    const { s, classId } = await setup('roster-template');
+    const tpl = await http()
+      .get(`/api/classes/${classId}/students/template.xlsx`)
+      .set('Cookie', ck(s))
+      .buffer(true)
+      .parse((res, cb) => {
+        const chunks: Buffer[] = [];
+        res.on('data', (c: Buffer) => chunks.push(c));
+        res.on('end', () => cb(null, Buffer.concat(chunks)));
+      })
+      .expect(200);
+    expect(tpl.headers['content-type']).toContain('spreadsheetml');
+    expect(tpl.headers['content-disposition']).toContain('.xlsx');
+
+    const wb = new ExcelJS.Workbook();
+    await wb.xlsx.load(tpl.body as unknown as ExcelJS.Buffer);
+    const ws = wb.getWorksheet('Danh sách')!;
+    expect(ws.getRow(1).getCell(2).value).toBe('Họ và tên (bắt buộc)');
+    expect(ws.getRow(1).getCell(3).value).toBe('Mã học sinh (tùy chọn)');
+    ws.addRow([
+      1,
+      'Nguyễn Văn An',
+      'HS001',
+      '15/08/2008',
+      'Nam',
+      '0912345678',
+      'an@example.com',
+      'THPT A',
+      'Nguyễn Văn Bình',
+      '0987654321',
+      'Ghi chú',
+    ]);
+    const buffer = Buffer.from(await wb.xlsx.writeBuffer());
+    const res = await http()
+      .post(`/api/classes/${classId}/students/import-excel`)
+      .set('Cookie', ck(s))
+      .attach('file', buffer, 'mau.xlsx')
+      .expect(200);
+    expect(res.body.added).toBe(1);
+    expect(res.body.students[0]).toMatchObject({
+      name: 'Nguyễn Văn An',
+      studentCode: 'HS001',
+      dateOfBirth: '2008-08-15',
+      gender: 'nam',
+      phone: '0912345678',
+      email: 'an@example.com',
+      school: 'THPT A',
+      parentName: 'Nguyễn Văn Bình',
+      parentPhone: '0987654321',
+      note: 'Ghi chú',
+    });
+
+    const id = (res.body.students[0] as StudentRow).id;
+    await http()
+      .patch(`/api/classes/${classId}/students/${id}`)
+      .set('Cookie', ck(s))
+      .send({ dateOfBirth: '2008-02-30' })
+      .expect(400);
+    await http()
+      .patch(`/api/classes/${classId}/students/${id}`)
+      .set('Cookie', ck(s))
+      .send({ gender: 'khac-la' })
+      .expect(400);
+    const upd = await http()
+      .patch(`/api/classes/${classId}/students/${id}`)
+      .set('Cookie', ck(s))
+      .send({ gender: '', email: '', dateOfBirth: '2008-02-29', note: 'Mới' })
+      .expect(200);
+    expect(upd.body).toMatchObject({
+      gender: null,
+      email: null,
+      dateOfBirth: '2008-02-29',
+      note: 'Mới',
+    });
+  });
+
   it('file không phải .xlsx → 400', async () => {
     const { s, classId } = await setup('roster-badfile');
     await http()

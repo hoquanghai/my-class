@@ -12,6 +12,27 @@ import { AnalyticsService } from '../analytics/analytics.service.js';
 import { LimitsService } from '../feature-flags/limits.service.js';
 import { ClassesService, toStudentDto } from './classes.service.js';
 import { parseRosterWorkbook, type RosterRow } from './excel-roster.parser.js';
+import { buildRosterTemplate } from './roster-template.js';
+
+/** "2008-08-15" → Date nửa đêm UTC cho cột `@db.Date`; rỗng → null. */
+export function toDbDate(iso: string | null | undefined): Date | null {
+  return iso ? new Date(`${iso}T00:00:00.000Z`) : null;
+}
+
+/** Các trường tùy chọn của học sinh từ một dòng nhập; thiếu thì null. */
+function rowFields(row?: RosterRow) {
+  return {
+    studentCode: row?.studentCode ?? null,
+    dateOfBirth: toDbDate(row?.dateOfBirth),
+    gender: row?.gender ?? null,
+    phone: row?.phone ?? null,
+    email: row?.email ?? null,
+    school: row?.school ?? null,
+    parentName: row?.parentName ?? null,
+    parentPhone: row?.parentPhone ?? null,
+    note: row?.note ?? null,
+  };
+}
 
 @Injectable()
 export class StudentsService {
@@ -76,13 +97,25 @@ export class StudentsService {
       data: names.map((name, i) => ({
         classId,
         name,
-        parentPhone: rows[i]?.parentPhone ?? null,
         sortOrder: nextOrder++,
+        ...rowFields(rows[i]),
       })),
     });
     const students = await this.list(classId);
     await this.analytics.track('roster_size', { classId, size: students.length }, teacherId);
     return { students, added: names.length };
+  }
+
+  /** File Excel mẫu cho lớp: tên file kèm mã lớp, sheet hướng dẫn ghi tên lớp. */
+  async template(
+    teacherId: string,
+    classId: string,
+  ): Promise<{ buffer: Buffer; filename: string }> {
+    const klass = await this.classes.findOwned(teacherId, classId);
+    return {
+      buffer: await buildRosterTemplate(klass.name),
+      filename: `lophoc-mau-danh-sach-${klass.code}.xlsx`,
+    };
   }
 
   async list(classId: string): Promise<StudentDto[]> {
@@ -116,8 +149,15 @@ export class StudentsService {
       where: { id: studentId },
       data: {
         name,
-        ...(input.parentPhone !== undefined && { parentPhone: input.parentPhone }),
         ...(input.studentCode !== undefined && { studentCode: input.studentCode }),
+        ...(input.dateOfBirth !== undefined && { dateOfBirth: toDbDate(input.dateOfBirth) }),
+        ...(input.gender !== undefined && { gender: input.gender }),
+        ...(input.phone !== undefined && { phone: input.phone }),
+        ...(input.email !== undefined && { email: input.email }),
+        ...(input.school !== undefined && { school: input.school }),
+        ...(input.parentName !== undefined && { parentName: input.parentName }),
+        ...(input.parentPhone !== undefined && { parentPhone: input.parentPhone }),
+        ...(input.note !== undefined && { note: input.note }),
       },
     });
     return toStudentDto(updated);

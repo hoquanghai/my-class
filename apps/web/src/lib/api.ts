@@ -48,6 +48,20 @@ export function apiUrl(path: string): string {
   return `${API_URL}/api${path}`;
 }
 
+/** Tải file nhị phân từ API (kèm cookie, thử refresh một lần khi 401) và lưu về máy. */
+export async function downloadFile(path: string, filename: string): Promise<void> {
+  const get = () => fetch(apiUrl(path), { credentials: 'include' });
+  let res = await get();
+  if (res.status === 401 && (await refreshSession())) res = await get();
+  if (!res.ok) throw new ApiError(res.status, undefined, `Không tải được file (lỗi ${res.status})`);
+  const url = URL.createObjectURL(await res.blob());
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
 export async function apiFetch<T>(path: string, opts: ApiOptions = {}): Promise<T> {
   const { method = 'GET', body, formData, signal, retryOn401 = true, headers = {} } = opts;
   const res = await fetch(apiUrl(path), {

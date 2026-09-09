@@ -111,7 +111,14 @@ model Student {
   classId     String
   name        String
   studentCode String?
+  dateOfBirth DateTime? @db.Date
+  gender      String? // nam | nu | khac
+  phone       String?
+  email       String?
+  school      String?
+  parentName  String?
   parentPhone String?
+  note        String?
   sortOrder   Int
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt

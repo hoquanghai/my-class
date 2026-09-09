@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { GRADES, SUBJECTS } from '../education.js';
+import { isValidIsoDate } from '../roster/dates.js';
 
 const TIME_HHMM = /^([01]\d|2[0-3]):[0-5]\d$/;
 
@@ -17,13 +18,16 @@ export const classNameSchema = z
   .min(1, 'Vui lòng nhập tên lớp')
   .max(100, 'Tên lớp tối đa 100 ký tự');
 
-const optionalShortText = z
-  .string()
-  .trim()
-  .max(50)
-  .transform((v) => (v === '' ? null : v))
-  .nullable()
-  .optional();
+/** Chuỗi tùy chọn: rỗng → null. */
+const optionalText = (max: number) =>
+  z
+    .string()
+    .trim()
+    .max(max, `Tối đa ${max} ký tự`)
+    .transform((v) => (v === '' ? null : v))
+    .nullable()
+    .optional();
+const optionalShortText = optionalText(50);
 
 export const createClassSchema = z.object({
   name: classNameSchema,
@@ -57,10 +61,42 @@ const optionalPhone = z
   .nullable()
   .optional();
 
+export const GENDERS = ['nam', 'nu', 'khac'] as const;
+export type Gender = (typeof GENDERS)[number];
+export const GENDER_LABELS: Record<Gender, string> = { nam: 'Nam', nu: 'Nữ', khac: 'Khác' };
+
+const optionalGender = z.preprocess(
+  (v) => (v === '' ? null : v),
+  z.enum(GENDERS, { error: 'Giới tính không hợp lệ' }).nullable().optional(),
+);
+
+const optionalIsoDate = optionalText(10).refine(
+  (v) => v == null || isValidIsoDate(v),
+  'Ngày sinh không hợp lệ',
+);
+
+const optionalEmail = z
+  .string()
+  .trim()
+  .toLowerCase()
+  .max(120, 'Email tối đa 120 ký tự')
+  .transform((v) => (v === '' ? null : v))
+  .nullable()
+  .optional()
+  .refine((v) => v == null || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v), 'Email không hợp lệ');
+
+/** Sửa học sinh: chỉ tên là bắt buộc phải có giá trị; các trường khác tùy chọn (khớp file Excel mẫu). */
 export const updateStudentSchema = z.object({
   name: studentNameSchema.optional(),
-  parentPhone: optionalPhone,
   studentCode: optionalShortText,
+  dateOfBirth: optionalIsoDate,
+  gender: optionalGender,
+  phone: optionalPhone,
+  email: optionalEmail,
+  school: optionalText(120),
+  parentName: optionalText(100),
+  parentPhone: optionalPhone,
+  note: optionalText(500),
 });
 export type UpdateStudentInput = z.infer<typeof updateStudentSchema>;
 

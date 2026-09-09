@@ -6,14 +6,24 @@ import {
   parseNameLines,
   type StudentDto,
 } from '@lophoc/shared';
-import { ArrowDown, ArrowUp, ArrowDownAZ, History, Trash2, Upload } from 'lucide-react';
+import {
+  ArrowDown,
+  ArrowUp,
+  ArrowDownAZ,
+  FileDown,
+  History,
+  Pencil,
+  Trash2,
+  Upload,
+} from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { type KeyboardEvent, useMemo, useRef, useState } from 'react';
 import { AttendanceHistoryDialog } from '@/components/attendance-history-dialog';
+import { StudentDetailDialog } from '@/components/classes/student-detail-dialog';
 import { Alert } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Input, Textarea } from '@/components/ui/input';
-import { errorMessage } from '@/lib/api';
+import { downloadFile, errorMessage } from '@/lib/api';
 import {
   useImportExcel,
   useImportNames,
@@ -34,6 +44,7 @@ export function RosterTab({ klass, limits }: { klass: ClassDetailDto; limits?: L
   const t = useTranslations('Roster');
   const ta = useTranslations('Attendance');
   const [historyStudent, setHistoryStudent] = useState<StudentDto | null>(null);
+  const [detailStudent, setDetailStudent] = useState<StudentDto | null>(null);
   const importNames = useImportNames(klass.id);
   const importExcel = useImportExcel(klass.id);
   const updateStudent = useUpdateStudent(klass.id);
@@ -43,6 +54,8 @@ export function RosterTab({ klass, limits }: { klass: ClassDetailDto; limits?: L
   const [text, setText] = useState('');
   const [editing, setEditing] = useState<Editing | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
+  const [downloading, setDownloading] = useState(false);
+  const [downloadError, setDownloadError] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
 
   const pendingNames = useMemo(() => parseNameLines(text), [text]);
@@ -67,6 +80,21 @@ export function RosterTab({ klass, limits }: { klass: ClassDetailDto; limits?: L
     const result = await importExcel.mutateAsync(file).catch(() => null);
     if (fileRef.current) fileRef.current.value = '';
     if (result) setNotice(t('added', { count: result.added }));
+  }
+
+  async function downloadTemplate() {
+    setDownloadError(null);
+    setDownloading(true);
+    try {
+      await downloadFile(
+        `/classes/${klass.id}/students/template.xlsx`,
+        `lophoc-mau-danh-sach-${klass.code}.xlsx`,
+      );
+    } catch {
+      setDownloadError(t('downloadFailed'));
+    } finally {
+      setDownloading(false);
+    }
   }
 
   function startEdit(s: StudentDto, field: EditField) {
@@ -111,7 +139,7 @@ export function RosterTab({ klass, limits }: { klass: ClassDetailDto; limits?: L
 
   return (
     <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_360px]">
-      <section className="space-y-4">
+      <section className="min-w-0 space-y-4">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <p className="text-sm font-medium text-slate-700">
             {t('capacity', { count: students.length, max })}
@@ -144,100 +172,113 @@ export function RosterTab({ klass, limits }: { klass: ClassDetailDto; limits?: L
                   <th className="w-12 px-3 py-2">{t('colIndex')}</th>
                   <th className="px-3 py-2">{t('colName')}</th>
                   <th className="w-40 px-3 py-2">{t('colPhone')}</th>
-                  <th className="w-44 px-3 py-2" />
+                  <th className="w-52 px-3 py-2" />
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                {students.map((s, i) => (
-                  <tr key={s.id} className="hover:bg-slate-50">
-                    <td className="px-3 py-2 text-slate-500">{i + 1}</td>
-                    <td className="px-3 py-1.5">
-                      {editing?.id === s.id && editing.field === 'name' ? (
-                        <Input
-                          autoFocus
-                          value={editing.value}
-                          onChange={(e) => setEditing({ ...editing, value: e.target.value })}
-                          onKeyDown={onEditKey}
-                          onBlur={() => setEditing(null)}
-                          className="h-8"
-                        />
-                      ) : (
-                        <button
-                          type="button"
-                          className="w-full rounded px-1 py-1 text-left font-medium text-slate-900 hover:bg-brand-50"
-                          onClick={() => startEdit(s, 'name')}
-                        >
-                          {s.name}
-                        </button>
-                      )}
-                    </td>
-                    <td className="px-3 py-1.5">
-                      {editing?.id === s.id && editing.field === 'parentPhone' ? (
-                        <Input
-                          autoFocus
-                          value={editing.value}
-                          onChange={(e) => setEditing({ ...editing, value: e.target.value })}
-                          onKeyDown={onEditKey}
-                          onBlur={() => setEditing(null)}
-                          className="h-8"
-                          inputMode="tel"
-                        />
-                      ) : (
-                        <button
-                          type="button"
-                          className="w-full rounded px-1 py-1 text-left text-slate-600 hover:bg-brand-50"
-                          onClick={() => startEdit(s, 'parentPhone')}
-                        >
-                          {s.parentPhone || <span className="text-slate-300">—</span>}
-                        </button>
-                      )}
-                    </td>
-                    <td className="px-2 py-1.5">
-                      <div className="flex justify-end gap-0.5">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          aria-label={ta('history')}
-                          title={ta('history')}
-                          onClick={() => setHistoryStudent(s)}
-                        >
-                          <History className="size-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          aria-label={t('moveUp')}
-                          disabled={i === 0 || reorder.isPending}
-                          onClick={() => move(i, -1)}
-                        >
-                          <ArrowUp className="size-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          aria-label={t('moveDown')}
-                          disabled={i === students.length - 1 || reorder.isPending}
-                          onClick={() => move(i, 1)}
-                        >
-                          <ArrowDown className="size-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          aria-label={t('remove')}
-                          className="text-red-600 hover:bg-red-50"
-                          onClick={() => {
-                            if (window.confirm(t('removeConfirm', { name: s.name }))) {
-                              removeStudent.mutate(s.id);
-                            }
-                          }}
-                        >
-                          <Trash2 className="size-4" />
-                        </Button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                {students.map((s, i) => {
+                  const meta = [s.studentCode, s.school].filter(Boolean).join(' · ');
+                  return (
+                    <tr key={s.id} className="hover:bg-slate-50">
+                      <td className="px-3 py-2 text-slate-500">{i + 1}</td>
+                      <td className="px-3 py-1.5">
+                        {editing?.id === s.id && editing.field === 'name' ? (
+                          <Input
+                            autoFocus
+                            value={editing.value}
+                            onChange={(e) => setEditing({ ...editing, value: e.target.value })}
+                            onKeyDown={onEditKey}
+                            onBlur={() => setEditing(null)}
+                            className="h-8"
+                          />
+                        ) : (
+                          <button
+                            type="button"
+                            className="w-full rounded px-1 py-1 text-left hover:bg-brand-50"
+                            onClick={() => startEdit(s, 'name')}
+                          >
+                            <span className="block font-medium text-slate-900">{s.name}</span>
+                            {meta && <span className="block text-xs text-slate-500">{meta}</span>}
+                          </button>
+                        )}
+                      </td>
+                      <td className="px-3 py-1.5">
+                        {editing?.id === s.id && editing.field === 'parentPhone' ? (
+                          <Input
+                            autoFocus
+                            value={editing.value}
+                            onChange={(e) => setEditing({ ...editing, value: e.target.value })}
+                            onKeyDown={onEditKey}
+                            onBlur={() => setEditing(null)}
+                            className="h-8"
+                            inputMode="tel"
+                          />
+                        ) : (
+                          <button
+                            type="button"
+                            className="w-full rounded px-1 py-1 text-left text-slate-600 hover:bg-brand-50"
+                            onClick={() => startEdit(s, 'parentPhone')}
+                          >
+                            {s.parentPhone || <span className="text-slate-300">—</span>}
+                          </button>
+                        )}
+                      </td>
+                      <td className="px-2 py-1.5">
+                        <div className="flex justify-end gap-0.5">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            aria-label={t('edit')}
+                            title={t('edit')}
+                            onClick={() => setDetailStudent(s)}
+                          >
+                            <Pencil className="size-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            aria-label={ta('history')}
+                            title={ta('history')}
+                            onClick={() => setHistoryStudent(s)}
+                          >
+                            <History className="size-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            aria-label={t('moveUp')}
+                            disabled={i === 0 || reorder.isPending}
+                            onClick={() => move(i, -1)}
+                          >
+                            <ArrowUp className="size-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            aria-label={t('moveDown')}
+                            disabled={i === students.length - 1 || reorder.isPending}
+                            onClick={() => move(i, 1)}
+                          >
+                            <ArrowDown className="size-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            aria-label={t('remove')}
+                            className="text-red-600 hover:bg-red-50"
+                            onClick={() => {
+                              if (window.confirm(t('removeConfirm', { name: s.name }))) {
+                                removeStudent.mutate(s.id);
+                              }
+                            }}
+                          >
+                            <Trash2 className="size-4" />
+                          </Button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
             <p className="border-t border-slate-100 px-3 py-2 text-xs text-slate-400">
@@ -249,6 +290,11 @@ export function RosterTab({ klass, limits }: { klass: ClassDetailDto; limits?: L
           classId={klass.id}
           student={historyStudent}
           onClose={() => setHistoryStudent(null)}
+        />
+        <StudentDetailDialog
+          classId={klass.id}
+          student={detailStudent}
+          onClose={() => setDetailStudent(null)}
         />
       </section>
 
@@ -295,7 +341,17 @@ export function RosterTab({ klass, limits }: { klass: ClassDetailDto; limits?: L
             <Upload className="size-4" />
             {t('excel')}
           </Button>
+          <Button
+            variant="ghost"
+            className="w-full"
+            loading={downloading}
+            onClick={downloadTemplate}
+          >
+            <FileDown className="size-4" />
+            {t('template')}
+          </Button>
           <p className="text-xs text-slate-500">{t('excelHint')}</p>
+          {downloadError && <Alert variant="error">{downloadError}</Alert>}
         </div>
 
         <p className="text-xs leading-relaxed text-slate-500">{t('consent')}</p>

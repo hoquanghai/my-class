@@ -13,7 +13,7 @@ import { Button } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
 import { Field } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
-import { apiUrl, errorMessage } from '@/lib/api';
+import { apiUrl, downloadFile, errorMessage } from '@/lib/api';
 import { useDeleteClass, useRegenerateCode, useUpdateClass } from '@/lib/classes';
 import { type FieldErrors, validate } from '@/lib/forms';
 import { studentJoinUrl } from '@/lib/student-origin';
@@ -57,14 +57,7 @@ export function SettingsTab({ klass }: { klass: ClassDetailDto }) {
   }
 
   async function downloadQr() {
-    const res = await fetch(apiUrl(`/classes/${klass.id}/qr.png`), { credentials: 'include' });
-    const blob = await res.blob();
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `lophoc-${klass.code}.png`;
-    a.click();
-    URL.revokeObjectURL(url);
+    await downloadFile(`/classes/${klass.id}/qr.png`, `lophoc-${klass.code}.png`);
   }
 
   async function softDelete() {

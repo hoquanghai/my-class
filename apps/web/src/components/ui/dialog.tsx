@@ -9,10 +9,12 @@ export interface DialogProps {
   title: string;
   children: ReactNode;
   className?: string;
+  /** `lg` cho form nhiều trường (max-w-2xl). */
+  size?: 'md' | 'lg';
 }
 
 /** Hộp thoại dùng thẻ <dialog> gốc: ESC và bấm nền đều đóng. */
-export function Dialog({ open, onClose, title, children, className }: DialogProps) {
+export function Dialog({ open, onClose, title, children, className, size = 'md' }: DialogProps) {
   const ref = useRef<HTMLDialogElement>(null);
 
   useEffect(() => {
@@ -37,7 +39,8 @@ export function Dialog({ open, onClose, title, children, className }: DialogProp
         if (e.target === ref.current) onClose();
       }}
       className={cn(
-        'w-full max-w-lg rounded-xl bg-white p-0 shadow-xl backdrop:bg-slate-900/40 open:animate-in',
+        'w-full rounded-xl bg-white p-0 shadow-xl backdrop:bg-slate-900/40 open:animate-in',
+        size === 'lg' ? 'max-w-2xl' : 'max-w-lg',
         'm-auto',
         className,
       )}

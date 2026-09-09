@@ -3,10 +3,12 @@ import {
   Body,
   Controller,
   Delete,
+  Get,
   HttpCode,
   Param,
   Patch,
   Post,
+  Res,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
@@ -21,6 +23,7 @@ import {
   type UpdateStudentInput,
   updateStudentSchema,
 } from '@lophoc/shared';
+import type { Response } from 'express';
 import {
   CurrentTeacher,
   type TeacherPrincipal,
@@ -68,6 +71,22 @@ export class StudentsController {
     if (!file) throw new BadRequestException('Chưa chọn file Excel');
     if (!looksLikeXlsx(file)) throw new BadRequestException('Chỉ hỗ trợ file .xlsx');
     return this.students.importExcel(teacher.id, classId, file.buffer);
+  }
+
+  /** File Excel mẫu: đủ cột, tiêu đề ghi rõ (bắt buộc)/(tùy chọn), kèm sheet Hướng dẫn. */
+  @Get('template.xlsx')
+  async template(
+    @CurrentTeacher() teacher: TeacherPrincipal,
+    @Param('classId') classId: string,
+    @Res() res: Response,
+  ): Promise<void> {
+    const { buffer, filename } = await this.students.template(teacher.id, classId);
+    res.setHeader(
+      'Content-Type',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    );
+    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+    res.end(buffer);
   }
 
   @Post('reorder')

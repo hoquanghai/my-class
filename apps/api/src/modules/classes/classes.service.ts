@@ -3,6 +3,7 @@ import {
   type ClassDetailDto,
   type ClassSummaryDto,
   type CreateClassInput,
+  type Gender,
   generateClassCode,
   type ScheduleItem,
   type StudentDto,
@@ -18,7 +19,14 @@ export function toStudentDto(s: Student): StudentDto {
     id: s.id,
     name: s.name,
     studentCode: s.studentCode,
+    dateOfBirth: s.dateOfBirth ? s.dateOfBirth.toISOString().slice(0, 10) : null,
+    gender: (s.gender as Gender | null) ?? null,
+    phone: s.phone,
+    email: s.email,
+    school: s.school,
+    parentName: s.parentName,
     parentPhone: s.parentPhone,
+    note: s.note,
     sortOrder: s.sortOrder,
   };
 }
