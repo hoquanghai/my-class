@@ -71,7 +71,10 @@ function ResetPasswordForm() {
         </>
       )}
       <p className="text-center text-sm">
-        <Link href="/login" className="text-brand-700 hover:underline">
+        <Link
+          href="/login"
+          className="font-semibold text-accent underline-offset-4 hover:underline"
+        >
           {t('backToLogin')}
         </Link>
       </p>

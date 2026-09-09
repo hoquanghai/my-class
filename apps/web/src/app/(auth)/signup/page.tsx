@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { type FormEvent, useState } from 'react';
+import { PasswordInput } from '@/components/auth/password-input';
 import { OrDivider, SocialButtons } from '@/components/auth/social-buttons';
 import { Alert } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
@@ -52,14 +53,15 @@ export default function SignupPage() {
     <div className="space-y-6">
       <div>
         <h1 className="type-h2 text-ink">{t('signupTitle')}</h1>
-        <p className="mt-2 text-base text-ink-muted">{t('signupHint')}</p>
+        <p className="mt-2 text-sm text-ink-muted sm:text-base">{t('signupHint')}</p>
       </div>
+
       {serverError && <Alert variant="error">{serverError}</Alert>}
 
       <SocialButtons />
       <OrDivider />
 
-      <form onSubmit={onSubmit} className="space-y-5" noValidate>
+      <form onSubmit={onSubmit} className="space-y-4" noValidate>
         <Field label={t('name')} htmlFor="name" error={errors.name}>
           <Input
             id="name"
@@ -67,6 +69,7 @@ export default function SignupPage() {
             value={name}
             onChange={(e) => setName(e.target.value)}
             aria-invalid={Boolean(errors.name)}
+            className="h-12"
           />
         </Field>
         <Field label={t('email')} htmlFor="email" error={errors.email}>
@@ -74,9 +77,13 @@ export default function SignupPage() {
             id="email"
             type="email"
             autoComplete="email"
+            inputMode="email"
+            autoCapitalize="none"
+            spellCheck={false}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             aria-invalid={Boolean(errors.email)}
+            className="h-12"
           />
         </Field>
         <Field
@@ -85,9 +92,8 @@ export default function SignupPage() {
           hint={t('passwordHint')}
           error={errors.password}
         >
-          <Input
+          <PasswordInput
             id="password"
-            type="password"
             autoComplete="new-password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
@@ -96,10 +102,10 @@ export default function SignupPage() {
         </Field>
 
         <div className="space-y-1">
-          <label className="flex items-start gap-2 text-sm text-ink">
+          <label className="flex items-start gap-3 text-sm text-ink">
             <input
               type="checkbox"
-              className="mt-0.5 size-4 rounded border-hairline accent-ink"
+              className="mt-0.5 size-5 shrink-0 rounded border-hairline accent-accent"
               checked={acceptTerms}
               onChange={(e) => setAcceptTerms(e.target.checked)}
             />
@@ -108,7 +114,7 @@ export default function SignupPage() {
                 terms: (chunks) => (
                   <Link
                     href="/terms"
-                    className="text-accent underline-offset-4 hover:underline"
+                    className="font-medium text-accent underline-offset-4 hover:underline"
                     target="_blank"
                   >
                     {chunks}
@@ -117,7 +123,7 @@ export default function SignupPage() {
                 privacy: (chunks) => (
                   <Link
                     href="/privacy"
-                    className="text-accent underline-offset-4 hover:underline"
+                    className="font-medium text-accent underline-offset-4 hover:underline"
                     target="_blank"
                   >
                     {chunks}
@@ -140,7 +146,10 @@ export default function SignupPage() {
 
       <p className="text-center text-sm text-ink-muted">
         {t('haveAccount')}{' '}
-        <Link href="/login" className="font-medium text-accent underline-offset-4 hover:underline">
+        <Link
+          href="/login"
+          className="font-semibold text-accent underline-offset-4 hover:underline"
+        >
           {t('loginLink')}
         </Link>
       </p>

@@ -40,7 +40,7 @@ function VerifyEmail() {
     <div className="space-y-5">
       <h1 className="type-h2 text-ink">{t('verifyTitle')}</h1>
       {status === 'verifying' && (
-        <div className="flex items-center gap-3 text-slate-600">
+        <div className="flex items-center gap-3 text-ink-muted">
           <Spinner className="size-5" /> {t('verifying')}
         </div>
       )}
@@ -49,7 +49,7 @@ function VerifyEmail() {
       {status === 'missing' && <Alert variant="warning">{t('verifyMissingToken')}</Alert>}
       <Link
         href="/app/classes"
-        className="inline-flex h-11 items-center justify-center rounded-lg bg-brand-600 px-5 font-medium text-white hover:bg-brand-700"
+        className="inline-flex h-11 items-center justify-center rounded-full bg-accent px-5 font-semibold text-white hover:bg-accent-strong"
       >
         {t('goToApp')}
       </Link>

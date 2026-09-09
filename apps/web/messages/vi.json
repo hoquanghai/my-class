@@ -187,18 +187,14 @@
     "backHome": "Về trang chủ",
     "showPassword": "Hiện mật khẩu",
     "hidePassword": "Ẩn mật khẩu",
-    "loginHint": "Đăng nhập để mở lớp, phát đề và xem báo cáo.",
+    "loginHint": "Đăng nhập để mở lớp, phát đề và xem kết quả.",
     "signupHint": "Tạo tài khoản trong 1 phút. Miễn phí, không cần thẻ.",
-    "panelEyebrow": "Mẹo nhanh",
-    "panelTitle": "Đề kiểm tra hôm nay đã sẵn sàng chưa?",
-    "panelBody": "Dán đề từ Word hoặc chụp ảnh đề in, lưới xem trước sẽ tách câu và đáp án. Chọn ngẫu nhiên 10 câu theo chủ đề là có đề đầu giờ.",
-    "panelNoteTitle": "Buổi gần nhất",
-    "panelNoteBody": "28/30 có mặt · 10 câu · 6 phút",
     "facebook": "Tiếp tục với Facebook",
     "facebookError": "Đăng nhập Facebook không thành công. Hãy chắc tài khoản Facebook có email và cho phép chia sẻ email.",
     "orEmail": "hoặc dùng email",
     "socialTermsNote": "Khi tiếp tục với Google hoặc Facebook, bạn đồng ý với Điều khoản sử dụng và Chính sách bảo mật.",
-    "providerDisabled": "Đăng nhập bằng {provider} chưa được bật trên máy chủ này. Hãy dùng email hoặc liên hệ quản trị viên."
+    "providerDisabled": "Đăng nhập bằng {provider} chưa được bật trên máy chủ này. Hãy dùng email hoặc liên hệ quản trị viên.",
+    "panelSample": "Dữ liệu minh họa"
   },
   "Shell": {
     "classes": "Lớp học",
