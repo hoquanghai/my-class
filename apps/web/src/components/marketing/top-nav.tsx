@@ -44,13 +44,6 @@ export function TopNav() {
           >
             {t('login')}
           </Link>
-          <PillLink
-            href="/join"
-            variant="secondary"
-            className="hidden h-10 px-4 text-sm md:inline-flex"
-          >
-            {t('studentJoin')}
-          </PillLink>
           <PillLink href="/signup" className="h-10 px-4 text-sm">
             {t('cta')}
           </PillLink>
@@ -82,11 +75,8 @@ export function TopNav() {
               {l.label}
             </a>
           ))}
-          <div className="mt-2 flex flex-col gap-2 border-t border-hairline-soft pt-3 sm:flex-row">
-            <PillLink href="/join" variant="secondary" className="w-full sm:w-auto">
-              {t('studentJoin')}
-            </PillLink>
-            <PillLink href="/login" variant="secondary" className="w-full sm:hidden">
+          <div className="mt-2 flex flex-col gap-2 border-t border-hairline-soft pt-3 sm:hidden">
+            <PillLink href="/login" variant="secondary" className="w-full">
               {t('login')}
             </PillLink>
           </div>

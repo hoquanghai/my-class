@@ -8,15 +8,16 @@ async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule);
   const config = app.get(ConfigService<Env, true>);
   const appUrl = config.get('APP_URL', { infer: true });
+  const origins = [appUrl, config.get('STUDENT_APP_URL', { infer: true })];
 
   await configureApp(app, {
-    corsOrigin: appUrl,
+    corsOrigin: origins,
     realtimeRedisUrl:
       config.get('REALTIME_ADAPTER', { infer: true }) === 'redis'
         ? config.get('REDIS_URL', { infer: true })
         : undefined,
   });
-  app.enableCors({ origin: appUrl, credentials: true });
+  app.enableCors({ origin: origins, credentials: true });
   app.enableShutdownHooks();
 
   const port = config.get('PORT', { infer: true });

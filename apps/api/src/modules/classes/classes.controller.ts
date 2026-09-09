@@ -19,14 +19,14 @@ import { QrService } from './qr.service.js';
 
 @Controller('classes')
 export class ClassesController {
-  private readonly appUrl: string;
+  private readonly studentUrl: string;
 
   constructor(
     private readonly classes: ClassesService,
     private readonly qr: QrService,
     config: ConfigService<Env, true>,
   ) {
-    this.appUrl = config.get('APP_URL', { infer: true });
+    this.studentUrl = config.get('STUDENT_APP_URL', { infer: true });
   }
 
   @Get()
@@ -88,7 +88,7 @@ export class ClassesController {
     @Res() res: Response,
   ): Promise<void> {
     const klass = await this.classes.findOwned(teacher.id, id);
-    const png = await this.qr.png(`${this.appUrl}/join/${klass.code}`);
+    const png = await this.qr.png(`${this.studentUrl}/${klass.code}`);
     res.setHeader('Content-Type', 'image/png');
     res.setHeader('Cache-Control', 'private, max-age=300');
     res.setHeader('Content-Disposition', `inline; filename="lophoc-${klass.code}.png"`);

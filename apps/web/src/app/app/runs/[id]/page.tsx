@@ -19,7 +19,7 @@ import { Spinner } from '@/components/ui/spinner';
 import { errorMessage } from '@/lib/api';
 import { runKeys, useOverrideAnswer, useRunAction, useRunDetail } from '@/lib/runs';
 import { useSessionSocket } from '@/lib/socket';
-import { useOrigin } from '@/lib/use-origin';
+import { studentJoinDisplay, studentJoinUrl } from '@/lib/student-origin';
 
 const STATUS_STYLE = {
   lobby: 'bg-slate-100 text-slate-700',
@@ -128,7 +128,6 @@ export default function RunControlPage() {
   const detail = useRunDetail(id);
   const action = useRunAction(id);
   const override = useOverrideAnswer(id);
-  const origin = useOrigin();
   const sessionId = detail.data?.state.sessionId ?? null;
   const rt = useSessionSocket(
     sessionId,
@@ -169,7 +168,7 @@ export default function RunControlPage() {
   const current = state.currentQuestion;
   const openedAt = state.questionOpenedAt ? Date.parse(state.questionOpenedAt) : null;
   const closed = state.questionClosedAt !== null;
-  const joinUrl = origin ? `${origin}/join/${state.classCode}` : `/join/${state.classCode}`;
+  const joinUrl = studentJoinUrl(state.classCode);
 
   return (
     <div className="space-y-5">
@@ -218,7 +217,7 @@ export default function RunControlPage() {
       {state.status === 'lobby' && (
         <section className="space-y-4 rounded-xl border border-slate-200 bg-white p-5">
           <div className="flex flex-wrap items-center gap-2 text-slate-700">
-            <span>{t('joinHint', { url: joinUrl })}</span>
+            <span>{t('joinHint', { url: studentJoinDisplay(state.classCode) })}</span>
             <span className="rounded-md bg-slate-900 px-2 py-0.5 font-mono text-lg font-bold tracking-widest text-white">
               {state.classCode}
             </span>

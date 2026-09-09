@@ -15,7 +15,7 @@ import { Input } from '@/components/ui/input';
 import { apiUrl, errorMessage } from '@/lib/api';
 import { useDeleteClass, useRegenerateCode, useUpdateClass } from '@/lib/classes';
 import { type FieldErrors, validate } from '@/lib/forms';
-import { useOrigin } from '@/lib/use-origin';
+import { studentJoinUrl } from '@/lib/student-origin';
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -43,8 +43,7 @@ export function SettingsTab({ klass }: { klass: ClassDetailDto }) {
   const [saved, setSaved] = useState(false);
   const [hardOpen, setHardOpen] = useState(false);
   const [confirmName, setConfirmName] = useState('');
-  const origin = useOrigin();
-  const joinUrl = origin ? `${origin}/join/${klass.code}` : '';
+  const joinUrl = studentJoinUrl(klass.code);
 
   async function saveInfo(e: FormEvent) {
     e.preventDefault();

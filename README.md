@@ -46,15 +46,16 @@ Các lệnh trên đi qua Turbo nên tự sinh Prisma client trước. Nếu ch�
 
 Xem `apps/api/.env.example` và `apps/web/.env.example`. `apps/api/.env.test` dùng cho e2e (không có secret).
 
-| Biến (api)                                 | Ý nghĩa                                                                    |
-| ------------------------------------------ | -------------------------------------------------------------------------- |
-| `JWT_SECRET`                               | Bí mật ký access token (≥ 32 ký tự). Production: `openssl rand -base64 48` |
-| `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` | Google OAuth; để trống thì nút "Tiếp tục với Google" bị ẩn                 |
-| `FACEBOOK_APP_ID`, `FACEBOOK_APP_SECRET`   | Facebook Login (cần quyền `email`); để trống thì nút Facebook bị ẩn        |
-| `SMTP_HOST/PORT/USER/PASS/SECURE`          | Gửi email xác thực và đặt lại mật khẩu (dev: Mailpit `localhost:1025`)     |
-| `MAIL_FROM`                                | Địa chỉ người gửi                                                          |
-| `MAIL_TRANSPORT`                           | `smtp` (mặc định) hoặc `memory` (test: giữ email trong RAM)                |
-| `APP_URL`, `API_URL`                       | Địa chỉ web và api, dùng cho cookie, CORS, liên kết trong email, OAuth     |
+| Biến (api)                                 | Ý nghĩa                                                                                      |
+| ------------------------------------------ | -------------------------------------------------------------------------------------------- |
+| `JWT_SECRET`                               | Bí mật ký access token (≥ 32 ký tự). Production: `openssl rand -base64 48`                   |
+| `STUDENT_APP_URL`                          | Sub-domain học sinh (dev `http://hs.localhost:3000`): CORS, Socket.IO, đường dẫn trong mã QR |
+| `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` | Google OAuth; để trống thì nút "Tiếp tục với Google" bị ẩn                                   |
+| `FACEBOOK_APP_ID`, `FACEBOOK_APP_SECRET`   | Facebook Login (cần quyền `email`); để trống thì nút Facebook bị ẩn                          |
+| `SMTP_HOST/PORT/USER/PASS/SECURE`          | Gửi email xác thực và đặt lại mật khẩu (dev: Mailpit `localhost:1025`)                       |
+| `MAIL_FROM`                                | Địa chỉ người gửi                                                                            |
+| `MAIL_TRANSPORT`                           | `smtp` (mặc định) hoặc `memory` (test: giữ email trong RAM)                                  |
+| `APP_URL`, `API_URL`                       | Địa chỉ web và api, dùng cho cookie, CORS, liên kết trong email, OAuth                       |
 
 ## Xác thực
 

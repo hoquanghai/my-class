@@ -12,9 +12,6 @@ export function Footer() {
           <p className="mt-1 max-w-xs text-sm text-ink-muted">{t('tagline')}</p>
         </div>
         <nav className="grid grid-cols-2 gap-x-10 gap-y-2 text-sm" aria-label={t('links')}>
-          <Link href="/join" className="text-ink hover:underline">
-            {t('studentJoin')}
-          </Link>
           <Link href="/login" className="text-ink hover:underline">
             {t('login')}
           </Link>

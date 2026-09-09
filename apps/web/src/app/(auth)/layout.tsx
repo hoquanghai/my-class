@@ -29,16 +29,6 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
           <div className="flex flex-1 items-center py-10">
             <div className="w-full">{children}</div>
           </div>
-
-          <p className="text-sm text-ink-muted">
-            {t('studentHint')}{' '}
-            <Link
-              href="/join"
-              className="font-medium text-accent underline-offset-4 hover:underline"
-            >
-              {t('studentLink')}
-            </Link>
-          </p>
         </div>
       </div>
 

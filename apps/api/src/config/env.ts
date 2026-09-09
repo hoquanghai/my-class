@@ -7,6 +7,8 @@ export const envSchema = z.object({
   REDIS_URL: z.string().min(1).default('redis://localhost:6379'),
   APP_URL: z.url().default('http://localhost:3000'),
   API_URL: z.url().default('http://localhost:4000'),
+  /** Sub-domain học sinh: dùng cho CORS, Socket.IO và đường dẫn trong mã QR. */
+  STUDENT_APP_URL: z.url().default('http://hs.localhost:3000'),
 
   JWT_SECRET: z.string().min(32, 'JWT_SECRET cần ít nhất 32 ký tự'),
 

@@ -281,9 +281,7 @@ export default function LandingPage() {
                   <ClassCodeMock />
                   <span className="text-sm text-white/80">{t('students.codeHint')}</span>
                 </div>
-                <PillLink href="/join" variant="inverse" className="mt-8">
-                  {t('students.cta')}
-                </PillLink>
+                <p className="mt-6 max-w-xl text-sm text-white/70">{t('students.hostNote')}</p>
               </div>
               <div className="lg:col-span-5">
                 <div className="relative mx-auto aspect-[4/5] max-w-xs overflow-hidden rounded-card bg-white/10">

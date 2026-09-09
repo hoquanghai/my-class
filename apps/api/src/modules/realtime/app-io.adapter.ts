@@ -13,7 +13,7 @@ export class AppIoAdapter extends IoAdapter {
 
   constructor(
     app: INestApplicationContext,
-    private readonly corsOrigin: string | boolean,
+    private readonly corsOrigin: string | string[] | boolean,
   ) {
     super(app);
   }

@@ -9,7 +9,6 @@
       "students": "Học sinh",
       "faq": "Hỏi đáp",
       "login": "Đăng nhập",
-      "studentJoin": "Học sinh vào lớp",
       "cta": "Dùng thử miễn phí"
     },
     "hero": {
@@ -66,11 +65,11 @@
       "mockTitle": "Toán 9A · Buổi tối thứ 3"
     },
     "students": {
-      "eyebrow": "Dành cho học sinh",
-      "title": "Không cần tài khoản. Nhập mã lớp, chọn tên, làm bài.",
-      "body": "Mở trình duyệt trên bất kỳ điện thoại nào. Thiết bị nhớ tên bạn cho những buổi sau. Chữ to, nút to, làm được bằng một tay.",
+      "eyebrow": "Học sinh của bạn",
+      "title": "Học sinh không cần tài khoản: nhập mã lớp, chọn tên, làm bài.",
+      "body": "Học sinh mở trình duyệt trên bất kỳ điện thoại nào, vào địa chỉ riêng của lớp và chọn tên mình. Thiết bị nhớ tên cho những buổi sau. Chữ to, nút to, làm được bằng một tay.",
       "codeHint": "Mã lớp do giáo viên đưa, 6 ký tự",
-      "cta": "Vào lớp"
+      "hostNote": "Trang học sinh chạy ở địa chỉ riêng, tách khỏi trang giáo viên, nên học sinh không thể tự tạo tài khoản giáo viên hay xem đề của lớp khác."
     },
     "faq": {
       "eyebrow": "Hỏi đáp",
@@ -92,7 +91,6 @@
     "footer": {
       "tagline": "Điểm danh, kiểm tra đầu giờ và bảng xếp hạng cho lớp học của bạn.",
       "links": "Liên kết",
-      "studentJoin": "Học sinh vào lớp",
       "login": "Đăng nhập giáo viên",
       "terms": "Điều khoản sử dụng",
       "privacy": "Chính sách bảo mật",
@@ -161,8 +159,6 @@
     "backHome": "Về trang chủ",
     "showPassword": "Hiện mật khẩu",
     "hidePassword": "Ẩn mật khẩu",
-    "studentHint": "Bạn là học sinh?",
-    "studentLink": "Vào lớp bằng mã",
     "loginHint": "Đăng nhập để mở lớp, phát đề và xem báo cáo.",
     "signupHint": "Tạo tài khoản trong 1 phút. Miễn phí, không cần thẻ.",
     "panelEyebrow": "Mẹo nhanh",
@@ -449,7 +445,7 @@
       "paced": "Từng câu",
       "self_paced": "Tự làm"
     },
-    "joinHint": "Học sinh vào {url} và nhập mã lớp",
+    "joinHint": "Học sinh vào {url} hoặc quét mã QR của lớp",
     "joined": "Đã vào: {count}",
     "joinedNone": "Chưa có học sinh nào vào phòng.",
     "start": "Bắt đầu",

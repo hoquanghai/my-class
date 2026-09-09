@@ -4,7 +4,7 @@ import { HttpExceptionFilter } from './common/http-exception.filter.js';
 import { AppIoAdapter } from './modules/realtime/app-io.adapter.js';
 
 export interface ConfigureAppOptions {
-  corsOrigin: string | boolean;
+  corsOrigin: string | string[] | boolean;
   /** URL Redis cho Socket.IO adapter; bỏ trống → adapter trong bộ nhớ (một instance / test). */
   realtimeRedisUrl?: string;
 }
