@@ -1,5 +1,7 @@
 import { Check, Copy, X } from 'lucide-react';
+import { Tex } from '@/components/tex';
 import { cn } from '@/components/ui/cn';
+import { CubicFigure } from './cubic-figure';
 
 /*
  * Mẩu giao diện thật dựng bằng CSS để ghim lên ảnh và khối màu (DESIGN.md §7):
@@ -86,11 +88,12 @@ export function PhoneQuizMock({
   revealed?: boolean;
   className?: string;
 }) {
+  // f(x) = x³ − 3x² + 2 → f'(x) = 3x² − 6x → f'(1) = −3 (B)
   const options = [
-    ['A', 'x²'],
-    ['B', '3x²'],
-    ['C', '3x'],
-    ['D', 'x³ / 3'],
+    ['A', '3'],
+    ['B', '-3'],
+    ['C', '0'],
+    ['D', '-1'],
   ];
   return (
     <div
@@ -106,7 +109,12 @@ export function PhoneQuizMock({
           0:18
         </span>
       </div>
-      <p className="mb-3 text-[15px] font-semibold leading-snug">Đạo hàm của hàm số y = x³ là</p>
+      <p className="mb-2 text-[15px] font-semibold leading-snug">
+        Cho <Tex tex="f(x)=x^3-3x^2+2" />. Giá trị <Tex tex="f'(1)" /> bằng
+      </p>
+      <div className="mb-3 rounded-lg bg-surface-soft px-2 py-1 text-ink">
+        <CubicFigure className="h-auto w-full" />
+      </div>
       <ul className="space-y-2">
         {options.map(([label, text]) => {
           const selected = label === 'B';
@@ -135,7 +143,9 @@ export function PhoneQuizMock({
               >
                 {label}
               </span>
-              <span className="flex-1">{text}</span>
+              <span className="flex-1">
+                <Tex tex={text} />
+              </span>
               {correct && <Check className="size-4 text-success" />}
             </li>
           );

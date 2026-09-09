@@ -4,6 +4,7 @@ import { Check } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
+import { Tex } from '@/components/tex';
 import { cn } from '@/components/ui/cn';
 import { usePrefersReducedMotion } from './use-reduced-motion';
 
@@ -31,11 +32,12 @@ const NAMES = [
   'Quân',
   'Thư',
 ];
+/** Đáp án viết bằng TeX; B đúng: ∫₀¹ 3x² dx = [x³]₀¹ = 1 */
 const OPTIONS: [string, string][] = [
-  ['A', 'x²'],
-  ['B', '3x²'],
-  ['C', '3x'],
-  ['D', 'x³ / 3'],
+  ['A', '0'],
+  ['B', '1'],
+  ['C', '3'],
+  ['D', '\\tfrac{1}{3}'],
 ];
 const DIST = [3, 18, 6, 3];
 const BOARD: [string, number][] = [
@@ -241,7 +243,9 @@ export function HeroDemo({ className }: { className?: string }) {
           </div>
         ) : (
           <>
-            <p className="mb-2 text-[11px] font-semibold leading-snug">{t('stem')}</p>
+            <p className="mb-2 text-[11px] font-semibold leading-snug">
+              {t('stem')} <Tex tex="\\int_0^1 3x^2\\,dx" className="text-[12px]" />
+            </p>
             <ul className="space-y-1">
               {OPTIONS.map(([label, text]) => {
                 const selected = submitted && label === 'B';
@@ -270,7 +274,9 @@ export function HeroDemo({ className }: { className?: string }) {
                     >
                       {label}
                     </span>
-                    <span className="flex-1">{text}</span>
+                    <span className="flex-1">
+                      <Tex tex={text} />
+                    </span>
                     {correct && <Check className="size-3 text-success" aria-hidden="true" />}
                   </li>
                 );
