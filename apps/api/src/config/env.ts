@@ -49,7 +49,7 @@ export const envSchema = z.object({
   AI_MODEL: z.string().optional(),
   AI_EFFORT: z.enum(['low', 'medium', 'high']).default('medium'),
   /** Mức suy nghĩ của Gemini 3.x; chép đề chỉ cần LOW (token suy nghĩ tính vào giá ra). */
-  AI_GEMINI_THINKING: z.enum(['MINIMAL', 'LOW', 'MEDIUM', 'HIGH']).default('LOW'),
+  AI_GEMINI_THINKING: z.enum(['LOW', 'MEDIUM', 'HIGH']).default('LOW'),
   /** Cascade: nhà cung cấp chính (rẻ) và nhà cung cấp leo thang (mạnh). */
   AI_PRIMARY_PROVIDER: z.enum(['claude', 'openai', 'gemini', 'mock']).default('gemini'),
   AI_ESCALATION_PROVIDER: z.enum(['claude', 'openai', 'gemini', 'mock']).default('claude'),

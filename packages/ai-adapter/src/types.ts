@@ -43,8 +43,11 @@ export interface QuestionExtractor {
 export type SingleAiProvider = 'claude' | 'openai' | 'gemini' | 'mock';
 export type AiProvider = SingleAiProvider | 'cascade';
 
-/** Mức suy nghĩ của Gemini 3.x; chép đề chỉ cần LOW, mức cao tốn token ra (tính cả token suy nghĩ). */
-export type GeminiThinking = 'MINIMAL' | 'LOW' | 'MEDIUM' | 'HIGH';
+/**
+ * Mức suy nghĩ của Gemini 3.x; chép đề chỉ cần LOW, mức cao tốn token ra (tính cả token suy nghĩ).
+ * Không có MINIMAL: gemini-3.7-flash trả 400 "Thinking level MINIMAL is not supported".
+ */
+export type GeminiThinking = 'LOW' | 'MEDIUM' | 'HIGH';
 
 export interface SingleExtractorConfig {
   provider: SingleAiProvider;

@@ -25,7 +25,7 @@ Prereqs: Node 24, pnpm 9 (`corepack enable`), Docker Desktop.
 ```bash
 pnpm install
 pnpm infra:up                 # postgres :5433 (not 5432), redis :6379, minio :9000/:9001, mailpit :8025/:1025
-cp apps/api/.env.example apps/api/.env
+cp apps/api/.env.example apps/api/.env          # or keep personal secrets in apps/api/.env.dev (gitignored): in dev, Nest and prisma.config.ts load .env.dev first, then .env
 cp apps/web/.env.example apps/web/.env.local
 pnpm db:migrate               # prisma migrate dev in apps/api (also regenerates the client)
 pnpm db:seed                  # demo teacher demo@lophoc.app / demo1234, class code DEM268, feature flags

@@ -27,7 +27,8 @@ import { PrismaModule } from './prisma/prisma.module.js';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: process.env.NODE_ENV === 'test' ? '.env.test' : '.env',
+      // Dev: `.env.dev` (cá nhân, gitignore) ưu tiên hơn `.env`; file đứng trước thắng khi trùng biến.
+      envFilePath: process.env.NODE_ENV === 'test' ? '.env.test' : ['.env.dev', '.env'],
       validate: validateEnv,
     }),
     ThrottlerModule.forRoot({
