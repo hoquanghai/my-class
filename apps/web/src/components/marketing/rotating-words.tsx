@@ -31,7 +31,7 @@ export function RotatingWords({
   return (
     <span
       className={cn(
-        'relative inline-grid overflow-hidden rounded-lg bg-block-lime px-2 align-baseline',
+        'relative inline-grid justify-items-start overflow-hidden align-baseline',
         className,
       )}
       aria-live="polite"
@@ -41,7 +41,7 @@ export function RotatingWords({
           key={word}
           aria-hidden={i !== index}
           className={cn(
-            'col-start-1 row-start-1 whitespace-nowrap transition-[transform,opacity] duration-500 [transition-timing-function:var(--ease-out-soft)]',
+            'col-start-1 row-start-1 whitespace-nowrap rounded-lg bg-block-lime px-2 transition-[transform,opacity] duration-500 [transition-timing-function:var(--ease-out-soft)]',
             i === index
               ? 'translate-y-0 opacity-100'
               : i === prev

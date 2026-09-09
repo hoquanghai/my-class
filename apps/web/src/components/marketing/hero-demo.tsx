@@ -144,7 +144,7 @@ export function HeroDemo({ className }: { className?: string }) {
       </div>
 
       {/* Máy chiếu: đếm số trả lời → phân bố → bảng xếp hạng */}
-      <div className="absolute bottom-[4%] left-0 w-[60%] rotate-1 overflow-hidden rounded-card bg-block-navy p-4 text-white shadow-modal">
+      <div className="absolute bottom-[4%] left-0 w-[64%] rotate-1 overflow-hidden rounded-card bg-block-navy p-4 pr-[30%] text-white shadow-modal">
         {board && (
           <div aria-hidden="true" className="pointer-events-none absolute inset-0">
             {SPARKS.map(([color, pos, delay]) => (
