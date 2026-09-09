@@ -24,6 +24,7 @@ import { PrismaService } from '../../prisma/prisma.service.js';
 import { AnalyticsService } from '../analytics/analytics.service.js';
 import { QuizzesService } from '../quizzes/quizzes.service.js';
 import { RunBroadcaster } from '../realtime/run-broadcaster.service.js';
+import { RunDeadlineService } from './run-deadline.service.js';
 import {
   buildQuestionResult,
   computeLeaderboard,
@@ -53,7 +54,10 @@ export class RunsService {
     private readonly runState: RunStateService,
     private readonly broadcaster: RunBroadcaster,
     private readonly analytics: AnalyticsService,
-  ) {}
+    private readonly deadline: RunDeadlineService,
+  ) {
+    this.deadline.onExpire((runId) => this.finishExpired(runId));
+  }
 
   // ---------- Giáo viên ----------
 
@@ -131,6 +135,7 @@ export class RunsService {
     const run = await this.findOwned(teacherId, runId);
     if (run.status === 'lobby') {
       const now = new Date();
+      const deadlineAt = new Date(now.getTime() + (run.selfPacedMinutes ?? 10) * 60_000);
       await this.prisma.quizRun.update({
         where: { id: runId },
         data:
@@ -142,12 +147,10 @@ export class RunsService {
                 questionOpenedAt: now,
                 questionClosedAt: null,
               }
-            : {
-                status: 'in_progress',
-                startedAt: now,
-                deadlineAt: new Date(now.getTime() + (run.selfPacedMinutes ?? 10) * 60_000),
-              },
+            : { status: 'in_progress', startedAt: now, deadlineAt },
       });
+      // Tự làm: hết giờ thì server tự kết thúc lượt, giáo viên không cần bấm
+      if (run.mode === 'self_paced') this.deadline.arm(runId, deadlineAt);
       await this.analytics.track(
         'students_joined',
         { sessionId: run.sessionId, runId, count: run.session.participants.length },
@@ -188,31 +191,50 @@ export class RunsService {
 
   async finish(teacherId: string, runId: string): Promise<RunDetailDto> {
     const run = await this.findOwned(teacherId, runId);
-    if (run.status !== 'finished') {
-      const now = new Date();
-      await this.prisma.quizRun.update({
-        where: { id: runId },
-        data: {
-          status: 'finished',
-          endedAt: now,
-          ...(run.mode === 'paced' && !run.questionClosedAt && { questionClosedAt: now }),
-        },
-      });
-      await this.persistResults(runId);
-      const fresh = await this.runState.load(runId);
-      await this.analytics.track(
-        'quiz_completed',
-        {
-          runId,
-          sessionId: run.sessionId,
-          participants: fresh.session.participants.length,
-          answered: new Set(fresh.answers.map((a) => a.studentId)).size,
-        },
-        teacherId,
-      );
-      await this.broadcaster.emitNow(run.sessionId);
-    }
+    await this.finishRun(run);
     return this.detail(teacherId, runId);
+  }
+
+  /**
+   * Chốt lượt tự làm đã quá hạn (gọi từ RunDeadlineService). Đọc lại từ DB nên gọi trùng
+   * (hẹn giờ + quét + nhiều instance) vẫn chỉ kết thúc một lần. Trả về true nếu vừa chốt.
+   */
+  async finishExpired(runId: string): Promise<boolean> {
+    const run = await this.runState.load(runId);
+    if (run.status !== 'in_progress' || run.mode !== 'self_paced' || !run.deadlineAt) return false;
+    if (Date.now() < run.deadlineAt.getTime() + GRACE_MS) return false;
+    return this.finishRun(run);
+  }
+
+  private async finishRun(run: RunWithAll): Promise<boolean> {
+    if (run.status === 'finished') return false;
+    const now = new Date();
+    // updateMany có điều kiện: hai tiến trình cùng chốt thì chỉ một bên thắng
+    const { count } = await this.prisma.quizRun.updateMany({
+      where: { id: run.id, status: { not: 'finished' } },
+      data: {
+        status: 'finished',
+        endedAt: now,
+        ...(run.mode === 'paced' && !run.questionClosedAt && { questionClosedAt: now }),
+      },
+    });
+    if (count === 0) return false;
+    this.deadline.disarm(run.id);
+    await this.persistResults(run.id);
+    const fresh = await this.runState.load(run.id);
+    await this.analytics.track(
+      'quiz_completed',
+      {
+        runId: run.id,
+        sessionId: run.sessionId,
+        participants: fresh.session.participants.length,
+        answered: new Set(fresh.answers.map((a) => a.studentId)).size,
+        submitted: fresh.results.filter((r) => r.submittedAt !== null).length,
+      },
+      run.session.class.teacherId,
+    );
+    await this.broadcaster.emitNow(run.sessionId);
+    return true;
   }
 
   async override(
@@ -351,7 +373,46 @@ export class RunsService {
       ? (computeLeaderboard(run).find((e) => e.studentId === principal.studentId) ?? null)
       : null;
 
-    return { state, questions: visibleQuestions, myAnswers, revealed, myResult };
+    return {
+      state,
+      questions: visibleQuestions,
+      myAnswers,
+      revealed,
+      myResult,
+      submittedAt: this.submissionOf(run, principal.studentId)?.toISOString() ?? null,
+    };
+  }
+
+  /**
+   * Tự làm: học sinh nộp bài một lần duy nhất. Sau đó câu trả lời bị khóa; kết quả chỉ hiện khi
+   * lượt kết thúc (hết giờ hoặc giáo viên bấm) để không lộ đáp án cho bạn còn đang làm.
+   * Gọi lại khi đã nộp / lượt đã kết thúc thì không lỗi, chỉ trả góc nhìn hiện tại.
+   */
+  async submitRun(principal: StudentPrincipal, runId: string): Promise<StudentRunViewDto> {
+    const run = await this.findForStudent(principal, runId);
+    if (run.mode !== 'self_paced') throw new BadRequestException('Chỉ nộp bài ở chế độ tự làm');
+    if (run.status === 'lobby') {
+      throw new ConflictException({ code: ErrorCodes.RUN_NOT_OPEN, message: 'Lượt chưa bắt đầu' });
+    }
+    if (run.status === 'in_progress' && !this.submissionOf(run, principal.studentId)) {
+      const mine = run.answers.filter((a) => a.studentId === principal.studentId);
+      const now = new Date();
+      await this.prisma.quizRunResult.upsert({
+        where: { runId_studentId: { runId, studentId: principal.studentId } },
+        create: {
+          runId,
+          studentId: principal.studentId,
+          score: mine.reduce((s, a) => s + a.pointsAwarded, 0),
+          correctCount: mine.filter((a) => a.isCorrect === true).length,
+          answeredCount: mine.length,
+          submittedAt: now,
+        },
+        update: { submittedAt: now },
+      });
+      await this.touchParticipant(run.sessionId, principal);
+      this.broadcaster.schedule(run.sessionId);
+    }
+    return this.studentView(principal, runId);
   }
 
   async submit(
@@ -369,11 +430,18 @@ export class RunsService {
     const question = run.questions.find((q) => q.id === input.runQuestionId);
     if (!question) throw new BadRequestException('Câu hỏi không thuộc lượt này');
 
-    // Đã nộp rồi (kể cả sau khi câu đóng, do client gửi lại) → không lỗi, chỉ báo không nhận
     const existing = run.answers.find(
       (a) => a.runQuestionId === question.id && a.studentId === principal.studentId,
     );
-    if (existing) return { accepted: false, answerId: existing.id };
+    if (run.mode === 'paced') {
+      // Từng câu: nộp rồi là chốt (kể cả client gửi lại sau khi câu đóng) → không lỗi, chỉ báo không nhận
+      if (existing) return { accepted: false, answerId: existing.id };
+    } else if (this.submissionOf(run, principal.studentId)) {
+      throw new ConflictException({
+        code: ErrorCodes.RUN_SUBMITTED,
+        message: 'Bạn đã nộp bài, không sửa được câu trả lời',
+      });
+    }
 
     const now = Date.now();
     let open: boolean;
@@ -399,6 +467,25 @@ export class RunsService {
       question.points,
     );
 
+    const textAnswer = snapshot.type === 'short_text' ? (input.textAnswer?.trim() ?? null) : null;
+    // Tự làm: được đổi câu trả lời cho tới khi bấm nộp bài
+    if (existing) {
+      await this.prisma.answer.update({
+        where: { id: existing.id },
+        data: {
+          selectedOptionIds: selected,
+          textAnswer,
+          isCorrect: grade.isCorrect,
+          pointsAwarded: grade.pointsAwarded,
+          overriddenByTeacher: false,
+          responseMs: input.responseMs ?? existing.responseMs,
+          submittedAt: new Date(),
+        },
+      });
+      this.broadcaster.schedule(run.sessionId);
+      return { accepted: true, answerId: existing.id };
+    }
+
     try {
       const answer = await this.prisma.answer.create({
         data: {
@@ -406,23 +493,13 @@ export class RunsService {
           runQuestionId: question.id,
           studentId: principal.studentId,
           selectedOptionIds: selected,
-          textAnswer: snapshot.type === 'short_text' ? (input.textAnswer?.trim() ?? null) : null,
+          textAnswer,
           isCorrect: grade.isCorrect,
           pointsAwarded: grade.pointsAwarded,
           responseMs: input.responseMs ?? null,
         },
       });
-      await this.prisma.sessionParticipant.upsert({
-        where: {
-          sessionId_studentId: { sessionId: run.sessionId, studentId: principal.studentId },
-        },
-        create: {
-          sessionId: run.sessionId,
-          studentId: principal.studentId,
-          deviceId: principal.deviceId,
-        },
-        update: { lastSeenAt: new Date() },
-      });
+      await this.touchParticipant(run.sessionId, principal);
       this.broadcaster.schedule(run.sessionId);
       return { accepted: true, answerId: answer.id };
     } catch (err) {
@@ -441,6 +518,19 @@ export class RunsService {
 
   // ---------- nội bộ ----------
 
+  /** Thời điểm học sinh đã nộp bài (tự làm), undefined nếu chưa. */
+  private submissionOf(run: RunWithAll, studentId: string): Date | undefined {
+    return run.results.find((r) => r.studentId === studentId)?.submittedAt ?? undefined;
+  }
+
+  private async touchParticipant(sessionId: string, principal: StudentPrincipal): Promise<void> {
+    await this.prisma.sessionParticipant.upsert({
+      where: { sessionId_studentId: { sessionId, studentId: principal.studentId } },
+      create: { sessionId, studentId: principal.studentId, deviceId: principal.deviceId },
+      update: { lastSeenAt: new Date() },
+    });
+  }
+
   private closedIndexes(run: RunWithAll): Set<number> {
     const closed = new Set<number>();
     if (run.status === 'finished') {
@@ -454,24 +544,29 @@ export class RunsService {
     return closed;
   }
 
+  /** Ghi bảng kết quả cuối; giữ nguyên `submittedAt` của những em đã bấm nộp trước khi lượt kết thúc. */
   private async persistResults(runId: string): Promise<void> {
     const run = await this.runState.load(runId);
     const board = computeLeaderboard(run);
+    const now = new Date();
     await this.prisma.$transaction([
-      this.prisma.quizRunResult.deleteMany({ where: { runId } }),
-      ...board.map((e) =>
-        this.prisma.quizRunResult.create({
-          data: {
-            runId,
-            studentId: e.studentId,
-            score: e.score,
-            correctCount: e.correctCount,
-            answeredCount: e.answeredCount,
-            rank: e.rank,
-            finishedAt: new Date(),
-          },
-        }),
-      ),
+      this.prisma.quizRunResult.deleteMany({
+        where: { runId, studentId: { notIn: board.map((e) => e.studentId) } },
+      }),
+      ...board.map((e) => {
+        const fields = {
+          score: e.score,
+          correctCount: e.correctCount,
+          answeredCount: e.answeredCount,
+          rank: e.rank,
+          finishedAt: now,
+        };
+        return this.prisma.quizRunResult.upsert({
+          where: { runId_studentId: { runId, studentId: e.studentId } },
+          create: { runId, studentId: e.studentId, ...fields },
+          update: fields,
+        });
+      }),
     ]);
   }
 

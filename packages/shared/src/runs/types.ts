@@ -54,6 +54,8 @@ export interface RunParticipant {
   studentId: string;
   name: string;
   answeredCount: number;
+  /** Tự làm: đã bấm nộp bài (hoặc được nộp tự động khi hết giờ). */
+  submitted: boolean;
 }
 
 /** Trạng thái công khai của lượt (phát qua Socket.IO, dùng cho máy chiếu, giáo viên, học sinh). */
@@ -75,6 +77,8 @@ export interface RunPublicStateDto {
   /** Thời điểm server tạo trạng thái, để client bù lệch đồng hồ */
   serverTime: string;
   participants: RunParticipant[];
+  /** Tự làm: số học sinh đã nộp bài */
+  submittedCount: number;
   currentQuestion: PublicQuestion | null;
   currentAnswerCount: number;
   /** Kết quả câu vừa đóng (paced) */
@@ -151,6 +155,8 @@ export interface StudentRunViewDto {
     explanationMd: string | null;
   }[];
   myResult: LeaderboardEntry | null;
+  /** Tự làm: thời điểm học sinh nộp bài; null khi chưa nộp. Sau khi nộp không sửa được câu trả lời. */
+  submittedAt: string | null;
 }
 
 export interface SubmitAnswerResultDto {

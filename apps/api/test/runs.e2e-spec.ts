@@ -2,6 +2,7 @@ import type { INestApplication } from '@nestjs/common';
 import type { RunPublicStateDto } from '@lophoc/shared';
 import { io as ioClient, type Socket } from 'socket.io-client';
 import request from 'supertest';
+import { RunDeadlineService } from '../src/modules/runs/run-deadline.service.js';
 import { PrismaService } from '../src/prisma/prisma.service.js';
 import {
   cleanupE2eData,
@@ -277,8 +278,8 @@ describe('Quiz runs (e2e)', () => {
     expect(pub.body.leaderboard).toHaveLength(2);
   });
 
-  it('self-paced: mọi câu mở tới hạn; nộp cả hai; kết thúc → kết quả', async () => {
-    const { s, sessionId, quizId, an } = await setup('run-self');
+  it('self-paced: đổi câu trả lời tới khi nộp bài; nộp một lần; hết giờ tự kết thúc', async () => {
+    const { s, sessionId, quizId, an, binh } = await setup('run-self');
     const launched = await http()
       .post(`/api/sessions/${sessionId}/runs`)
       .set('Cookie', ck(s))
@@ -319,15 +320,104 @@ describe('Quiz runs (e2e)', () => {
         )
         .expect(200);
     }
-    const finished = await http()
-      .post(`/api/runs/${run.state.id}/finish`)
-      .set('Cookie', ck(s))
+    const runId = run.state.id as string;
+    type RunQ = {
+      id: string;
+      snapshot: { type: string; correctOptionIds: string[]; options: { id: string }[] };
+    };
+    const singleQ = (run.questions as RunQ[]).find((q) => q.snapshot.type === 'single_choice')!;
+    const wrongId = singleQ.snapshot.options.find(
+      (o) => !singleQ.snapshot.correctOptionIds.includes(o.id),
+    )!.id;
+
+    // Chưa nộp bài → được đổi câu trả lời, chấm lại theo lựa chọn mới
+    const changed = await http()
+      .post(`/api/student/runs/${runId}/answers`)
+      .set('Cookie', ck(an))
+      .send({ runQuestionId: singleQ.id, selectedOptionIds: [wrongId] })
       .expect(200);
-    const an1 = (
-      finished.body.state.leaderboard as { name: string; score: number; correctCount: number }[]
-    ).find((b) => b.name === 'An');
-    expect(an1).toMatchObject({ score: 1, correctCount: 1 });
-    await http().post(`/api/runs/${run.state.id}/finish`).set('Cookie', ck(s)).expect(200);
+    expect(changed.body.accepted).toBe(true);
+    const afterChange = await http()
+      .get(`/api/student/runs/${runId}`)
+      .set('Cookie', ck(an))
+      .expect(200);
+    expect(afterChange.body.submittedAt).toBeNull();
+    expect(
+      (afterChange.body.myAnswers as { runQuestionId: string; selectedOptionIds: string[] }[]).find(
+        (a) => a.runQuestionId === singleQ.id,
+      )?.selectedOptionIds,
+    ).toEqual([wrongId]);
+    await http()
+      .post(`/api/student/runs/${runId}/answers`)
+      .set('Cookie', ck(an))
+      .send({ runQuestionId: singleQ.id, selectedOptionIds: singleQ.snapshot.correctOptionIds })
+      .expect(200);
+
+    // Nộp bài: khóa câu trả lời, giáo viên thấy "đã nộp", kết quả chưa lộ khi lượt còn mở
+    const submitted = await http()
+      .post(`/api/student/runs/${runId}/submit`)
+      .set('Cookie', ck(an))
+      .expect(200);
+    expect(submitted.body.submittedAt).not.toBeNull();
+    expect(submitted.body.state.status).toBe('in_progress');
+    expect(submitted.body.myResult).toBeNull();
+    expect(submitted.body.revealed).toEqual([]);
+    expect(submitted.body.state.submittedCount).toBe(1);
+    expect(
+      (submitted.body.state.participants as { name: string; submitted: boolean }[]).find(
+        (p) => p.name === 'An',
+      )?.submitted,
+    ).toBe(true);
+    const locked = await http()
+      .post(`/api/student/runs/${runId}/answers`)
+      .set('Cookie', ck(an))
+      .send({ runQuestionId: singleQ.id, selectedOptionIds: [wrongId] })
+      .expect(409);
+    expect(locked.body.code).toBe('RUN_SUBMITTED');
+    const again = await http()
+      .post(`/api/student/runs/${runId}/submit`)
+      .set('Cookie', ck(an))
+      .expect(200);
+    expect(again.body.submittedAt).toBe(submitted.body.submittedAt);
+
+    // Bình làm một câu rồi bỏ đó; hết giờ → server tự kết thúc, bài của Bình vẫn được tính
+    await http()
+      .post(`/api/student/runs/${runId}/answers`)
+      .set('Cookie', ck(binh))
+      .send({ runQuestionId: singleQ.id, selectedOptionIds: singleQ.snapshot.correctOptionIds })
+      .expect(200);
+    const prisma = app.get(PrismaService);
+    const deadline = app.get(RunDeadlineService);
+    expect(await deadline.sweep()).toBe(0); // chưa tới hạn
+    await prisma.quizRun.update({
+      where: { id: runId },
+      data: { deadlineAt: new Date(Date.now() - 10_000) },
+    });
+    expect(await deadline.sweep()).toBe(1);
+    expect(await deadline.sweep()).toBe(0); // đã chốt, không chốt lại
+
+    const pub = await http().get(`/api/runs/${runId}/public`).expect(200);
+    expect(pub.body.status).toBe('finished');
+    const board = pub.body.leaderboard as { name: string; score: number; correctCount: number }[];
+    expect(board.find((b) => b.name === 'An')).toMatchObject({ score: 1, correctCount: 1 });
+    expect(board.find((b) => b.name === 'Bình')).toMatchObject({ score: 1, correctCount: 1 });
+    const results = await prisma.quizRunResult.findMany({
+      where: { runId },
+      include: { student: { select: { name: true } } },
+    });
+    expect(results.find((r) => r.student.name === 'An')?.submittedAt?.toISOString()).toBe(
+      submitted.body.submittedAt,
+    );
+    expect(results.find((r) => r.student.name === 'Bình')?.submittedAt).toBeNull();
+
+    // Sau khi kết thúc: học sinh thấy kết quả; nộp lại không lỗi; giáo viên bấm kết thúc lần nữa cũng vậy
+    const anView = await http()
+      .post(`/api/student/runs/${runId}/submit`)
+      .set('Cookie', ck(an))
+      .expect(200);
+    expect(anView.body.state.status).toBe('finished');
+    expect(anView.body.myResult).toMatchObject({ score: 1, correctCount: 1 });
+    await http().post(`/api/runs/${runId}/finish`).set('Cookie', ck(s)).expect(200);
   });
 
   it('socket: máy chiếu tham gia phòng nhận run:state khi giáo viên bắt đầu; giáo viên khác bị từ chối', async () => {

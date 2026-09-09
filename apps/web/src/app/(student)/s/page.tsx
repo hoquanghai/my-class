@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import { Countdown } from '@/components/runs/countdown';
 import { QuestionPanel } from '@/components/runs/question-panel';
+import { SelfPacedQuiz } from '@/components/runs/self-paced-quiz';
 import { Alert } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/components/ui/cn';
@@ -21,6 +22,7 @@ import {
   useAnswerQueue,
   useStudentMe,
   useStudentRunView,
+  useSubmitRun,
 } from '@/lib/student';
 
 /** Một câu hỏi: chọn → nộp; sau khi nộp khóa lại; công bố đáp án khi có `revealed`. */
@@ -144,7 +146,7 @@ export default function StudentHomePage() {
     : `${me.data?.run?.status ?? ''}`;
   const view = useStudentRunView(runId, version);
   const queue = useAnswerQueue(rt.connectCount);
-  const [selfIndex, setSelfIndex] = useState(0);
+  const submitRun = useSubmitRun(runId);
 
   // Token hỏng/bị gỡ → về trang nhập mã
   useEffect(() => {
@@ -279,69 +281,21 @@ export default function StudentHomePage() {
       {runState.status === 'in_progress' &&
         runState.mode === 'self_paced' &&
         data.questions.length > 0 && (
-          <div className="space-y-3">
-            <div className="flex items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white px-4 py-2">
-              <span className="text-sm text-slate-600">
-                {t('done', { done: data.myAnswers.length, total: data.questions.length })}
-              </span>
-              {runState.deadlineAt && (
-                <Countdown endsAt={Date.parse(runState.deadlineAt)} offsetMs={rt.offsetMs} />
-              )}
-            </div>
-            <div className="flex flex-wrap gap-1">
-              {data.questions.map((q, i) => (
-                <button
-                  key={q.runQuestionId}
-                  type="button"
-                  onClick={() => setSelfIndex(i)}
-                  className={cn(
-                    'size-9 rounded-lg border text-sm font-semibold',
-                    i === selfIndex
-                      ? 'border-brand-600 bg-brand-600 text-white'
-                      : answerFor(q.runQuestionId)
-                        ? 'border-green-300 bg-green-50 text-green-800'
-                        : 'border-slate-200 bg-white text-slate-700',
-                  )}
-                >
-                  {i + 1}
-                </button>
-              ))}
-            </div>
-            {(() => {
-              const q = data.questions[Math.min(selfIndex, data.questions.length - 1)]!;
-              return (
-                <div className="rounded-xl border border-slate-200 bg-white p-4">
-                  <AnswerCard
-                    key={q.runQuestionId}
-                    question={q}
-                    mine={answerFor(q.runQuestionId)}
-                    revealed={revealedFor(q.runQuestionId)}
-                    pending={queue.pending.includes(q.runQuestionId)}
-                    deadline={null}
-                    offsetMs={rt.offsetMs}
-                    onSubmit={submitFor(q.runQuestionId)}
-                    outcome={queue.lastOutcome}
-                  />
-                </div>
-              );
-            })()}
-            <div className="flex justify-between">
-              <Button
-                variant="secondary"
-                disabled={selfIndex === 0}
-                onClick={() => setSelfIndex((i) => i - 1)}
-              >
-                {t('prev')}
-              </Button>
-              <Button
-                variant="secondary"
-                disabled={selfIndex >= data.questions.length - 1}
-                onClick={() => setSelfIndex((i) => i + 1)}
-              >
-                {t('next')}
-              </Button>
-            </div>
-          </div>
+          <SelfPacedQuiz
+            state={runState}
+            data={data}
+            offsetMs={rt.offsetMs}
+            pending={queue.pending}
+            saveAnswer={(input) =>
+              queue.submit(runState.id, input).then((o) => {
+                void queryClient.invalidateQueries({ queryKey: ['student', 'runs', runState.id] });
+                return o;
+              })
+            }
+            submitRun={() => submitRun.mutateAsync()}
+            submitting={submitRun.isPending}
+            submitError={submitRun.isError ? errorMessage(submitRun.error) : null}
+          />
         )}
 
       {runState.status === 'finished' && (

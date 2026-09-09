@@ -8,7 +8,7 @@ import type {
   SubmitAnswerInput,
   SubmitAnswerResultDto,
 } from '@lophoc/shared';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { ApiError, apiFetch, type ApiOptions } from './api';
 
@@ -86,6 +86,21 @@ export function useStudentRunView(runId: string | null, version: string) {
   });
 }
 
+/**
+ * Tự làm: nộp bài một lần. Server trả góc nhìn mới (có `submittedAt`), ghi đè mọi phiên bản
+ * cache của lượt để màn hình chuyển ngay sang "đã nộp".
+ */
+export function useSubmitRun(runId: string | null) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: () =>
+      studentFetch<StudentRunViewDto>(`/student/runs/${runId}/submit`, { method: 'POST' }),
+    onSuccess: (view) => {
+      queryClient.setQueriesData({ queryKey: ['student', 'runs', runId] }, view);
+    },
+  });
+}
+
 // ---------- Hàng đợi nộp bài chịu mất mạng ----------
 
 export interface QueuedAnswer {
@@ -116,6 +131,8 @@ export type SubmitOutcome =
   | { kind: 'duplicate' }
   | { kind: 'queued' }
   | { kind: 'closed' }
+  /** Tự làm: đã nộp bài, câu trả lời bị khóa */
+  | { kind: 'locked' }
   | { kind: 'error'; message: string };
 
 /**
@@ -143,8 +160,9 @@ export function useAnswerQueue(flushSignal: number) {
           });
         } catch (err) {
           if (err instanceof ApiError) {
-            // 409 câu đã đóng / 400 dữ liệu sai → bỏ khỏi hàng đợi, không lặp mãi
+            // 409 câu đã đóng / đã nộp bài / 400 dữ liệu sai → bỏ khỏi hàng đợi, không lặp mãi
             if (err.code === 'RUN_NOT_OPEN') setLastOutcome({ kind: 'closed' });
+            else if (err.code === 'RUN_SUBMITTED') setLastOutcome({ kind: 'locked' });
           } else {
             break; // mất mạng: giữ lại, thử sau
           }
@@ -185,7 +203,9 @@ export function useAnswerQueue(flushSignal: number) {
           const outcome: SubmitOutcome =
             err.code === 'RUN_NOT_OPEN'
               ? { kind: 'closed' }
-              : { kind: 'error', message: err.message };
+              : err.code === 'RUN_SUBMITTED'
+                ? { kind: 'locked' }
+                : { kind: 'error', message: err.message };
           setLastOutcome(outcome);
           return outcome;
         }

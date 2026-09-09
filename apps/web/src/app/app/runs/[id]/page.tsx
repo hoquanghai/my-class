@@ -141,6 +141,11 @@ export default function RunControlPage() {
     if (rtVersion) void queryClient.invalidateQueries({ queryKey: runKeys.detail(id) });
   }, [rtVersion, queryClient, id]);
 
+  // Tự làm: hết giờ server tự chốt lượt (sau 3 s trễ mạng); socket sẽ báo, đây là dự phòng
+  const refetchAfterGrace = useCallback(() => {
+    setTimeout(() => void queryClient.invalidateQueries({ queryKey: runKeys.detail(id) }), 4000);
+  }, [queryClient, id]);
+
   const [autoClosed, setAutoClosed] = useState<string | null>(null);
   const closeNow = useCallback(() => {
     const st = detail.data?.state;
@@ -340,9 +345,16 @@ export default function RunControlPage() {
               <Countdown
                 endsAt={Date.parse(state.deadlineAt)}
                 offsetMs={rt.offsetMs}
+                onExpire={refetchAfterGrace}
                 className="w-48"
               />
             )}
+            <span className="text-sm font-medium text-slate-700">
+              {t('submittedCount', {
+                count: state.submittedCount,
+                total: state.participants.length,
+              })}
+            </span>
             <Button
               variant="danger"
               onClick={() => {
@@ -354,12 +366,18 @@ export default function RunControlPage() {
               {t('finish')}
             </Button>
           </div>
+          <p className="text-sm text-slate-500">{t('autoFinishHint')}</p>
           <div>
             <p className="mb-2 text-sm font-medium text-slate-700">{t('progress')}</p>
             <ul className="grid gap-1.5 sm:grid-cols-2 lg:grid-cols-3">
               {state.participants.map((p) => (
                 <li key={p.studentId} className="flex items-center gap-2 text-sm">
                   <span className="w-32 truncate">{p.name}</span>
+                  {p.submitted && (
+                    <span className="shrink-0 rounded-md bg-green-100 px-1.5 py-0.5 text-xs font-semibold text-green-800">
+                      {t('submittedBadge')}
+                    </span>
+                  )}
                   <div className="h-2 flex-1 overflow-hidden rounded-full bg-slate-100">
                     <div
                       className="h-full rounded-full bg-brand-600"

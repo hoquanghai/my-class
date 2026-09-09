@@ -79,6 +79,8 @@ export const ErrorCodes = {
   AI_DISABLED: 'AI_DISABLED',
   RUN_ACTIVE: 'RUN_ACTIVE',
   RUN_NOT_OPEN: 'RUN_NOT_OPEN',
+  /** Học sinh đã nộp bài (tự làm): không nhận thêm câu trả lời. */
+  RUN_SUBMITTED: 'RUN_SUBMITTED',
   STUDENT_BOUND: 'STUDENT_BOUND',
 } as const;
 export type ErrorCode = (typeof ErrorCodes)[keyof typeof ErrorCodes];

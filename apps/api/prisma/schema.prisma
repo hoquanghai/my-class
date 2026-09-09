@@ -338,6 +338,7 @@ model QuizRun {
 
   @@index([sessionId])
   @@index([quizId])
+  @@index([status, deadlineAt])
 }
 
 model QuizRunQuestion {
@@ -387,6 +388,8 @@ model QuizRunResult {
   answeredCount Int
   rank          Int?
   finishedAt    DateTime?
+  /// Tự làm: lúc học sinh bấm nộp (null = chưa nộp / được chốt khi lượt kết thúc)
+  submittedAt   DateTime?
 
   run     QuizRun @relation(fields: [runId], references: [id], onDelete: Cascade)
   student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)

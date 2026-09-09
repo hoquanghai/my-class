@@ -117,4 +117,15 @@ export class StudentRunsController {
   ): Promise<SubmitAnswerResultDto> {
     return this.runs.submit(s, id, body);
   }
+
+  /** Tự làm: nộp bài một lần, khóa câu trả lời. */
+  @StudentRoute()
+  @Post(':id/submit')
+  @HttpCode(200)
+  submitRun(
+    @CurrentStudent() s: StudentPrincipal,
+    @Param('id') id: string,
+  ): Promise<StudentRunViewDto> {
+    return this.runs.submitRun(s, id);
+  }
 }

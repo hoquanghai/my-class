@@ -530,7 +530,10 @@
     "present": "Máy chiếu",
     "progress": "Tiến độ",
     "waitingStudents": "Đang chờ học sinh…",
-    "joinHint": "Học sinh vào {url} hoặc quét mã QR của lớp"
+    "joinHint": "Học sinh vào {url} hoặc quét mã QR của lớp",
+    "submittedCount": "Đã nộp {count}/{total}",
+    "submittedBadge": "Đã nộp",
+    "autoFinishHint": "Hết giờ, lượt sẽ tự kết thúc và công bố kết quả. Bấm Kết thúc nếu muốn chốt sớm."
   },
   "Student": {
     "joinTitle": "Vào lớp",
@@ -569,7 +572,26 @@
     "leave": "Thoát",
     "timeLeft": "Còn {sec}s",
     "timeUp": "Hết giờ",
-    "waitingReveal": "Chờ giáo viên công bố đáp án…"
+    "waitingReveal": "Chờ giáo viên công bố đáp án…",
+    "answeredCount": "Đã làm {done}/{total}",
+    "questionList": "Danh sách câu hỏi",
+    "questionN": "Câu {n}",
+    "legendCurrent": "Đang xem",
+    "legendAnswered": "Đã làm",
+    "legendUnanswered": "Chưa làm",
+    "changeHint": "Chọn đáp án là lưu ngay. Bạn có thể đổi cho tới khi bấm Nộp bài.",
+    "submitRun": "Nộp bài",
+    "submitConfirmTitle": "Nộp bài ngay?",
+    "submitIncomplete": "Bạn còn {count} câu chưa làm: {list}.",
+    "submitOnce": "Chỉ được nộp một lần. Sau khi nộp sẽ không sửa được câu trả lời.",
+    "keepWorking": "Làm tiếp",
+    "submitAnyway": "Nộp bài",
+    "submittedRun": "Đã nộp bài",
+    "submittedAt": "Nộp lúc {time} · đã làm {done}/{total} câu",
+    "waitingResult": "Kết quả sẽ hiện khi hết giờ hoặc khi giáo viên kết thúc bài kiểm tra.",
+    "timeLeftLabel": "Còn lại",
+    "timeUpSubmitting": "Hết giờ. Bài của bạn đang được nộp tự động…",
+    "locked": "Bạn đã nộp bài, không sửa được nữa."
   },
   "Profile": {
     "title": "Hồ sơ giáo viên",

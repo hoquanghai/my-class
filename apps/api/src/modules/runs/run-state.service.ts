@@ -110,12 +110,16 @@ export class RunStateService {
       mode === 'paced' && status === 'in_progress' && run.currentIndex !== null
         ? (run.questions.find((q) => q.sortOrder === run.currentIndex) ?? null)
         : null;
+    const submitted = new Set(
+      run.results.filter((r) => r.submittedAt !== null).map((r) => r.studentId),
+    );
     const participants: RunParticipant[] = run.session.participants
       .filter((p) => p.student.deletedAt === null)
       .map((p) => ({
         studentId: p.studentId,
         name: p.student.name,
         answeredCount: run.answers.filter((a) => a.studentId === p.studentId).length,
+        submitted: submitted.has(p.studentId),
       }));
 
     return {
@@ -135,6 +139,7 @@ export class RunStateService {
       deadlineAt: run.deadlineAt?.toISOString() ?? null,
       serverTime: new Date().toISOString(),
       participants,
+      submittedCount: submitted.size,
       currentQuestion: currentQ ? toPublicQuestion(currentQ) : null,
       currentAnswerCount: currentQ
         ? run.answers.filter((a) => a.runQuestionId === currentQ.id).length
