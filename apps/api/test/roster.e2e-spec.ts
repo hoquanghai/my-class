@@ -55,6 +55,43 @@ describe('Roster (e2e)', () => {
     expect(last.sortOrder).toBe(3);
   });
 
+  it('thêm một học sinh từ form: đủ trường, trùng tên → hậu tố, thiếu tên → 400', async () => {
+    const { s, classId } = await setup('roster-create');
+    await importNames(s, classId, ['Nguyễn Văn An']).expect(200);
+    const created = await http()
+      .post(`/api/classes/${classId}/students`)
+      .set('Cookie', ck(s))
+      .send({
+        name: 'Nguyễn Văn An',
+        studentCode: 'HS002',
+        dateOfBirth: '2008-03-01',
+        gender: 'nu',
+        email: 'AN2@example.com',
+        school: 'THPT B',
+        parentPhone: '0900000002',
+        note: '',
+      })
+      .expect(201);
+    expect(created.body.added).toBe(1);
+    expect(created.body.students).toHaveLength(2);
+    expect(created.body.students[1]).toMatchObject({
+      name: 'Nguyễn Văn An (2)',
+      studentCode: 'HS002',
+      dateOfBirth: '2008-03-01',
+      gender: 'nu',
+      email: 'an2@example.com',
+      school: 'THPT B',
+      parentPhone: '0900000002',
+      note: null,
+      sortOrder: 1,
+    });
+    await http()
+      .post(`/api/classes/${classId}/students`)
+      .set('Cookie', ck(s))
+      .send({ studentCode: 'HS003' })
+      .expect(400);
+  });
+
   it('gói miễn phí 30 học sinh/giáo viên: quá → 403 kèm details; ?fit=1 chỉ nhập phần còn chỗ', async () => {
     const { s, classId } = await setup('roster-limit');
     const names = (n: number, prefix: string) =>

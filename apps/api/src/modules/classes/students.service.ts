@@ -1,5 +1,6 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import {
+  type CreateStudentInput,
   dedupeNames,
   normalizeText,
   parseNameLines,
@@ -42,6 +43,31 @@ export class StudentsService {
     private readonly limits: LimitsService,
     private readonly analytics: AnalyticsService,
   ) {}
+
+  /**
+   * Thêm một học sinh từ form (hộp thoại). Đi chung đường `insert` nên cũng chịu giới hạn gói
+   * (403 LIMIT_STUDENTS) và tự thêm hậu tố khi trùng tên; học sinh mới nằm cuối danh sách.
+   */
+  async create(
+    teacherId: string,
+    classId: string,
+    input: CreateStudentInput,
+  ): Promise<RosterImportResultDto> {
+    await this.classes.findOwned(teacherId, classId);
+    const row: RosterRow = {
+      name: input.name,
+      studentCode: input.studentCode ?? undefined,
+      dateOfBirth: input.dateOfBirth ?? undefined,
+      gender: input.gender ?? undefined,
+      phone: input.phone ?? undefined,
+      email: input.email ?? undefined,
+      school: input.school ?? undefined,
+      parentName: input.parentName ?? undefined,
+      parentPhone: input.parentPhone ?? undefined,
+      note: input.note ?? undefined,
+    };
+    return this.insert(teacherId, classId, [row], false);
+  }
 
   async importNames(
     teacherId: string,

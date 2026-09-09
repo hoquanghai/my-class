@@ -254,7 +254,7 @@
     "excelHint": "Chỉ cột \"Họ và tên\" là bắt buộc. Các cột khác (mã học sinh, ngày sinh, giới tính, SĐT, email, trường, phụ huynh, ghi chú) tùy chọn; tiêu đề trong file mẫu ghi rõ từng cột.",
     "consent": "Bạn chịu trách nhiệm về việc phụ huynh/học sinh đã đồng ý khi đưa thông tin vào hệ thống. Dữ liệu chỉ dùng cho điểm danh, kiểm tra và liên hệ; không chia sẻ cho bên thứ ba.",
     "capacity": "{count} học sinh trong lớp",
-    "empty": "Chưa có học sinh. Dán tên hoặc nhập Excel để bắt đầu.",
+    "empty": "Chưa có học sinh. Bấm Thêm học sinh hoặc nhập từ Excel để bắt đầu.",
     "colIndex": "STT",
     "colName": "Họ và tên",
     "colPhone": "SĐT phụ huynh",
@@ -278,7 +278,16 @@
     "limitRemaining": "Còn {remaining} chỗ trống.",
     "limitFull": "Đã hết chỗ, không thể thêm học sinh nào nữa.",
     "limitFit": "Chỉ nhập {remaining} học sinh đầu",
-    "limitUpgrade": "Nâng cấp gói"
+    "limitUpgrade": "Nâng cấp gói",
+    "search": "Tìm theo tên hoặc mã học sinh",
+    "noMatch": "Không có học sinh nào khớp “{query}”.",
+    "addStudent": "Thêm học sinh",
+    "addOne": "Nhập một học sinh",
+    "addMany": "Dán danh sách tên",
+    "pasteHint": "Số thứ tự đầu dòng (1., 2)…) sẽ được bỏ; tên trùng được thêm hậu tố (2), (3).",
+    "colBirth": "Ngày sinh",
+    "colSchool": "Trường",
+    "createdOne": "Đã thêm {name} vào lớp"
   },
   "Sessions": {
     "start": "Bắt đầu buổi học",

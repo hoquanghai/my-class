@@ -15,6 +15,8 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import {
+  type CreateStudentInput,
+  createStudentSchema,
   type ImportNamesInput,
   importNamesSchema,
   type ReorderStudentsInput,
@@ -55,6 +57,17 @@ function looksLikeXlsx(file: UploadedXlsx): boolean {
 @Controller('classes/:classId/students')
 export class StudentsController {
   constructor(private readonly students: StudentsService) {}
+
+  /** Thêm một học sinh với đầy đủ thông tin (hộp thoại trên web). */
+  @Post()
+  @HttpCode(201)
+  create(
+    @CurrentTeacher() teacher: TeacherPrincipal,
+    @Param('classId') classId: string,
+    @Body({ schema: createStudentSchema }) body: CreateStudentInput,
+  ): Promise<RosterImportResultDto> {
+    return this.students.create(teacher.id, classId, body);
+  }
 
   @Post('import')
   @HttpCode(200)

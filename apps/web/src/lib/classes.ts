@@ -4,6 +4,7 @@ import type {
   ClassDetailDto,
   ClassSummaryDto,
   CreateClassInput,
+  CreateStudentInput,
   LimitsDto,
   RosterImportResultDto,
   StudentDto,
@@ -128,6 +129,16 @@ export function useImportExcel(id: string) {
         { method: 'POST', formData },
       );
     },
+    onSuccess: (r) => apply(r.students),
+  });
+}
+
+/** Thêm một học sinh từ hộp thoại; server trả cả danh sách (học sinh mới ở cuối). */
+export function useCreateStudent(id: string) {
+  const apply = useApplyRoster(id);
+  return useMutation({
+    mutationFn: (input: CreateStudentInput) =>
+      apiFetch<RosterImportResultDto>(`/classes/${id}/students`, { method: 'POST', body: input }),
     onSuccess: (r) => apply(r.students),
   });
 }

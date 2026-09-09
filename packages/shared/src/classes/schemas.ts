@@ -100,6 +100,10 @@ export const updateStudentSchema = z.object({
 });
 export type UpdateStudentInput = z.infer<typeof updateStudentSchema>;
 
+/** Thêm một học sinh từ form: tên bắt buộc, các trường khác như khi sửa. */
+export const createStudentSchema = updateStudentSchema.extend({ name: studentNameSchema });
+export type CreateStudentInput = z.infer<typeof createStudentSchema>;
+
 export const reorderStudentsSchema = z.object({
   ids: z.array(z.string().min(1)).min(1),
 });
