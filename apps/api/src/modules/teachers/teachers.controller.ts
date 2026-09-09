@@ -7,26 +7,15 @@ import {
   HttpCode,
   Patch,
   Post,
-  Req,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { Throttle } from '@nestjs/throttler';
-import {
-  type ChangePasswordInput,
-  changePasswordSchema,
-  type TeacherDto,
-  type UpdateProfileInput,
-  updateProfileSchema,
-} from '@lophoc/shared';
-import type { Request } from 'express';
+import { type TeacherDto, type UpdateProfileInput, updateProfileSchema } from '@lophoc/shared';
 import {
   CurrentTeacher,
   type TeacherPrincipal,
 } from '../../common/decorators/current-teacher.decorator.js';
-import { readCookie, REFRESH_COOKIE } from '../auth/cookies.js';
-import { sha256 } from '../auth/tokens.js';
 import { TeachersService } from './teachers.service.js';
 
 const MAX_AVATAR_BYTES = 2 * 1024 * 1024;
@@ -51,19 +40,6 @@ export class TeachersController {
     @Body({ schema: updateProfileSchema }) body: UpdateProfileInput,
   ): Promise<{ teacher: TeacherDto }> {
     return { teacher: await this.teachers.updateProfile(teacher.id, body) };
-  }
-
-  @Throttle({ default: { limit: 10, ttl: 60_000 } })
-  @Post('me/password')
-  @HttpCode(200)
-  async changePassword(
-    @CurrentTeacher() teacher: TeacherPrincipal,
-    @Body({ schema: changePasswordSchema }) body: ChangePasswordInput,
-    @Req() req: Request,
-  ): Promise<{ changed: true }> {
-    const refresh = readCookie(req, REFRESH_COOKIE);
-    await this.teachers.changePassword(teacher.id, body, refresh ? sha256(refresh) : undefined);
-    return { changed: true };
   }
 
   @Post('me/avatar')

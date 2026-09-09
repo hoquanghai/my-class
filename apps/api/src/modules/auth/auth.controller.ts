@@ -13,6 +13,8 @@ import { ConfigService } from '@nestjs/config';
 import { Throttle } from '@nestjs/throttler';
 import {
   type AuthProvidersDto,
+  type ChangePasswordInput,
+  changePasswordSchema,
   type ForgotPasswordInput,
   forgotPasswordSchema,
   type LoginInput,
@@ -32,6 +34,7 @@ import {
 } from '../../common/decorators/current-teacher.decorator.js';
 import { Public } from '../../common/decorators/public.decorator.js';
 import type { Env } from '../../config/env.js';
+import { TeachersService } from '../teachers/teachers.service.js';
 import { AuthService, type RequestMeta } from './auth.service.js';
 import {
   clearAuthCookies,
@@ -45,7 +48,7 @@ import {
 import { FacebookOAuthService } from './facebook-oauth.service.js';
 import { GoogleOAuthService } from './google-oauth.service.js';
 import type { OAuthProvider, OAuthProviderService } from './oauth-profile.js';
-import { randomToken } from './tokens.js';
+import { randomToken, sha256 } from './tokens.js';
 
 const AUTH_THROTTLE = { default: { limit: 10, ttl: 60_000 } };
 
@@ -66,6 +69,7 @@ export class AuthController {
     private readonly auth: AuthService,
     private readonly google: GoogleOAuthService,
     private readonly facebook: FacebookOAuthService,
+    private readonly teachers: TeachersService,
     config: ConfigService<Env, true>,
   ) {
     this.secure = config.get('NODE_ENV', { infer: true }) === 'production';
@@ -123,6 +127,23 @@ export class AuthController {
       clearAuthCookies(res, this.secure);
       throw err;
     }
+  }
+
+  /**
+   * Đổi/đặt mật khẩu. Đặt dưới /auth để nhận được cookie refresh (path /api/auth),
+   * nhờ đó giữ lại phiên hiện tại và chỉ thu hồi các phiên khác.
+   */
+  @Throttle(AUTH_THROTTLE)
+  @Post('password')
+  @HttpCode(200)
+  async changePassword(
+    @CurrentTeacher() teacher: TeacherPrincipal,
+    @Body({ schema: changePasswordSchema }) body: ChangePasswordInput,
+    @Req() req: Request,
+  ): Promise<{ changed: true }> {
+    const refresh = readCookie(req, REFRESH_COOKIE);
+    await this.teachers.changePassword(teacher.id, body, refresh ? sha256(refresh) : undefined);
+    return { changed: true };
   }
 
   @Get('me')

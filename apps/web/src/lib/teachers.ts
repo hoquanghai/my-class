@@ -22,7 +22,7 @@ export function useUpdateProfile() {
 export function useChangePassword() {
   return useMutation({
     mutationFn: (input: ChangePasswordInput) =>
-      apiFetch<{ changed: true }>('/teachers/me/password', { method: 'POST', body: input }),
+      apiFetch<{ changed: true }>('/auth/password', { method: 'POST', body: input }),
   });
 }
 

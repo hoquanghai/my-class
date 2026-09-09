@@ -90,12 +90,12 @@ describe('Teacher profile (e2e)', () => {
     );
 
     await http()
-      .post('/api/teachers/me/password')
+      .post('/api/auth/password')
       .set('Cookie', ck(s))
       .send({ currentPassword: 'sai-roi-123', newPassword: 'matkhaumoi456' })
       .expect(400);
     await http()
-      .post('/api/teachers/me/password')
+      .post('/api/auth/password')
       .set('Cookie', ck(s))
       .send({ currentPassword: 'matkhau123', newPassword: 'matkhaumoi456' })
       .expect(200);
