@@ -529,7 +529,8 @@
     "overridden": "GV sửa",
     "present": "Máy chiếu",
     "progress": "Tiến độ",
-    "waitingStudents": "Đang chờ học sinh…"
+    "waitingStudents": "Đang chờ học sinh…",
+    "joinHint": "Học sinh vào {url} hoặc quét mã QR của lớp"
   },
   "Student": {
     "joinTitle": "Vào lớp",
