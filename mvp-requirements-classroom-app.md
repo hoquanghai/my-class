@@ -119,7 +119,7 @@ Three input paths, all landing on the same **preview-and-fix grid** (parsed ques
 
 ## 9. Non-goals for MVP
 
-Homework, parent notifications (Zalo/ZNS), fees, center-owner role, multi-teacher, AI question generation, native apps, payments, shared/public question bank.
+Homework, parent notifications (Zalo/ZNS), fees, center-owner role, multi-teacher, AI question generation, native apps, payments. (A teacher-only shared question-set community was added on 2026-09-09 by user decision; see `docs/superpowers/specs/2026-09-09-community-design.md`. A public/SEO bank stays out of scope.)
 
 ## 10. Deliverables
 

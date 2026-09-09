@@ -21,6 +21,9 @@ const FEATURE_FLAGS: Record<string, unknown> = {
   'free.history_days': 30,
   'free.export_enabled': false,
   'ai_extraction.enabled': true,
+  // Cộng đồng: số báo cáo để tự ẩn bài; số bộ đề được lấy về mỗi ngày (gói miễn phí)
+  'community.report_auto_hide': 3,
+  'community.max_clones_per_day': 20,
 };
 
 const STUDENT_NAMES = [

@@ -24,4 +24,6 @@ export * from './runs/schemas.js';
 export * from './runs/types.js';
 export * from './runs/grading.js';
 export * from './students/schemas.js';
+export * from './community/schemas.js';
+export * from './community/types.js';
 export * from './socket-events.js';

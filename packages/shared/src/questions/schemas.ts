@@ -14,7 +14,8 @@ export const DIFFICULTIES = ['nhan_biet', 'thong_hieu', 'van_dung'] as const;
 export const difficultySchema = z.enum(DIFFICULTIES);
 export type Difficulty = z.infer<typeof difficultySchema>;
 
-export const QUESTION_SOURCES = ['paste', 'docx', 'image_ai', 'manual'] as const;
+/** `community`: lấy về từ bộ đề chia sẻ (Question.sharedSetId trỏ về bài gốc). */
+export const QUESTION_SOURCES = ['paste', 'docx', 'image_ai', 'manual', 'community'] as const;
 export const questionSourceSchema = z.enum(QUESTION_SOURCES);
 export type QuestionSource = z.infer<typeof questionSourceSchema>;
 
@@ -121,6 +122,8 @@ export const questionFilterSchema = z.object({
   topic: z.string().trim().max(60).optional(),
   difficulty: difficultySchema.optional(),
   type: questionTypeSchema.optional(),
+  /** Lọc theo nguồn (ví dụ `community` = lấy về từ cộng đồng) */
+  source: questionSourceSchema.optional(),
   q: z.string().trim().max(200).optional(),
   page: z.coerce.number().int().min(1).default(1),
   pageSize: z.coerce.number().int().min(1).max(100).default(20),

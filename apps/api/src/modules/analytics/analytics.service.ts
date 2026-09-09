@@ -10,6 +10,9 @@ export type AnalyticsEventName =
   | 'quiz_launched'
   | 'students_joined'
   | 'quiz_completed'
+  | 'community_publish'
+  | 'community_clone'
+  | 'community_report'
   | 'projector_opened'
   | 'question_import'
   | 'export_clicked';

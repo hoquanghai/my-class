@@ -93,6 +93,7 @@ export class QuestionsService {
       ...(filter.topic && { topic: filter.topic }),
       ...(filter.difficulty && { difficulty: filter.difficulty }),
       ...(filter.type && { type: filter.type }),
+      ...(filter.source && { source: filter.source }),
       ...(filter.q && { stemMd: { contains: filter.q, mode: 'insensitive' } }),
     };
     const [rows, total] = await Promise.all([

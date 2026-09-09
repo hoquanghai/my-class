@@ -84,6 +84,10 @@ export const ErrorCodes = {
   RUN_NOT_OPEN: 'RUN_NOT_OPEN',
   /** Học sinh đã nộp bài (tự làm): không nhận thêm câu trả lời. */
   RUN_SUBMITTED: 'RUN_SUBMITTED',
+  /** Cộng đồng: vượt số lượt lấy bộ đề về trong ngày. */
+  LIMIT_COMMUNITY_CLONES: 'LIMIT_COMMUNITY_CLONES',
+  /** Cần xác minh email trước khi đăng bài / bình luận / báo cáo. */
+  EMAIL_NOT_VERIFIED: 'EMAIL_NOT_VERIFIED',
   STUDENT_BOUND: 'STUDENT_BOUND',
 } as const;
 export type ErrorCode = (typeof ErrorCodes)[keyof typeof ErrorCodes];
