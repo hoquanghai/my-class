@@ -2,6 +2,7 @@
 
 import { loginSchema, type TeacherDto } from '@lophoc/shared';
 import { useQueryClient } from '@tanstack/react-query';
+import { Eye, EyeOff } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -27,6 +28,7 @@ function LoginForm() {
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState<FieldErrors>({});
   const [serverError, setServerError] = useState<string | null>(
     params.get('error') === 'google' ? t('googleError') : null,
@@ -54,8 +56,13 @@ function LoginForm() {
   }
 
   return (
-    <form onSubmit={onSubmit} className="space-y-5" noValidate>
-      <h1 className="text-xl font-semibold text-slate-900">{t('loginTitle')}</h1>
+    <form onSubmit={onSubmit} className="space-y-6" noValidate>
+      <div>
+        <h1 className="text-3xl font-bold tracking-[-0.015em] text-ink sm:text-4xl">
+          {t('loginTitle')}
+        </h1>
+        <p className="mt-2 text-base text-ink-muted">{t('loginHint')}</p>
+      </div>
       {serverError && <Alert variant="error">{serverError}</Alert>}
 
       <Field label={t('email')} htmlFor="email" error={errors.email}>
@@ -63,33 +70,55 @@ function LoginForm() {
           id="email"
           type="email"
           autoComplete="email"
+          inputMode="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           aria-invalid={Boolean(errors.email)}
+          className="h-12"
         />
       </Field>
       <Field label={t('password')} htmlFor="password" error={errors.password}>
-        <Input
-          id="password"
-          type="password"
-          autoComplete="current-password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          aria-invalid={Boolean(errors.password)}
-        />
+        <div className="relative">
+          <Input
+            id="password"
+            type={showPassword ? 'text' : 'password'}
+            autoComplete="current-password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            aria-invalid={Boolean(errors.password)}
+            className="h-12 pr-12"
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword((v) => !v)}
+            aria-label={showPassword ? t('hidePassword') : t('showPassword')}
+            aria-pressed={showPassword}
+            className="absolute right-1 top-1 flex size-10 items-center justify-center rounded-lg text-ink-muted hover:bg-surface-soft hover:text-ink"
+          >
+            {showPassword ? <EyeOff className="size-5" /> : <Eye className="size-5" />}
+          </button>
+        </div>
       </Field>
 
-      <Button type="submit" size="lg" className="w-full" loading={loading}>
+      <Button
+        type="submit"
+        size="lg"
+        className="w-full rounded-full bg-ink hover:bg-ink/85 disabled:bg-ink/50"
+        loading={loading}
+      >
         {t('loginButton')}
       </Button>
 
-      <div className="flex justify-between text-sm">
-        <Link href="/forgot-password" className="text-brand-700 hover:underline">
+      <div className="flex flex-wrap items-center justify-between gap-2 text-sm">
+        <Link href="/forgot-password" className="text-accent underline-offset-4 hover:underline">
           {t('forgot')}
         </Link>
-        <span className="text-slate-600">
+        <span className="text-ink-muted">
           {t('noAccount')}{' '}
-          <Link href="/signup" className="font-medium text-brand-700 hover:underline">
+          <Link
+            href="/signup"
+            className="font-medium text-accent underline-offset-4 hover:underline"
+          >
             {t('signupLink')}
           </Link>
         </span>
@@ -97,19 +126,19 @@ function LoginForm() {
 
       {providers.data?.google && (
         <>
-          <div className="flex items-center gap-3 text-xs text-slate-400">
-            <span className="h-px flex-1 bg-slate-200" />
+          <div className="flex items-center gap-3 font-mono text-xs uppercase tracking-[0.08em] text-ink-muted">
+            <span className="h-px flex-1 bg-hairline" />
             {t('or')}
-            <span className="h-px flex-1 bg-slate-200" />
+            <span className="h-px flex-1 bg-hairline" />
           </div>
           <a
             href={apiUrl('/auth/google')}
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-lg border border-slate-300 font-medium text-slate-800 hover:bg-slate-50"
+            className="flex h-12 w-full items-center justify-center gap-2 rounded-full border border-hairline font-semibold text-ink hover:bg-surface-soft"
           >
             <GoogleIcon />
             {t('google')}
           </a>
-          <p className="text-center text-xs text-slate-500">{t('googleTermsNote')}</p>
+          <p className="text-center text-xs text-ink-muted">{t('googleTermsNote')}</p>
         </>
       )}
     </form>

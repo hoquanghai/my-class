@@ -38,7 +38,9 @@ export default function ForgotPasswordPage() {
 
   return (
     <form onSubmit={onSubmit} className="space-y-5" noValidate>
-      <h1 className="text-xl font-semibold text-slate-900">{t('forgotTitle')}</h1>
+      <h1 className="text-3xl font-bold tracking-[-0.015em] text-ink sm:text-4xl">
+        {t('forgotTitle')}
+      </h1>
       <p className="text-sm text-slate-600">{t('forgotHint')}</p>
       {serverError && <Alert variant="error">{serverError}</Alert>}
       {sent ? (

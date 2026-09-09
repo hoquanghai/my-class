@@ -26,3 +26,7 @@ apps/web/next-env.d.ts
 # Playwright MCP artifacts
 .playwright-mcp/
 *.png
+
+# Công cụ cục bộ (skill cache, chỉ mục codegraph)
+.claude/
+.codegraph/

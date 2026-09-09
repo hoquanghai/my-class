@@ -1,13 +1,90 @@
 @import 'tailwindcss';
 
+/*
+ * Token thiết kế — nguồn: DESIGN.md (mục 2–5, 11).
+ * Thành phần chỉ dùng lớp tiện ích (bg-block-lime, text-ink, rounded-card…), không viết hex trong JSX.
+ */
 @theme {
-  --font-sans: var(--font-be-vietnam), system-ui, sans-serif;
-  --color-brand-50: oklch(0.97 0.02 250);
-  --color-brand-500: oklch(0.55 0.18 250);
-  --color-brand-600: oklch(0.48 0.18 250);
-  --color-brand-700: oklch(0.42 0.16 250);
+  --font-sans: var(--font-be-vietnam), system-ui, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, Consolas, monospace;
+
+  /* Mực và nền */
+  --color-ink: #111111;
+  --color-ink-muted: #5b5b60;
+  --color-canvas: #ffffff;
+  --color-surface-soft: #f7f7f5;
+  --color-hairline: #e6e6e6;
+  --color-hairline-soft: #f1f1f1;
+
+  /* Màu nhấn tương tác: liên kết, focus, trạng thái chọn, tiến độ */
+  --color-accent: #2a5bd7;
+  --color-accent-soft: #eaf0fd;
+
+  /* Khối màu gắn với tính năng */
+  --color-block-lime: #dceeb1;
+  --color-block-lilac: #c9b8f5;
+  --color-block-cream: #f4ecd6;
+  --color-block-mint: #c8e6cd;
+  --color-block-pink: #efd4d4;
+  --color-block-coral: #f3c9b6;
+  --color-block-navy: #1f1d3d;
+
+  /* Ngữ nghĩa */
+  --color-success: #1a8f43;
+  --color-warning: #b45309;
+  --color-danger: #c62828;
+
+  /* Bí danh cũ (app đang dùng brand-*): trỏ về accent để chỉ còn một màu xanh */
+  --color-brand-50: #eaf0fd;
+  --color-brand-500: #3b6fe6;
+  --color-brand-600: #2a5bd7;
+  --color-brand-700: #1f47b3;
+
+  /* Bo góc theo vai trò (giữ nguyên thang mặc định của Tailwind cho app) */
+  --radius-field: 12px;
+  --radius-card: 20px;
+  --radius-block: 28px;
+
+  /* Bóng */
+  --shadow-soft: 0 4px 16px rgb(17 17 17 / 0.06);
+  --shadow-modal: 0 12px 40px rgb(17 17 17 / 0.14);
+
+  /* Chuyển động */
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 body {
-  @apply bg-white text-slate-900 antialiased;
+  @apply bg-canvas text-ink antialiased;
+}
+
+/* Số dạng bảng cho điểm, đồng hồ, mã */
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Hiện dần khi cuộn tới (components/marketing/reveal.tsx) */
+.reveal {
+  opacity: 0;
+  transform: translateY(16px);
+  transition:
+    opacity 450ms var(--ease-out-soft),
+    transform 450ms var(--ease-out-soft);
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }

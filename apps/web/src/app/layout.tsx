@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { NextIntlClientProvider } from 'next-intl';
 import { getLocale } from 'next-intl/server';
-import { Be_Vietnam_Pro } from 'next/font/google';
+import { Be_Vietnam_Pro, JetBrains_Mono } from 'next/font/google';
 import { QueryProvider } from '@/lib/query';
 import './globals.css';
 
@@ -9,6 +9,14 @@ const beVietnam = Be_Vietnam_Pro({
   variable: '--font-be-vietnam',
   subsets: ['vietnamese', 'latin'],
   weight: ['400', '500', '600', '700'],
+  display: 'swap',
+});
+
+const jetbrains = JetBrains_Mono({
+  variable: '--font-jetbrains',
+  subsets: ['vietnamese', 'latin'],
+  weight: ['400', '500', '700'],
+  display: 'swap',
 });
 
 export const metadata: Metadata = {
@@ -20,7 +28,7 @@ export const metadata: Metadata = {
 export default async function RootLayout({ children }: LayoutProps<'/'>) {
   const locale = await getLocale();
   return (
-    <html lang={locale} className={`${beVietnam.variable} h-full`}>
+    <html lang={locale} className={`${beVietnam.variable} ${jetbrains.variable} h-full`}>
       <body className="flex min-h-full flex-col font-sans">
         <NextIntlClientProvider>
           <QueryProvider>{children}</QueryProvider>

@@ -38,7 +38,9 @@ function VerifyEmail() {
 
   return (
     <div className="space-y-5">
-      <h1 className="text-xl font-semibold text-slate-900">{t('verifyTitle')}</h1>
+      <h1 className="text-3xl font-bold tracking-[-0.015em] text-ink sm:text-4xl">
+        {t('verifyTitle')}
+      </h1>
       {status === 'verifying' && (
         <div className="flex items-center gap-3 text-slate-600">
           <Spinner className="size-5" /> {t('verifying')}

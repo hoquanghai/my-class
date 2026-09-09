@@ -1,11 +1,109 @@
 {
   "Landing": {
-    "title": "Điểm danh, kiểm tra đầu giờ và bảng xếp hạng cho lớp học của bạn",
-    "subtitle": "Miễn phí cho giáo viên. Nhập đề từ Word, ảnh chụp hoặc dán văn bản, học sinh làm bài trên điện thoại, kết quả hiện ngay trên máy chiếu.",
-    "cta": "Dùng thử miễn phí",
-    "login": "Đăng nhập",
-    "demoPlaceholder": "Video demo 60 giây (sắp có)",
-    "contact": "Liên hệ Zalo / Facebook"
+    "skip": "Tới nội dung chính",
+    "nav": {
+      "primary": "Điều hướng chính",
+      "menu": "Mở menu",
+      "features": "Tính năng",
+      "howItWorks": "Cách dùng",
+      "students": "Học sinh",
+      "faq": "Hỏi đáp",
+      "login": "Đăng nhập",
+      "studentJoin": "Học sinh vào lớp",
+      "cta": "Dùng thử miễn phí"
+    },
+    "hero": {
+      "eyebrow": "Miễn phí cho giáo viên trung tâm",
+      "title": "5 phút đầu giờ: điểm danh xong, kiểm tra xong, có ngay bảng xếp hạng.",
+      "subtitle": "Nhập đề từ Word, ảnh chụp hay dán văn bản. Học sinh làm bài trên điện thoại bằng mã lớp, không cần cài app. Kết quả hiện ngay trên máy chiếu.",
+      "cta": "Dùng thử miễn phí",
+      "secondary": "Xem cách dùng",
+      "note": "Không cần thẻ · Không cần cài đặt · Học sinh không cần tài khoản",
+      "noteAttendance": "Điểm danh 19:02",
+      "present": "Có mặt",
+      "late": "Muộn",
+      "absent": "Vắng"
+    },
+    "proof": {
+      "join": "Học sinh vào lớp bằng mã 6 ký tự",
+      "import": "Nhập đề từ Word, ảnh chụp hoặc dán văn bản",
+      "project": "Chiếu câu hỏi và bảng xếp hạng trực tiếp"
+    },
+    "how": {
+      "eyebrow": "Cách dùng",
+      "title": "Ba bước cho buổi học đầu tiên",
+      "step1Title": "Tạo lớp, dán danh sách tên",
+      "step1Body": "Dán danh sách từ Zalo hoặc Excel, hệ thống tự tách tên và tạo mã lớp. In mã QR dán lên bảng.",
+      "step2Title": "Phát đề, học sinh vào bằng mã",
+      "step2Body": "Chọn đề từ ngân hàng câu hỏi, chọn chế độ từng câu hoặc tự làm. Học sinh mở trình duyệt, nhập mã, chọn tên.",
+      "step3Title": "Chiếu kết quả, xem báo cáo",
+      "step3Body": "Bảng xếp hạng hiện ngay khi kết thúc. Điểm danh và điểm số lưu theo buổi để xem lại."
+    },
+    "quiz": {
+      "eyebrow": "Kiểm tra đầu giờ",
+      "title": "Cả lớp làm cùng một câu, thầy cô bấm chuyển.",
+      "body": "Mỗi câu có đếm ngược riêng. Học sinh nộp xong thấy ngay đúng sai khi giáo viên công bố. Kết thúc là có bảng xếp hạng, không phải chấm tay.",
+      "b1": "Chế độ từng câu để chiếu lên bảng, hoặc tự làm với thời gian chung",
+      "b2": "Xáo thứ tự câu và phương án cho từng lượt",
+      "b3": "Mất mạng giữa chừng, bài vẫn tự gửi lại khi có kết nối",
+      "cta": "Tạo đề đầu tiên"
+    },
+    "bank": {
+      "eyebrow": "Ngân hàng câu hỏi",
+      "title": "Dán đề từ Word, chụp ảnh đề in, có ngay câu hỏi.",
+      "body": "Trình nhận diện hiểu định dạng đề Việt Nam: Câu 1, A. B. C. D., đáp án in đậm, công thức toán. Xem lại trong lưới, sửa chỗ sai rồi lưu vào ngân hàng riêng của bạn.",
+      "b1": "Dán văn bản hoặc tải file Word, kể cả ảnh trong đề",
+      "b2": "Chụp ảnh hoặc PDF, AI trích xuất 20 trang mỗi tháng miễn phí",
+      "b3": "Gắn thẻ môn, khối, chủ đề, mức độ để chọn ngẫu nhiên"
+    },
+    "attendance": {
+      "eyebrow": "Điểm danh",
+      "title": "Điểm danh 30 giây bằng ô chạm.",
+      "body": "Mỗi học sinh là một ô. Chạm để đổi có mặt, muộn, vắng, có phép. Học sinh vào lớp bằng điện thoại được tự đánh có mặt.",
+      "b1": "Đánh cả lớp có mặt một chạm, chỉ sửa vài trường hợp",
+      "b2": "Ghi chú nhanh cho từng học sinh, hoàn tác khi bấm nhầm",
+      "b3": "Lịch sử chuyên cần 30 ngày của từng học sinh",
+      "mockTitle": "Toán 9A · Buổi tối thứ 3"
+    },
+    "students": {
+      "eyebrow": "Dành cho học sinh",
+      "title": "Không cần tài khoản. Nhập mã lớp, chọn tên, làm bài.",
+      "body": "Mở trình duyệt trên bất kỳ điện thoại nào. Thiết bị nhớ tên bạn cho những buổi sau. Chữ to, nút to, làm được bằng một tay.",
+      "codeHint": "Mã lớp do giáo viên đưa, 6 ký tự",
+      "cta": "Vào lớp"
+    },
+    "faq": {
+      "eyebrow": "Hỏi đáp",
+      "title": "Câu hỏi thường gặp",
+      "q1": "Miễn phí tới đâu?",
+      "a1": "Gói miễn phí gồm 2 lớp, 50 học sinh mỗi lớp, 20 trang AI trích xuất mỗi tháng và lịch sử 30 ngày. Không giới hạn số buổi học hay số câu hỏi.",
+      "q2": "Học sinh có cần cài gì không?",
+      "a2": "Không. Học sinh mở trình duyệt, nhập mã lớp và chọn tên. Không cần tài khoản, email hay số điện thoại.",
+      "q3": "Dữ liệu lớp của tôi ai xem được?",
+      "a3": "Chỉ bạn. Học sinh chỉ thấy bài của mình và bảng xếp hạng của lớp. Bạn có thể xóa lớp và toàn bộ dữ liệu bất cứ lúc nào.",
+      "q4": "Mạng ở trung tâm yếu thì sao?",
+      "a4": "Bài nộp được giữ trên điện thoại và tự gửi lại khi có mạng. Trang máy chiếu tự kết nối lại mà không cần tải lại."
+    },
+    "final": {
+      "title": "Buổi học tới, thử 5 phút đầu giờ với Lớp Học.",
+      "cta": "Tạo tài khoản miễn phí",
+      "login": "Đã có tài khoản? Đăng nhập"
+    },
+    "footer": {
+      "tagline": "Điểm danh, kiểm tra đầu giờ và bảng xếp hạng cho lớp học của bạn.",
+      "links": "Liên kết",
+      "studentJoin": "Học sinh vào lớp",
+      "login": "Đăng nhập giáo viên",
+      "terms": "Điều khoản sử dụng",
+      "privacy": "Chính sách bảo mật",
+      "copyright": "© {year} Lớp Học",
+      "contact": "Liên hệ qua Zalo / Facebook"
+    },
+    "imgAlt": {
+      "hero": "Giáo viên đứng cạnh bảng trắng trong lớp học buổi tối, học sinh cầm điện thoại làm bài",
+      "bank": "Tay giáo viên cầm điện thoại chụp đề thi in trên bàn",
+      "students": "Học sinh cầm điện thoại trong lớp học đang chiếu bài"
+    }
   },
   "Common": {
     "appName": "Lớp Học",
@@ -59,7 +157,19 @@
     "newPassword": "Mật khẩu mới",
     "resetButton": "Đổi mật khẩu",
     "resetDone": "Đã đổi mật khẩu. Hãy đăng nhập lại bằng mật khẩu mới.",
-    "backToLogin": "Về trang đăng nhập"
+    "backToLogin": "Về trang đăng nhập",
+    "backHome": "Về trang chủ",
+    "showPassword": "Hiện mật khẩu",
+    "hidePassword": "Ẩn mật khẩu",
+    "studentHint": "Bạn là học sinh?",
+    "studentLink": "Vào lớp bằng mã",
+    "loginHint": "Đăng nhập để mở lớp, phát đề và xem báo cáo.",
+    "signupHint": "Tạo tài khoản trong 1 phút. Miễn phí, không cần thẻ.",
+    "panelEyebrow": "Mẹo nhanh",
+    "panelTitle": "Đề kiểm tra hôm nay đã sẵn sàng chưa?",
+    "panelBody": "Dán đề từ Word hoặc chụp ảnh đề in, lưới xem trước sẽ tách câu và đáp án. Chọn ngẫu nhiên 10 câu theo chủ đề là có đề đầu giờ.",
+    "panelNoteTitle": "Buổi gần nhất",
+    "panelNoteBody": "28/30 có mặt · 10 câu · 6 phút"
   },
   "Shell": {
     "classes": "Lớp học",

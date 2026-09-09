@@ -44,7 +44,9 @@ function ResetPasswordForm() {
 
   return (
     <form onSubmit={onSubmit} className="space-y-5" noValidate>
-      <h1 className="text-xl font-semibold text-slate-900">{t('resetTitle')}</h1>
+      <h1 className="text-3xl font-bold tracking-[-0.015em] text-ink sm:text-4xl">
+        {t('resetTitle')}
+      </h1>
       {serverError && <Alert variant="error">{serverError}</Alert>}
       {done ? (
         <Alert variant="success">{t('resetDone')}</Alert>

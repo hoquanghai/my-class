@@ -112,6 +112,19 @@ Principle: "REST for commands, Socket.IO for state". PostgreSQL is the source of
 - All user-visible text goes through next-intl: `useTranslations('Namespace')` with keys in `messages/vi.json`. Primitives live in `components/ui`; `MarkdownLatex` renders question stems with remark-math + KaTeX.
 - `apps/web/CLAUDE.md` includes `AGENTS.md`, which `next dev` rewrites: Next.js 16 differs from training data, so read `apps/web/node_modules/next/dist/docs/` before writing Next-specific code.
 
+### UI rules (see `DESIGN.md`)
+
+`DESIGN.md` at the repo root is the design system: tokens in its front matter, rules in the body. `DESIGN-figma.md` is the reference it was adapted from; do not copy from it directly. Before building or restyling any page or component, read `DESIGN.md` and apply these rules:
+
+- **Two contexts, one palette.** Marketing (`/`, `(auth)`) is editorial: ink `#111` on white, pill buttons 48px, mono eyebrows, one pastel color block per section with white canvas between blocks. Product (`app/`, `(student)`, `/present`) is compact: same tokens, buttons `rounded-md` 40px, cards with hairline borders.
+- **Primary action is ink black, never the accent.** The accent blue is only for links, focus rings, selected state, progress. Danger red only for destructive actions, spatially separated from the primary button.
+- **Color blocks are bound to features**: lime = quiz/leaderboard, lilac = question bank/AI, cream = attendance, mint = students/join/correct, pink = absent/wrong (never a section), coral = projector, navy = student section and the projector background. Never put two color blocks in one viewport; never add other accent colors, gradients, or glass effects.
+- **Type**: Be Vietnam Pro 400/500/600/700 (headings 600–700, never light weights: Vietnamese diacritics need it) and JetBrains Mono only for eyebrows, captions, class codes, timers, scores. Body ≥16px on mobile, tabular numerals for scores and countdowns, projector stems ≥48px.
+- **Tokens live in `apps/web/src/app/globals.css` `@theme`** (`--color-ink`, `--color-accent`, `--color-block-*`, `--font-sans`, `--font-mono`, radii). Components use utility classes; no hex values in JSX. Primitives in `components/ui`, marketing sections in `components/marketing`, quiz views shared through `components/runs`.
+- **Imagery**: real Vietnamese classroom photos (AI-generated via Higgsfield, stored as WebP in `apps/web/public/img/`, rendered with `next/image`, hero has `priority`). Screens in photos stay blank; real UI is composited with CSS. Icons are lucide-react only, no emoji icons.
+- **Accessibility and motion**: contrast ≥4.5:1 on every block, targets ≥44px (students ≥56px), visible labels and focus rings, `aria-live` for live counts, one h1 per page, `min-h-dvh`. Motion only via transform/opacity with 150/200/300/450ms tokens, ease-out in, ease-in out, everything off under `prefers-reduced-motion`.
+- Update `DESIGN.md` when a rule changes; UI work that contradicts it is a bug.
+
 ### Tests
 
 - Unit tests are vitest `*.spec.ts` files next to the source (vitest globals are on). Shared covers the parser fixtures, grading, roster utils, normalize; api covers tokens, limits, env.
