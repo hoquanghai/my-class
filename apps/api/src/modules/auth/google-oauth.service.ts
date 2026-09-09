@@ -2,6 +2,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { z } from 'zod';
 import type { Env } from '../../config/env.js';
+import type { OAuthProfile, OAuthProviderService } from './oauth-profile.js';
 
 const AUTHORIZE_URL = 'https://accounts.google.com/o/oauth2/v2/auth';
 const TOKEN_URL = 'https://oauth2.googleapis.com/token';
@@ -16,16 +17,12 @@ const userInfoSchema = z.object({
   picture: z.string().optional(),
 });
 
-export interface GoogleProfile {
-  sub: string;
-  email: string;
-  name: string;
-  picture: string | null;
-}
+export type GoogleProfile = OAuthProfile;
 
 /** Google OAuth 2.0 (authorization code) tự triển khai bằng fetch, không cần Passport. */
 @Injectable()
-export class GoogleOAuthService {
+export class GoogleOAuthService implements OAuthProviderService {
+  readonly provider = 'google' as const;
   private readonly clientId: string | undefined;
   private readonly clientSecret: string | undefined;
   private readonly redirectUri: string;

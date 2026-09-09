@@ -14,7 +14,7 @@ import { AnalyticsService } from '../analytics/analytics.service.js';
 import { MailerService } from '../mailer/mailer.service.js';
 import { resetPasswordTemplate, verifyEmailTemplate } from '../mailer/templates.js';
 import { ACCESS_TTL_SEC, type AuthTokens, REFRESH_TTL_SEC } from './cookies.js';
-import type { GoogleProfile } from './google-oauth.service.js';
+import type { OAuthProfile, OAuthProvider } from './oauth-profile.js';
 import { hashPassword, randomToken, sha256, verifyPassword } from './tokens.js';
 
 export interface RequestMeta {
@@ -223,9 +223,14 @@ export class AuthService {
 
   // ---------- Google ----------
 
-  async loginWithGoogle(profile: GoogleProfile, meta: RequestMeta): Promise<AuthResult> {
+  /** Đăng nhập/đăng ký qua Google hoặc Facebook: liên kết theo providerUserId, rồi theo email đã xác thực. */
+  async loginWithOAuth(
+    provider: OAuthProvider,
+    profile: OAuthProfile,
+    meta: RequestMeta,
+  ): Promise<AuthResult> {
     const identity = await this.prisma.authIdentity.findUnique({
-      where: { provider_providerUserId: { provider: 'google', providerUserId: profile.sub } },
+      where: { provider_providerUserId: { provider, providerUserId: profile.sub } },
       include: { teacher: true },
     });
 
@@ -234,13 +239,13 @@ export class AuthService {
     if (!teacher) {
       const byEmail = await this.prisma.teacher.findUnique({ where: { email: profile.email } });
       if (byEmail) {
-        // Cùng email đã xác thực ở Google → liên kết vào tài khoản hiện có
+        // Cùng email đã xác thực ở nhà cung cấp → liên kết vào tài khoản hiện có
         teacher = await this.prisma.teacher.update({
           where: { id: byEmail.id },
           data: {
             emailVerifiedAt: byEmail.emailVerifiedAt ?? new Date(),
             avatarUrl: byEmail.avatarUrl ?? profile.picture,
-            identities: { create: { provider: 'google', providerUserId: profile.sub } },
+            identities: { create: { provider, providerUserId: profile.sub } },
           },
         });
       } else {
@@ -251,10 +256,10 @@ export class AuthService {
             avatarUrl: profile.picture,
             emailVerifiedAt: new Date(),
             acceptedTermsAt: new Date(),
-            identities: { create: { provider: 'google', providerUserId: profile.sub } },
+            identities: { create: { provider, providerUserId: profile.sub } },
           },
         });
-        await this.analytics.track('signup', { provider: 'google' }, teacher.id);
+        await this.analytics.track('signup', { provider }, teacher.id);
       }
     }
 

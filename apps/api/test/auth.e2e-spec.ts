@@ -149,10 +149,11 @@ describe('Auth (e2e)', () => {
       .expect(401);
   });
 
-  it('providers: google tắt khi thiếu env; /auth/google → 503', async () => {
+  it('providers: google/facebook tắt khi thiếu env; /auth/google, /auth/facebook → 503', async () => {
     const res = await http().get('/api/auth/providers').expect(200);
     expect(res.body).toEqual({ google: false, facebook: false });
     await http().get('/api/auth/google').expect(503);
+    await http().get('/api/auth/facebook').expect(503);
   });
 
   it('PATCH /teachers/me đổi tên', async () => {

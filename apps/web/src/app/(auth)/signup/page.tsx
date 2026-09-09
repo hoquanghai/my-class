@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { type FormEvent, useState } from 'react';
+import { OrDivider, SocialButtons } from '@/components/auth/social-buttons';
 import { Alert } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Field } from '@/components/ui/field';
@@ -48,87 +49,108 @@ export default function SignupPage() {
   }
 
   return (
-    <form onSubmit={onSubmit} className="space-y-5" noValidate>
-      <h1 className="text-3xl font-bold tracking-[-0.015em] text-ink sm:text-4xl">
-        {t('signupTitle')}
-      </h1>
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-3xl font-bold tracking-[-0.015em] text-ink sm:text-4xl">
+          {t('signupTitle')}
+        </h1>
+        <p className="mt-2 text-base text-ink-muted">{t('signupHint')}</p>
+      </div>
       {serverError && <Alert variant="error">{serverError}</Alert>}
 
-      <Field label={t('name')} htmlFor="name" error={errors.name}>
-        <Input
-          id="name"
-          autoComplete="name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          aria-invalid={Boolean(errors.name)}
-        />
-      </Field>
-      <Field label={t('email')} htmlFor="email" error={errors.email}>
-        <Input
-          id="email"
-          type="email"
-          autoComplete="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          aria-invalid={Boolean(errors.email)}
-        />
-      </Field>
-      <Field
-        label={t('password')}
-        htmlFor="password"
-        hint={t('passwordHint')}
-        error={errors.password}
-      >
-        <Input
-          id="password"
-          type="password"
-          autoComplete="new-password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          aria-invalid={Boolean(errors.password)}
-        />
-      </Field>
+      <SocialButtons />
+      <OrDivider />
 
-      <div className="space-y-1">
-        <label className="flex items-start gap-2 text-sm text-slate-700">
-          <input
-            type="checkbox"
-            className="mt-0.5 size-4 rounded border-slate-300"
-            checked={acceptTerms}
-            onChange={(e) => setAcceptTerms(e.target.checked)}
+      <form onSubmit={onSubmit} className="space-y-5" noValidate>
+        <Field label={t('name')} htmlFor="name" error={errors.name}>
+          <Input
+            id="name"
+            autoComplete="name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            aria-invalid={Boolean(errors.name)}
           />
-          <span>
-            {t.rich('acceptTerms', {
-              terms: (chunks) => (
-                <Link href="/terms" className="text-brand-700 hover:underline" target="_blank">
-                  {chunks}
-                </Link>
-              ),
-              privacy: (chunks) => (
-                <Link href="/privacy" className="text-brand-700 hover:underline" target="_blank">
-                  {chunks}
-                </Link>
-              ),
-            })}
-          </span>
-        </label>
-        {errors.acceptTerms && (
-          <p className="text-sm text-red-600" role="alert">
-            {errors.acceptTerms}
-          </p>
-        )}
-      </div>
+        </Field>
+        <Field label={t('email')} htmlFor="email" error={errors.email}>
+          <Input
+            id="email"
+            type="email"
+            autoComplete="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            aria-invalid={Boolean(errors.email)}
+          />
+        </Field>
+        <Field
+          label={t('password')}
+          htmlFor="password"
+          hint={t('passwordHint')}
+          error={errors.password}
+        >
+          <Input
+            id="password"
+            type="password"
+            autoComplete="new-password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            aria-invalid={Boolean(errors.password)}
+          />
+        </Field>
 
-      <Button type="submit" size="lg" className="w-full" loading={loading}>
-        {t('signupButton')}
-      </Button>
+        <div className="space-y-1">
+          <label className="flex items-start gap-2 text-sm text-ink">
+            <input
+              type="checkbox"
+              className="mt-0.5 size-4 rounded border-hairline accent-ink"
+              checked={acceptTerms}
+              onChange={(e) => setAcceptTerms(e.target.checked)}
+            />
+            <span>
+              {t.rich('acceptTerms', {
+                terms: (chunks) => (
+                  <Link
+                    href="/terms"
+                    className="text-accent underline-offset-4 hover:underline"
+                    target="_blank"
+                  >
+                    {chunks}
+                  </Link>
+                ),
+                privacy: (chunks) => (
+                  <Link
+                    href="/privacy"
+                    className="text-accent underline-offset-4 hover:underline"
+                    target="_blank"
+                  >
+                    {chunks}
+                  </Link>
+                ),
+              })}
+            </span>
+          </label>
+          {errors.acceptTerms && (
+            <p className="text-sm text-danger" role="alert">
+              {errors.acceptTerms}
+            </p>
+          )}
+        </div>
 
-      <p className="text-center text-sm text-slate-600">
+        <Button
+          type="submit"
+          size="lg"
+          className="w-full rounded-full bg-ink hover:bg-ink/85 disabled:bg-ink/50"
+          loading={loading}
+        >
+          {t('signupButton')}
+        </Button>
+      </form>
+
+      <p className="text-center text-sm text-ink-muted">
         {t('haveAccount')}{' '}
-        <Link href="/login" className="font-medium text-brand-700 hover:underline">
+        <Link href="/login" className="font-medium text-accent underline-offset-4 hover:underline">
           {t('loginLink')}
         </Link>
       </p>
-    </form>
+    </div>
   );
 }

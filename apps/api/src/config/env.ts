@@ -12,6 +12,8 @@ export const envSchema = z.object({
 
   GOOGLE_CLIENT_ID: z.string().optional(),
   GOOGLE_CLIENT_SECRET: z.string().optional(),
+  FACEBOOK_APP_ID: z.string().optional(),
+  FACEBOOK_APP_SECRET: z.string().optional(),
 
   SMTP_HOST: z.string().default('localhost'),
   SMTP_PORT: z.coerce.number().int().positive().default(1025),

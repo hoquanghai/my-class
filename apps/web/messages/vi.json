@@ -169,7 +169,11 @@
     "panelTitle": "Đề kiểm tra hôm nay đã sẵn sàng chưa?",
     "panelBody": "Dán đề từ Word hoặc chụp ảnh đề in, lưới xem trước sẽ tách câu và đáp án. Chọn ngẫu nhiên 10 câu theo chủ đề là có đề đầu giờ.",
     "panelNoteTitle": "Buổi gần nhất",
-    "panelNoteBody": "28/30 có mặt · 10 câu · 6 phút"
+    "panelNoteBody": "28/30 có mặt · 10 câu · 6 phút",
+    "facebook": "Tiếp tục với Facebook",
+    "facebookError": "Đăng nhập Facebook không thành công. Hãy chắc tài khoản Facebook có email và cho phép chia sẻ email.",
+    "orEmail": "hoặc dùng email",
+    "socialTermsNote": "Khi tiếp tục với Google hoặc Facebook, bạn đồng ý với Điều khoản sử dụng và Chính sách bảo mật."
   },
   "Shell": {
     "classes": "Lớp học",

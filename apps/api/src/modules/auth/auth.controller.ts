@@ -42,13 +42,19 @@ import {
   setAuthCookies,
   setOAuthStateCookie,
 } from './cookies.js';
+import { FacebookOAuthService } from './facebook-oauth.service.js';
 import { GoogleOAuthService } from './google-oauth.service.js';
+import type { OAuthProvider, OAuthProviderService } from './oauth-profile.js';
 import { randomToken } from './tokens.js';
 
 const AUTH_THROTTLE = { default: { limit: 10, ttl: 60_000 } };
 
 function meta(req: Request): RequestMeta {
   return { userAgent: req.headers['user-agent'] };
+}
+
+function providerLabel(provider: OAuthProvider): string {
+  return provider === 'google' ? 'Google' : 'Facebook';
 }
 
 @Controller('auth')
@@ -59,6 +65,7 @@ export class AuthController {
   constructor(
     private readonly auth: AuthService,
     private readonly google: GoogleOAuthService,
+    private readonly facebook: FacebookOAuthService,
     config: ConfigService<Env, true>,
   ) {
     this.secure = config.get('NODE_ENV', { infer: true }) === 'production';
@@ -165,40 +172,75 @@ export class AuthController {
   @Public()
   @Get('providers')
   providers(): AuthProvidersDto {
-    return { google: this.google.isConfigured(), facebook: false };
+    return { google: this.google.isConfigured(), facebook: this.facebook.isConfigured() };
   }
 
   @Public()
   @Get('google')
   googleStart(@Res() res: Response): void {
-    if (!this.google.isConfigured()) {
-      throw new ServiceUnavailableException('Đăng nhập Google chưa được cấu hình');
-    }
-    const state = randomToken(16);
-    setOAuthStateCookie(res, state, this.secure);
-    res.redirect(this.google.authorizeUrl(state));
+    this.oauthStart(this.google, res);
   }
 
   @Public()
   @Get('google/callback')
-  async googleCallback(
+  googleCallback(
     @Query('code') code: string | undefined,
     @Query('state') state: string | undefined,
     @Query('error') error: string | undefined,
     @Req() req: Request,
     @Res() res: Response,
   ): Promise<void> {
+    return this.oauthCallback(this.google, { code, state, error }, req, res);
+  }
+
+  @Public()
+  @Get('facebook')
+  facebookStart(@Res() res: Response): void {
+    this.oauthStart(this.facebook, res);
+  }
+
+  @Public()
+  @Get('facebook/callback')
+  facebookCallback(
+    @Query('code') code: string | undefined,
+    @Query('state') state: string | undefined,
+    @Query('error') error: string | undefined,
+    @Req() req: Request,
+    @Res() res: Response,
+  ): Promise<void> {
+    return this.oauthCallback(this.facebook, { code, state, error }, req, res);
+  }
+
+  /** Bắt đầu luồng OAuth: sinh state chống CSRF, lưu cookie rồi chuyển hướng tới nhà cung cấp. */
+  private oauthStart(service: OAuthProviderService, res: Response): void {
+    if (!service.isConfigured()) {
+      throw new ServiceUnavailableException(
+        `Đăng nhập ${providerLabel(service.provider)} chưa được cấu hình`,
+      );
+    }
+    const state = randomToken(16);
+    setOAuthStateCookie(res, state, this.secure);
+    res.redirect(service.authorizeUrl(state));
+  }
+
+  /** Nhận mã từ nhà cung cấp; mọi lỗi đều đưa về /login?error=<provider> để web hiện thông báo. */
+  private async oauthCallback(
+    service: OAuthProviderService,
+    query: { code?: string; state?: string; error?: string },
+    req: Request,
+    res: Response,
+  ): Promise<void> {
     const expectedState = readCookie(req, OAUTH_STATE_COOKIE);
     clearOAuthStateCookie(res, this.secure);
-    const failure = `${this.appUrl}/login?error=google`;
+    const failure = `${this.appUrl}/login?error=${service.provider}`;
 
-    if (error || !code || !state || state !== expectedState) {
+    if (query.error || !query.code || !query.state || query.state !== expectedState) {
       res.redirect(failure);
       return;
     }
     try {
-      const profile = await this.google.exchangeCode(code);
-      const result = await this.auth.loginWithGoogle(profile, meta(req));
+      const profile = await service.exchangeCode(query.code);
+      const result = await this.auth.loginWithOAuth(service.provider, profile, meta(req));
       setAuthCookies(res, result, this.secure);
       res.redirect(`${this.appUrl}/app/classes`);
     } catch {

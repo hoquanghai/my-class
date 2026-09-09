@@ -100,7 +100,7 @@ Principle: "REST for commands, Socket.IO for state". PostgreSQL is the source of
 
 ### Authentication
 
-- Teacher: argon2 password or Google OAuth. Access JWT lasts 15 min in httpOnly cookie `lh_at`; refresh token lasts 30 days, is rotated and stored hashed, in cookie `lh_rt` scoped to path `/api/auth`. A non-httpOnly hint cookie `lh_session` is read by `apps/web/src/proxy.ts` to redirect unauthenticated `/app/*` to `/login`; the real gate is `useMe()` in `app/app/layout.tsx`. Cookie helpers are in `modules/auth/cookies.ts`.
+- Teacher: argon2 password, Google OAuth, or Facebook Login. Both providers implement `OAuthProviderService` (`modules/auth/oauth-profile.ts`) and share `AuthService.loginWithOAuth(provider, profile)` plus the generic `oauthStart`/`oauthCallback` handlers in `auth.controller.ts`; a provider whose env vars are empty is hidden by `GET /auth/providers` and its start route returns 503. Callback failures redirect to `/login?error=<provider>`. Access JWT lasts 15 min in httpOnly cookie `lh_at`; refresh token lasts 30 days, is rotated and stored hashed, in cookie `lh_rt` scoped to path `/api/auth`. A non-httpOnly hint cookie `lh_session` is read by `apps/web/src/proxy.ts` to redirect unauthenticated `/app/*` to `/login`; the real gate is `useMe()` in `app/app/layout.tsx`. Cookie helpers are in `modules/auth/cookies.ts`.
 - Student: `/join/:code` lists names, picking one creates a `StudentDevice` row and a 180-day device token returned both as cookie and in the body. The web stores it in localStorage and sends `Authorization: Bearer` as a fallback for blocked third-party cookies. When `Class.rosterLocked` is true, a name already bound to another device yields 409 `STUDENT_BOUND`; the teacher can unbind.
 
 ### Web

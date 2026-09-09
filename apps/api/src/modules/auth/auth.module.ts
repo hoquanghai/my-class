@@ -5,6 +5,7 @@ import { JwtModule } from '@nestjs/jwt';
 import type { Env } from '../../config/env.js';
 import { AuthController } from './auth.controller.js';
 import { AuthService } from './auth.service.js';
+import { FacebookOAuthService } from './facebook-oauth.service.js';
 import { GoogleOAuthService } from './google-oauth.service.js';
 import { JwtAuthGuard } from './jwt-auth.guard.js';
 
@@ -18,7 +19,12 @@ import { JwtAuthGuard } from './jwt-auth.guard.js';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, GoogleOAuthService, { provide: APP_GUARD, useClass: JwtAuthGuard }],
+  providers: [
+    AuthService,
+    GoogleOAuthService,
+    FacebookOAuthService,
+    { provide: APP_GUARD, useClass: JwtAuthGuard },
+  ],
   exports: [AuthService, JwtModule],
 })
 export class AuthModule {}
