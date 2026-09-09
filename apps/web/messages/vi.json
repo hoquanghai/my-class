@@ -104,14 +104,6 @@
       "bank": "Tay giáo viên cầm điện thoại chụp đề thi in trên bàn",
       "students": "Học sinh cầm điện thoại trong lớp học đang chiếu bài"
     },
-    "ticker": {
-      "t1": "Điểm danh 30 giây",
-      "t2": "Phát đề từ Word hoặc ảnh chụp",
-      "t3": "Học sinh vào bằng mã 6 ký tự",
-      "t4": "Bảng xếp hạng trên máy chiếu",
-      "t5": "AI đọc đề chụp ảnh",
-      "t6": "Miễn phí cho giáo viên"
-    },
     "stats": {
       "attendance": "giây để điểm danh cả lớp",
       "import": "cách nhập đề: dán, Word, ảnh chụp",

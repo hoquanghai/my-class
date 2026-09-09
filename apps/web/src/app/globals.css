@@ -126,11 +126,6 @@ body {
     transform: translateY(-12px);
   }
 }
-@keyframes ticker {
-  to {
-    transform: translateX(-50%);
-  }
-}
 @keyframes sparkle {
   0% {
     opacity: 0;
@@ -155,9 +150,6 @@ body {
 }
 @utility animate-float {
   animation: float 6s ease-in-out infinite alternate;
-}
-@utility animate-ticker {
-  animation: ticker 48s linear infinite;
 }
 @utility animate-sparkle {
   animation: sparkle 1100ms ease-out both;

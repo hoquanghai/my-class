@@ -23,7 +23,6 @@ import {
 import { ColorBlock, Eyebrow, PillLink, StickyNote } from '@/components/marketing/primitives';
 import { Reveal } from '@/components/marketing/reveal';
 import { RotatingWords } from '@/components/marketing/rotating-words';
-import { Ticker } from '@/components/marketing/ticker';
 import { TopNav } from '@/components/marketing/top-nav';
 
 const container = 'mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8';
@@ -108,17 +107,6 @@ export default function LandingPage() {
             <HeroDemo />
           </div>
         </section>
-
-        <Ticker
-          items={[
-            t('ticker.t1'),
-            t('ticker.t2'),
-            t('ticker.t3'),
-            t('ticker.t4'),
-            t('ticker.t5'),
-            t('ticker.t6'),
-          ]}
-        />
 
         {/* Con số nói lên */}
         <section className="bg-surface-soft">
