@@ -13,6 +13,7 @@ export class MockExtractor implements QuestionExtractor {
       const label = page.kind === 'pdf' ? `PDF` : `ảnh ${n}`;
       questions.push({
         number: questions.length + 1,
+        page: n,
         type: 'single_choice',
         stem: `(Mẫu từ ${label}) Nghiệm của phương trình $2x + ${n} = ${n + 8}$ là:`,
         options: [
@@ -26,6 +27,7 @@ export class MockExtractor implements QuestionExtractor {
       });
       questions.push({
         number: questions.length + 1,
+        page: n,
         type: 'short_text',
         stem: `(Mẫu từ ${label}) Tính $${n} \\times 4$.`,
         options: [],

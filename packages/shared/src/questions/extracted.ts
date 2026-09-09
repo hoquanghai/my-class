@@ -5,7 +5,7 @@ import type { QuestionType } from './schemas.js';
 
 /**
  * Kết quả trích xuất từ AI (ảnh/PDF). Mọi trường bắt buộc, dùng `null` thay vì bỏ trống
- * để tương thích JSON Schema strict của cả Claude lẫn OpenAI.
+ * để tương thích JSON Schema strict của Claude, OpenAI lẫn Gemini.
  */
 export const extractedOptionSchema = z.object({
   label: z.string().describe('Nhãn phương án: A, B, C, D…'),
@@ -18,6 +18,11 @@ export const extractedOptionSchema = z.object({
 
 export const extractedQuestionSchema = z.object({
   number: z.number().int().nullable().describe('Số thứ tự câu trong đề, null nếu không có'),
+  page: z
+    .number()
+    .int()
+    .nullable()
+    .describe('Số trang (đếm từ 1 trong tài liệu gửi kèm) chứa câu hỏi; null nếu không rõ'),
   type: z
     .enum(['single_choice', 'multiple_choice', 'true_false', 'short_text'])
     .nullable()
@@ -38,6 +43,32 @@ export const extractionOutputSchema = z.object({
 export type ExtractedOption = z.infer<typeof extractedOptionSchema>;
 export type ExtractedQuestion = z.infer<typeof extractedQuestionSchema>;
 export type ExtractionOutput = z.infer<typeof extractionOutputSchema>;
+
+/** Một chặng gọi model trong quá trình trích xuất; cascade có từ hai chặng trở lên. */
+export interface ExtractionStage {
+  provider: string;
+  model: string;
+  /** Các trang (đếm từ 1) chặng này xử lý. */
+  pages: number[];
+  inputTokens?: number;
+  outputTokens?: number;
+  /** Ước tính theo bảng giá cấu hình sẵn, để theo dõi chi phí mỗi lần nhập. */
+  estimatedUsd?: number;
+  /** Chặng lỗi (đã dùng kết quả chặng trước cho các trang này). */
+  error?: string;
+}
+
+/** Thông tin model và chi phí kèm kết quả trích xuất, lưu trong `ImportJob.result.meta`. */
+export interface ExtractionMeta {
+  provider: string;
+  model: string;
+  inputTokens?: number;
+  outputTokens?: number;
+  estimatedUsd?: number;
+  stages?: ExtractionStage[];
+  /** Trang đã được đưa sang model mạnh hơn. */
+  escalatedPages?: number[];
+}
 
 const TRUE_FALSE = /^(dung|sai|true|false|d|s)$/i;
 const norm = (s: string) => stripDiacritics(s).toLowerCase().trim();

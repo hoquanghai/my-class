@@ -1,3 +1,4 @@
+import type { ExtractionMeta } from '../extracted.js';
 import type { QuestionType } from '../schemas.js';
 
 /**
@@ -37,6 +38,8 @@ export interface ParseResult {
   answerKeyFound: boolean;
   /** Số dòng bị bỏ qua (nhiễu, đầu trang, dòng lạc). */
   skippedLines: number;
+  /** Model và chi phí ước tính khi nguồn là AI (ảnh/PDF). */
+  meta?: ExtractionMeta;
 }
 
 export const PARSE_ISSUE_LABELS: Record<ParseIssue, string> = {

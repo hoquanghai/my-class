@@ -24,8 +24,10 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.124.0",
+    "@google/genai": "^2.21.0",
     "@lophoc/shared": "workspace:*",
     "openai": "^7.10.0",
+    "pdf-lib": "^1.17.1",
     "zod": "^4.5.4"
   },
   "devDependencies": {

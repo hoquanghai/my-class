@@ -37,13 +37,25 @@ export const envSchema = z.object({
   S3_PUBLIC_URL: z.string().optional(),
   S3_FORCE_PATH_STYLE: z.stringbool().default(true),
 
-  /** Trích xuất câu hỏi từ ảnh/PDF. `mock` không gọi mạng (dev/test). */
-  AI_PROVIDER: z.enum(['claude', 'openai', 'mock']).default('claude'),
+  /**
+   * Trích xuất câu hỏi từ ảnh/PDF. `mock` không gọi mạng (dev/test);
+   * `cascade` = model rẻ đọc cả đề, trang bị cờ chất lượng mới đưa sang model mạnh.
+   */
+  AI_PROVIDER: z.enum(['claude', 'openai', 'gemini', 'mock', 'cascade']).default('claude'),
   ANTHROPIC_API_KEY: z.string().optional(),
   OPENAI_API_KEY: z.string().optional(),
-  /** Ghi đè model mặc định của nhà cung cấp (claude-opus-5 / gpt-5.6). */
+  GEMINI_API_KEY: z.string().optional(),
+  /** Ghi đè model của nhà cung cấp chính (claude-sonnet-5 / gpt-5.6 / gemini-3.7-flash). */
   AI_MODEL: z.string().optional(),
   AI_EFFORT: z.enum(['low', 'medium', 'high']).default('medium'),
+  /** Mức suy nghĩ của Gemini 3.x; chép đề chỉ cần LOW (token suy nghĩ tính vào giá ra). */
+  AI_GEMINI_THINKING: z.enum(['MINIMAL', 'LOW', 'MEDIUM', 'HIGH']).default('LOW'),
+  /** Cascade: nhà cung cấp chính (rẻ) và nhà cung cấp leo thang (mạnh). */
+  AI_PRIMARY_PROVIDER: z.enum(['claude', 'openai', 'gemini', 'mock']).default('gemini'),
+  AI_ESCALATION_PROVIDER: z.enum(['claude', 'openai', 'gemini', 'mock']).default('claude'),
+  AI_ESCALATION_MODEL: z.string().optional(),
+  /** Tỷ lệ trang tối đa được leo thang (0–1); 1 = mọi trang bị cờ. */
+  AI_ESCALATION_MAX_SHARE: z.coerce.number().min(0).max(1).default(1),
 
   /** `bullmq` cần Redis; `inline` chạy job ngay trong tiến trình (test). */
   QUEUE_DRIVER: z.enum(['bullmq', 'inline']).default('bullmq'),

@@ -17,9 +17,32 @@ describe('ai-adapter', () => {
   it('createExtractor: thiếu key → not_configured; mock không cần key', () => {
     expect(() => createExtractor({ provider: 'claude' })).toThrow(ExtractionError);
     expect(createExtractor({ provider: 'mock' }).provider).toBe('mock');
-    expect(createExtractor({ provider: 'claude', apiKey: 'sk-test' }).model).toBe('claude-opus-5');
+    expect(createExtractor({ provider: 'claude', apiKey: 'sk-test' }).model).toBe(
+      'claude-sonnet-5',
+    );
     expect(createExtractor({ provider: 'openai', apiKey: 'sk-test', model: 'gpt-x' }).model).toBe(
       'gpt-x',
     );
+    expect(() => createExtractor({ provider: 'gemini' })).toThrow(ExtractionError);
+    expect(createExtractor({ provider: 'gemini', apiKey: 'g-test' }).model).toBe(
+      'gemini-3.7-flash',
+    );
+  });
+
+  it('createExtractor cascade: ghép model rẻ và model mạnh', () => {
+    const cascade = createExtractor({
+      provider: 'cascade',
+      primary: { provider: 'gemini', apiKey: 'g-test' },
+      escalation: { provider: 'claude', apiKey: 'sk-test' },
+    });
+    expect(cascade.provider).toBe('cascade');
+    expect(cascade.model).toBe('gemini-3.7-flash → claude-sonnet-5');
+    expect(() =>
+      createExtractor({
+        provider: 'cascade',
+        primary: { provider: 'mock' },
+        escalation: { provider: 'claude' },
+      }),
+    ).toThrow(ExtractionError);
   });
 });

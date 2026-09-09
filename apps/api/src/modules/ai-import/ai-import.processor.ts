@@ -1,5 +1,10 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { ExtractionError, type ExtractionPage, type ImageMime } from '@lophoc/ai-adapter';
+import {
+  estimateUsd,
+  ExtractionError,
+  type ExtractionPage,
+  type ImageMime,
+} from '@lophoc/ai-adapter';
 import { extractedToParsed, type ParseResult } from '@lophoc/shared';
 import type { Prisma } from '../../generated/prisma/client.js';
 import { PrismaService } from '../../prisma/prisma.service.js';
@@ -41,10 +46,13 @@ export class AiImportProcessor {
       }
 
       const result = await this.extractors.get().extract({ pages, hints: input.hints });
+      const { questions, ...meta } = result;
+      meta.estimatedUsd ??= estimateUsd(meta.model, meta.inputTokens, meta.outputTokens);
       const parsed: ParseResult = {
-        questions: extractedToParsed(result.questions),
+        questions: extractedToParsed(questions),
         answerKeyFound: false,
         skippedLines: 0,
+        meta,
       };
       await this.prisma.importJob.update({
         where: { id: jobId },
@@ -55,7 +63,7 @@ export class AiImportProcessor {
         },
       });
       this.logger.log(
-        `Job ${jobId}: ${parsed.questions.length} câu từ ${pages.length} trang (${result.provider}/${result.model}, in ${result.inputTokens ?? '?'} / out ${result.outputTokens ?? '?'} tokens)`,
+        `Job ${jobId}: ${parsed.questions.length} câu từ ${pages.length} trang (${meta.provider}/${meta.model}, in ${meta.inputTokens ?? '?'} / out ${meta.outputTokens ?? '?'} tokens, ≈$${meta.estimatedUsd ?? '?'}, leo thang trang: ${meta.escalatedPages?.length ? meta.escalatedPages.join(',') : 'không'})`,
       );
     } catch (err) {
       const message =

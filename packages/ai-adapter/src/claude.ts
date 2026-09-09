@@ -9,7 +9,7 @@ import {
   type QuestionExtractor,
 } from './types.js';
 
-export const DEFAULT_CLAUDE_MODEL = 'claude-opus-5';
+export const DEFAULT_CLAUDE_MODEL = 'claude-sonnet-5';
 
 /** Trích xuất câu hỏi bằng Claude: ảnh và PDF gửi trực tiếp, kết quả ép theo schema (structured outputs). */
 export class ClaudeExtractor implements QuestionExtractor {
