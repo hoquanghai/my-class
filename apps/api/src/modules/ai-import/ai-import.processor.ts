@@ -5,7 +5,7 @@ import {
   type ExtractionPage,
   type ImageMime,
 } from '@lophoc/ai-adapter';
-import { extractedToParsed, type ParseResult } from '@lophoc/shared';
+import { cleanExtractedQuestions, extractedToParsed, type ParseResult } from '@lophoc/shared';
 import type { Prisma } from '../../generated/prisma/client.js';
 import { PrismaService } from '../../prisma/prisma.service.js';
 import { StorageService } from '../storage/storage.service.js';
@@ -48,10 +48,11 @@ export class AiImportProcessor {
       const result = await this.extractors.get().extract({ pages, hints: input.hints });
       const { questions, ...meta } = result;
       meta.estimatedUsd ??= estimateUsd(meta.model, meta.inputTokens, meta.outputTokens);
+      const cleaned = cleanExtractedQuestions(questions);
       const parsed: ParseResult = {
-        questions: extractedToParsed(questions),
+        questions: extractedToParsed(cleaned.questions),
         answerKeyFound: false,
-        skippedLines: 0,
+        skippedLines: cleaned.dropped,
         meta,
       };
       await this.prisma.importJob.update({

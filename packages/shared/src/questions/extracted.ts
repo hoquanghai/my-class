@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { stripDiacritics } from '../text/normalize.js';
+import { stripStemNoise } from './noise.js';
 import type { ParsedOption, ParsedQuestion, ParseIssue } from './parser/types.js';
 import type { QuestionType } from './schemas.js';
 
@@ -68,6 +69,28 @@ export interface ExtractionMeta {
   stages?: ExtractionStage[];
   /** Trang đã được đưa sang model mạnh hơn. */
   escalatedPages?: number[];
+}
+
+/**
+ * Làm sạch kết quả AI trước khi đưa vào lưới: bỏ tiêu đề phần/chân trang/nhãn "Câu N." khỏi đề bài,
+ * loại các "câu" thực ra chỉ là tiêu đề (đề bài rỗng sau khi làm sạch, không phương án, không đáp án).
+ */
+export function cleanExtractedQuestions(items: ExtractedQuestion[]): {
+  questions: ExtractedQuestion[];
+  dropped: number;
+} {
+  const questions: ExtractedQuestion[] = [];
+  let dropped = 0;
+  for (const item of items) {
+    const stem = stripStemNoise(item.stem);
+    const headerOnly = stem === '' && item.options.length === 0 && !item.answer?.trim();
+    if (headerOnly) {
+      dropped++;
+      continue;
+    }
+    questions.push({ ...item, stem });
+  }
+  return { questions, dropped };
 }
 
 const TRUE_FALSE = /^(dung|sai|true|false|d|s)$/i;

@@ -1,35 +1,9 @@
 import { stripDiacritics } from '../../text/normalize.js';
+import { isNoiseLine } from '../noise.js';
 import type { QuestionType } from '../schemas.js';
 import type { ParsedOption, ParsedQuestion, ParseIssue, ParserLine, ParseResult } from './types.js';
 
 // ---------- Nhận dạng dòng ----------
-
-const NOISE_PATTERNS: RegExp[] = [
-  /^ho va ten/i,
-  /^ho ten/i,
-  /^ma de/i,
-  /^de so/i,
-  /^so bao danh/i,
-  /^lop\s*[:.]/i,
-  /^trang\s*\d+/i,
-  /^page\s*\d+/i,
-  /^\d{1,3}\s*\/\s*\d{1,3}$/,
-  /^-{3,}$|^_{3,}$|^={3,}$|^\.{3,}$/,
-  /^so giao duc/i,
-  /^so gd/i,
-  /^phong giao duc/i,
-  /^phong gd/i,
-  /^truong /i,
-  /^de (kiem tra|thi|on tap|cuong)/i,
-  /^kiem tra (\d+ phut|giua|cuoi|hoc ki)/i,
-  /^thoi gian( lam bai)?/i,
-  /^nam hoc/i,
-  /^mon\s*[:.]/i,
-  /^diem\s*[:.]?$/i,
-  /^diem\b.*loi phe/i,
-  /^(phan|part)\s+[ivx\d]+\s*[:.]?\s*(trac nghiem|tu luan)?$/i,
-  /^(i|ii|iii|iv)\s*[.)]\s*(phan\s+)?(trac nghiem|tu luan)/i,
-];
 
 const QUESTION_WORD = /^(?:cau|bai|question)\s*(\d{1,3})\s*[:.)\-–]*\s*(.*)$/i;
 const QUESTION_NUM = /^(\d{1,3})\s*[.)]\s*(.*)$/;
@@ -42,12 +16,6 @@ const OPTION_SPLIT = /\s+(?=\*?\(?[A-Ha-h]\s*[.)]\s)/;
 const TRUE_FALSE = /^(dung|sai|true|false|d|s)$/i;
 
 const norm = (s: string): string => stripDiacritics(s).toLowerCase().trim();
-
-function isNoise(text: string): boolean {
-  const n = norm(text);
-  if (n === '') return true;
-  return NOISE_PATTERNS.some((re) => re.test(n));
-}
 
 /** Bỏ đánh dấu đậm/gạch chân bao quanh; trả về cờ có đánh dấu ở phần nhãn hoặc toàn bộ. */
 function stripEmphasis(raw: string): { text: string; emphasized: boolean } {
@@ -143,8 +111,11 @@ function parseAnswerKey(lines: string[]): Map<number, string[]> {
 
 // ---------- Ghép câu hỏi ----------
 
+type LabelWord = 'cau' | 'bai' | 'question' | 'num';
+
 interface Draft {
   number: number | null;
+  labelWord: LabelWord;
   stem: string[];
   options: { label: string; content: string[]; marked: boolean; images: string[] }[];
   inlineAnswer: string | null;
@@ -152,9 +123,15 @@ interface Draft {
   images: string[];
 }
 
-function newDraft(number: number | null, firstStem: string, images: string[]): Draft {
+function newDraft(
+  number: number | null,
+  labelWord: LabelWord,
+  firstStem: string,
+  images: string[],
+): Draft {
   return {
     number,
+    labelWord,
     stem: firstStem ? [firstStem] : [],
     options: [],
     inlineAnswer: null,
@@ -269,7 +246,7 @@ export function parseQuestions(input: string | ParserLine[]): ParseResult {
     }
     const n = norm(raw.replace(/\*\*|__/g, ''));
 
-    if (isNoise(raw.replace(/\*\*|__/g, ''))) {
+    if (isNoiseLine(raw)) {
       skipped++;
       attachImages(line.images);
       continue;
@@ -286,7 +263,14 @@ export function parseQuestions(input: string | ParserLine[]): ParseResult {
             .replace(/^\*?\*?\s*(?:câu|bài|question|cau|bai)\s*\d{1,3}\s*[:.)\-–]*\s*/i, '')
             .replace(/\*\*$/, '')
         : (qNum![2] as string);
-      current = newDraft(number, rest.trim(), line.images ?? []);
+      const labelWord: LabelWord = qWord
+        ? n.startsWith('bai')
+          ? 'bai'
+          : n.startsWith('question')
+            ? 'question'
+            : 'cau'
+        : 'num';
+      current = newDraft(number, labelWord, rest.trim(), line.images ?? []);
       mode = 'stem';
       // Đề và phương án có thể cùng dòng: "Câu 1. ... A. x B. y"
       const inlineOpts = /\s+(?=\*?\(?A\s*[.)]\s)/.exec(rest);
@@ -350,6 +334,13 @@ export function parseQuestions(input: string | ParserLine[]): ParseResult {
       continue;
     }
 
+    // "B. Tên mục" đứng sau câu đã đủ phương án (nhãn không nối tiếp): tiêu đề mục, bỏ qua
+    const stray = mode !== 'stem' && current.options.length >= 2 ? matchOption(raw) : null;
+    if (stray && lastLabel !== null && stray.label <= lastLabel) {
+      skipped++;
+      continue;
+    }
+
     // Dòng nối tiếp
     const text = raw.replace(/\*\*|__/g, '');
     if (mode === 'stem') current.stem.push(text);
@@ -359,6 +350,22 @@ export function parseQuestions(input: string | ParserLine[]): ParseResult {
     attachImages(line.images);
   }
   if (current) drafts.push(current);
+
+  // "Bài N. Tên bài" xen giữa các "Câu": tiêu đề bài, không phải câu hỏi
+  const usesCau = drafts.some((d) => d.labelWord === 'cau' || d.labelWord === 'question');
+  const kept = usesCau
+    ? drafts.filter((d) => {
+        const header =
+          d.labelWord === 'bai' &&
+          d.options.length === 0 &&
+          d.inlineAnswer === null &&
+          d.explanation.length === 0;
+        if (header) skipped++;
+        return !header;
+      })
+    : drafts.slice();
+  drafts.length = 0;
+  drafts.push(...kept);
 
   // 3. Bảng đáp án: phần sau tiêu đề, hoặc phần đuôi sau câu cuối nếu toàn ký hiệu đáp án
   let key = parseAnswerKey(keyLines);
