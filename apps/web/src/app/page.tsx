@@ -271,7 +271,7 @@ export default function LandingPage() {
               <div className="lg:col-span-5">
                 <div className="relative mx-auto aspect-[4/5] max-w-xs overflow-hidden rounded-card bg-white/10">
                   <Image
-                    src="/img/student-phone.webp"
+                    src="/img/students-cheer.webp"
                     alt={t('imgAlt.students')}
                     fill
                     loading="lazy"
