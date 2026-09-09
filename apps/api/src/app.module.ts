@@ -20,6 +20,7 @@ import { MediaModule } from './modules/media/media.module.js';
 import { QuestionsModule } from './modules/questions/questions.module.js';
 import { SessionsModule } from './modules/sessions/sessions.module.js';
 import { StorageModule } from './modules/storage/storage.module.js';
+import { StudentProfileModule } from './modules/student-profile/student-profile.module.js';
 import { TeachersModule } from './modules/teachers/teachers.module.js';
 import { PrismaModule } from './prisma/prisma.module.js';
 
@@ -46,6 +47,7 @@ import { PrismaModule } from './prisma/prisma.module.js';
     TeachersModule,
     ClassesModule,
     SessionsModule,
+    StudentProfileModule,
     QuestionsModule,
     AiImportModule,
     QuizzesModule,

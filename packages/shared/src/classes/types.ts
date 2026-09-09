@@ -1,4 +1,7 @@
 import type { Gender, ScheduleItem } from './schemas.js';
+import type { AttendanceStatus } from '../attendance/schemas.js';
+import type { AttendanceSummary } from '../attendance/types.js';
+import type { RunMode } from '../runs/schemas.js';
 
 export interface StudentDto {
   id: string;
@@ -91,4 +94,50 @@ export interface ApiErrorBody {
   message: string;
   /** Số liệu đi kèm một số lỗi nghiệp vụ (ví dụ LIMIT_STUDENTS). */
   details?: Record<string, unknown>;
+}
+
+/** Một lượt kiểm tra đã kết thúc mà học sinh có mặt trong bảng kết quả (tham gia buổi hoặc có bài nộp). */
+export interface StudentRunHistoryItemDto {
+  runId: string;
+  sessionId: string;
+  quizTitle: string;
+  mode: RunMode;
+  endedAt: string;
+  score: number;
+  totalPoints: number;
+  /** score/totalPoints làm tròn (%), null khi đề không có điểm */
+  percent: number | null;
+  correctCount: number;
+  answeredCount: number;
+  questionCount: number;
+  rank: number | null;
+  /** Số học sinh trong bảng kết quả của lượt */
+  participants: number;
+  /** Tự làm: lúc bấm nộp bài; null nếu được chốt khi hết giờ / giáo viên kết thúc */
+  submittedAt: string | null;
+}
+
+/** Hồ sơ học sinh cho giáo viên: thông tin, điểm danh, lịch sử bài kiểm tra. */
+export interface StudentProfileDto {
+  student: StudentDto;
+  classId: string;
+  className: string;
+  attendance: {
+    items: {
+      sessionId: string;
+      startedAt: string;
+      status: AttendanceStatus;
+      note: string | null;
+    }[];
+    summary: AttendanceSummary;
+    rate: { present: number; total: number };
+    /** Buổi cũ hơn cửa sổ lịch sử của gói (bị ẩn) */
+    hiddenCount: number;
+  };
+  quizzes: {
+    items: StudentRunHistoryItemDto[];
+    count: number;
+    averagePercent: number | null;
+    bestPercent: number | null;
+  };
 }

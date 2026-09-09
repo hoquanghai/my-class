@@ -265,7 +265,7 @@
     "removeConfirm": "Xóa {name} khỏi lớp?",
     "added": "Đã thêm {count} học sinh",
     "locked": "Danh sách đang khóa: tên đã gắn thiết bị không thể được chọn từ máy khác.",
-    "editHint": "Nhấn vào tên hoặc SĐT để sửa nhanh (Enter lưu, Esc hủy); bấm biểu tượng bút để sửa đầy đủ thông tin.",
+    "editHint": "Bấm vào tên để mở hồ sơ học sinh (điểm danh, điểm kiểm tra). Nhấn vào SĐT để sửa nhanh (Enter lưu, Esc hủy); biểu tượng bút để sửa đầy đủ thông tin.",
     "template": "Tải file mẫu (.xlsx)",
     "downloadFailed": "Không tải được file mẫu, vui lòng thử lại.",
     "edit": "Sửa thông tin",
@@ -287,7 +287,8 @@
     "pasteHint": "Số thứ tự đầu dòng (1., 2)…) sẽ được bỏ; tên trùng được thêm hậu tố (2), (3).",
     "colBirth": "Ngày sinh",
     "colSchool": "Trường",
-    "createdOne": "Đã thêm {name} vào lớp"
+    "createdOne": "Đã thêm {name} vào lớp",
+    "openProfile": "Mở hồ sơ học sinh"
   },
   "Sessions": {
     "start": "Bắt đầu buổi học",
@@ -688,5 +689,32 @@
     "copyLink": "Sao chép link",
     "qrAlt": "Mã QR vào lớp {code}",
     "joined": "{count} học sinh đã vào phòng"
+  },
+  "StudentProfile": {
+    "title": "Hồ sơ học sinh",
+    "backToClass": "Về lớp {name}",
+    "edit": "Sửa thông tin",
+    "notFound": "Không tìm thấy học sinh",
+    "none": "—",
+    "percentValue": "{percent}%",
+    "statAttendance": "Đi học",
+    "attendanceOf": "{present}/{total} buổi gần đây",
+    "statQuizzes": "Bài kiểm tra",
+    "quizzesHint": "lượt đã kết thúc",
+    "statAverage": "Điểm trung bình",
+    "averageHint": "tính trên tổng điểm mỗi đề",
+    "statBest": "Cao nhất",
+    "bestHint": "bài tốt nhất",
+    "infoTitle": "Thông tin",
+    "quizTitle": "Lịch sử bài kiểm tra",
+    "quizEmpty": "Chưa tham gia lượt kiểm tra nào đã kết thúc.",
+    "colDate": "Ngày",
+    "colQuiz": "Đề",
+    "colScore": "Điểm",
+    "colCorrect": "Đúng",
+    "colRank": "Hạng",
+    "scoreOf": "{score}/{total}",
+    "correctOf": "{correct}/{total}",
+    "rankOf": "{rank}/{count}"
   }
 }

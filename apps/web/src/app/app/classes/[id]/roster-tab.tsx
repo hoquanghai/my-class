@@ -30,11 +30,9 @@ import {
   useUpdateStudent,
 } from '@/lib/classes';
 
-type EditField = 'name' | 'parentPhone';
-
+/** Sửa nhanh SĐT phụ huynh ngay trên bảng; tên và các trường khác sửa trong hộp thoại. */
 interface Editing {
   id: string;
-  field: EditField;
   value: string;
 }
 
@@ -156,8 +154,8 @@ export function RosterTab({ klass, limits }: { klass: ClassDetailDto; limits?: L
     }
   }
 
-  function startEdit(s: StudentDto, field: EditField) {
-    setEditing({ id: s.id, field, value: field === 'name' ? s.name : (s.parentPhone ?? '') });
+  function startEdit(s: StudentDto) {
+    setEditing({ id: s.id, value: s.parentPhone ?? '' });
   }
 
   async function commitEdit() {
@@ -165,13 +163,8 @@ export function RosterTab({ klass, limits }: { klass: ClassDetailDto; limits?: L
     const current = students.find((s) => s.id === editing.id);
     const value = editing.value.trim();
     setEditing(null);
-    if (!current) return;
-    if (editing.field === 'name') {
-      if (!value || value === current.name) return;
-      await updateStudent.mutateAsync({ studentId: current.id, input: { name: value } });
-    } else if (value !== (current.parentPhone ?? '')) {
-      await updateStudent.mutateAsync({ studentId: current.id, input: { parentPhone: value } });
-    }
+    if (!current || value === (current.parentPhone ?? '')) return;
+    await updateStudent.mutateAsync({ studentId: current.id, input: { parentPhone: value } });
   }
 
   function onEditKey(e: KeyboardEvent<HTMLInputElement>) {
@@ -282,27 +275,18 @@ export function RosterTab({ klass, limits }: { klass: ClassDetailDto; limits?: L
                 <tr key={s.id} className="hover:bg-slate-50">
                   <td className="px-3 py-2 text-slate-500">{indexOf.get(s.id)}</td>
                   <td className="px-3 py-1.5">
-                    {editing?.id === s.id && editing.field === 'name' ? (
-                      <Input
-                        autoFocus
-                        value={editing.value}
-                        onChange={(e) => setEditing({ ...editing, value: e.target.value })}
-                        onKeyDown={onEditKey}
-                        onBlur={() => setEditing(null)}
-                        className="h-8"
-                      />
-                    ) : (
-                      <button
-                        type="button"
-                        className="w-full rounded px-1 py-1 text-left hover:bg-brand-50"
-                        onClick={() => startEdit(s, 'name')}
-                      >
-                        <span className="block font-medium text-slate-900">{s.name}</span>
-                        {s.studentCode && (
-                          <span className="block text-xs text-slate-500">{s.studentCode}</span>
-                        )}
-                      </button>
-                    )}
+                    <Link
+                      href={`/app/classes/${klass.id}/students/${s.id}`}
+                      className="block rounded px-1 py-1 hover:bg-brand-50"
+                      title={t('openProfile')}
+                    >
+                      <span className="block font-medium text-slate-900 hover:underline">
+                        {s.name}
+                      </span>
+                      {s.studentCode && (
+                        <span className="block text-xs text-slate-500">{s.studentCode}</span>
+                      )}
+                    </Link>
                   </td>
                   <td className="hidden px-3 py-1.5 text-slate-600 tabular-nums md:table-cell">
                     {s.dateOfBirth ? formatDateVi(s.dateOfBirth) : '—'}
@@ -311,7 +295,7 @@ export function RosterTab({ klass, limits }: { klass: ClassDetailDto; limits?: L
                     {s.school ?? '—'}
                   </td>
                   <td className="px-3 py-1.5">
-                    {editing?.id === s.id && editing.field === 'parentPhone' ? (
+                    {editing?.id === s.id ? (
                       <Input
                         autoFocus
                         value={editing.value}
@@ -325,7 +309,7 @@ export function RosterTab({ klass, limits }: { klass: ClassDetailDto; limits?: L
                       <button
                         type="button"
                         className="w-full rounded px-1 py-1 text-left text-slate-600 hover:bg-brand-50"
-                        onClick={() => startEdit(s, 'parentPhone')}
+                        onClick={() => startEdit(s)}
                       >
                         {s.parentPhone || <span className="text-slate-300">—</span>}
                       </button>

@@ -119,7 +119,7 @@ describe('Quiz runs (e2e)', () => {
   }
 
   it('paced: phát đề → bắt đầu → nộp → đóng → chuyển → kết thúc → xếp hạng → sửa điểm', async () => {
-    const { s, sessionId, quizId, an, binh } = await setup('run-paced');
+    const { s, classId, sessionId, quizId, an, binh } = await setup('run-paced');
 
     const launched = await http()
       .post(`/api/sessions/${sessionId}/runs`)
@@ -276,6 +276,42 @@ describe('Quiz runs (e2e)', () => {
     const pub = await http().get(`/api/runs/${runId}/public`).expect(200);
     expect(pub.body.status).toBe('finished');
     expect(pub.body.leaderboard).toHaveLength(2);
+
+    // Hồ sơ học sinh: lịch sử bài kiểm tra (điểm, hạng) + điểm danh; giáo viên khác → 404
+    await http()
+      .patch(`/api/sessions/${sessionId}/attendance`)
+      .set('Cookie', ck(s))
+      .send({ updates: [{ studentId: an.studentId, status: 'present' }] })
+      .expect(200);
+    const profile = await http()
+      .get(`/api/classes/${classId}/students/${an.studentId}/profile`)
+      .set('Cookie', ck(s))
+      .expect(200);
+    expect(profile.body.student.name).toBe('An');
+    expect(profile.body.quizzes).toMatchObject({ count: 1, averagePercent: 100, bestPercent: 100 });
+    expect(profile.body.quizzes.items[0]).toMatchObject({
+      runId,
+      sessionId,
+      quizTitle: 'Đề run-paced',
+      mode: 'paced',
+      score: 3,
+      totalPoints: 3,
+      percent: 100,
+      correctCount: 2,
+      answeredCount: 2,
+      questionCount: 2,
+      rank: 1,
+      participants: 2,
+      submittedAt: null,
+    });
+    expect(profile.body.attendance.summary).toMatchObject({ present: 1, absent: 0, total: 1 });
+    expect(profile.body.attendance.rate).toEqual({ present: 1, total: 1 });
+    expect(profile.body.attendance.items[0]).toMatchObject({ sessionId, status: 'present' });
+    const other = await signup(app, 'run-paced-other');
+    await http()
+      .get(`/api/classes/${classId}/students/${an.studentId}/profile`)
+      .set('Cookie', ck(other))
+      .expect(404);
   });
 
   it('self-paced: đổi câu trả lời tới khi nộp bài; nộp một lần; hết giờ tự kết thúc', async () => {

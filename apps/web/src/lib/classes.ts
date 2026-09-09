@@ -8,6 +8,7 @@ import type {
   LimitsDto,
   RosterImportResultDto,
   StudentDto,
+  StudentProfileDto,
   UpdateClassInput,
   UpdateStudentInput,
 } from '@lophoc/shared';
@@ -17,6 +18,8 @@ import { apiFetch } from './api';
 export const classKeys = {
   all: ['classes'] as const,
   detail: (id: string) => ['classes', id] as const,
+  profile: (id: string, studentId: string) =>
+    ['classes', id, 'students', studentId, 'profile'] as const,
   limits: ['limits'] as const,
 };
 
@@ -33,6 +36,14 @@ export function useClassDetail(id: string) {
     queryFn: () => apiFetch<ClassDetailDto>(`/classes/${id}`),
     retry: (count, err) =>
       !(err instanceof Error && 'status' in err && err.status === 404) && count < 1,
+  });
+}
+
+/** Hồ sơ học sinh: thông tin, điểm danh, lịch sử bài kiểm tra. */
+export function useStudentProfile(classId: string, studentId: string) {
+  return useQuery({
+    queryKey: classKeys.profile(classId, studentId),
+    queryFn: () => apiFetch<StudentProfileDto>(`/classes/${classId}/students/${studentId}/profile`),
   });
 }
 
@@ -157,6 +168,7 @@ export function useUpdateStudent(id: string) {
           ? { ...old, students: old.students.map((s) => (s.id === student.id ? student : s)) }
           : old,
       );
+      void queryClient.invalidateQueries({ queryKey: classKeys.profile(id, student.id) });
     },
   });
 }
