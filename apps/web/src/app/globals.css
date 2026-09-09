@@ -118,3 +118,28 @@ body {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ---------- Nội dung Markdown + KaTeX (đề bài, phương án, lời giải) ---------- */
+/* Dòng cao hơn bình thường để phân số, chỉ số, tích phân không đè lên dòng trên/dưới. */
+.md-latex {
+  line-height: 1.85;
+  overflow-wrap: anywhere;
+}
+/* Không ghi đè font-size/line-height của .katex: KaTeX tính vị trí dựa trên line-height 1.2 của chính nó. */
+/* KaTeX mặc định cấm xuống dòng; cho phép cắt giữa các khối để công thức dài không tràn ô. */
+.md-latex .katex-html {
+  white-space: normal;
+}
+.md-latex .katex-html > .base {
+  white-space: nowrap;
+  margin: 0.12em 0;
+}
+.md-latex .katex-display {
+  margin: 0.5rem 0;
+  padding: 0.25rem 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+.md-latex .katex-display .katex-html {
+  white-space: nowrap;
+}

@@ -12,7 +12,8 @@ export function MarkdownLatex({ children, className }: { children: string; class
   return (
     <div
       className={cn(
-        'max-w-none break-words [&_img]:my-2 [&_img]:max-h-64 [&_img]:rounded-md [&_p]:my-1 [&_ul]:my-1 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:my-1 [&_ol]:list-decimal [&_ol]:pl-5',
+        // `md-latex` (globals.css): dòng cao hơn để phân số/lũy thừa không đè dòng khác, công thức dài xuống dòng được
+        'md-latex max-w-none [&_img]:my-2 [&_img]:max-h-64 [&_img]:rounded-md [&_p]:my-1 [&_ul]:my-1 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:my-1 [&_ol]:list-decimal [&_ol]:pl-5',
         className,
       )}
     >
