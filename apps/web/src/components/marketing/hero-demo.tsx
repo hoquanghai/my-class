@@ -244,7 +244,7 @@ export function HeroDemo({ className }: { className?: string }) {
         ) : (
           <>
             <p className="mb-2 text-[11px] font-semibold leading-snug">
-              {t('stem')} <Tex tex="\\int_0^1 3x^2\\,dx" className="text-[12px]" />
+              {t('stem')} <Tex tex={String.raw`\int_0^1 3x^2\,dx`} className="text-[12px]" />
             </p>
             <ul className="space-y-1">
               {OPTIONS.map(([label, text]) => {
