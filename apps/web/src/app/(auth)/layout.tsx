@@ -35,7 +35,7 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
       <aside className="hidden items-center justify-center bg-block-lilac p-12 lg:flex xl:p-16">
         <div className="w-full max-w-xl">
           <Eyebrow>{t('panelEyebrow')}</Eyebrow>
-          <p className="type-h2 mt-4 max-w-md text-ink">{t('panelTitle')}</p>
+          <p className="type-h2 mt-4 max-w-[20ch] text-ink">{t('panelTitle')}</p>
           <p className="type-lead mt-4 max-w-md text-ink">{t('panelBody')}</p>
 
           <div className="relative mt-12 mb-8">
