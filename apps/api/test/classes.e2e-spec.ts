@@ -32,16 +32,16 @@ describe('Classes (e2e)', () => {
 
   it('tạo 2 lớp OK, lớp thứ 3 bị chặn LIMIT_CLASSES; xóa mềm thì tạo lại được', async () => {
     const s = await signup(app, 'classes');
-    const c1 = await createClass(s, { name: 'Toán 9A', subject: 'Toán', grade: '9' });
+    const c1 = await createClass(s, { name: 'Toán 9A', subject: 'toan', grade: '9' });
     expect(isValidClassCode(c1.code)).toBe(true);
     expect(c1.students).toEqual([]);
     expect(c1.schedule).toEqual([]);
 
-    await createClass(s, { name: 'Văn 8B' });
+    await createClass(s, { name: 'Văn 8B', subject: 'ngu_van', grade: '8' });
     const third = await http()
       .post('/api/classes')
       .set('Cookie', ck(s))
-      .send({ name: 'Lý 7' })
+      .send({ name: 'Lý 7', subject: 'vat_ly', grade: '7' })
       .expect(403);
     expect(third.body.code).toBe('LIMIT_CLASSES');
 
@@ -50,18 +50,47 @@ describe('Classes (e2e)', () => {
     expect(list.body.map((c: { name: string }) => c.name)).toEqual(['Văn 8B']);
     await http().get(`/api/classes/${c1.id}`).set('Cookie', ck(s)).expect(404);
 
-    await createClass(s, { name: 'Lý 7' });
+    await createClass(s, { name: 'Lý 7', subject: 'vat_ly', grade: '7' });
   });
 
   it('tên lớp trống → 400', async () => {
     const s = await signup(app, 'classes-invalid');
-    await http().post('/api/classes').set('Cookie', ck(s)).send({ name: '   ' }).expect(400);
+    await http()
+      .post('/api/classes')
+      .set('Cookie', ck(s))
+      .send({ name: '   ', subject: 'toan', grade: '12' })
+      .expect(400);
+  });
+
+  it('thiếu môn/khối hoặc giá trị ngoài danh mục → 400', async () => {
+    const s = await signup(app, 'classes-catalog');
+    const post = (body: Record<string, unknown>) =>
+      http().post('/api/classes').set('Cookie', ck(s)).send(body);
+    await post({ name: 'Thiếu môn', grade: '12' }).expect(400);
+    await post({ name: 'Thiếu khối', subject: 'toan' }).expect(400);
+    await post({ name: 'Môn lạ', subject: 'Toán', grade: '12' }).expect(400);
+    await post({ name: 'Khối lạ', subject: 'toan', grade: '13' }).expect(400);
+    const ok = await post({ name: 'Đủ', subject: 'gdkt_pl', grade: '10' }).expect(201);
+    expect(ok.body.subject).toBe('gdkt_pl');
+    expect(ok.body.grade).toBe('10');
+    // sửa lớp: môn/khối vẫn phải thuộc danh mục
+    await http()
+      .patch(`/api/classes/${ok.body.id}`)
+      .set('Cookie', ck(s))
+      .send({ subject: 'Văn' })
+      .expect(400);
+    const upd = await http()
+      .patch(`/api/classes/${ok.body.id}`)
+      .set('Cookie', ck(s))
+      .send({ subject: 'ngu_van', grade: '11' })
+      .expect(200);
+    expect([upd.body.subject, upd.body.grade]).toEqual(['ngu_van', '11']);
   });
 
   it('lớp của giáo viên khác → 404 ở mọi thao tác', async () => {
     const owner = await signup(app, 'owner');
     const other = await signup(app, 'other');
-    const c = await createClass(owner, { name: 'Lớp riêng' });
+    const c = await createClass(owner, { name: 'Lớp riêng', subject: 'toan', grade: '12' });
     await http().get(`/api/classes/${c.id}`).set('Cookie', ck(other)).expect(404);
     await http()
       .patch(`/api/classes/${c.id}`)
@@ -78,7 +107,7 @@ describe('Classes (e2e)', () => {
 
   it('cập nhật tên, lịch, khóa danh sách; danh sách lớp có studentCount', async () => {
     const s = await signup(app, 'classes-update');
-    const c = await createClass(s, { name: 'Toán 9A' });
+    const c = await createClass(s, { name: 'Toán 9A', subject: 'toan', grade: '12' });
     const res = await http()
       .patch(`/api/classes/${c.id}`)
       .set('Cookie', ck(s))
@@ -109,7 +138,7 @@ describe('Classes (e2e)', () => {
 
   it('regenerate-code đổi mã hợp lệ; qr.png trả PNG', async () => {
     const s = await signup(app, 'classes-code');
-    const c = await createClass(s, { name: 'Lớp QR' });
+    const c = await createClass(s, { name: 'Lớp QR', subject: 'toan', grade: '12' });
     const r = await http()
       .post(`/api/classes/${c.id}/regenerate-code`)
       .set('Cookie', ck(s))
@@ -132,7 +161,7 @@ describe('Classes (e2e)', () => {
 
   it('xóa vĩnh viễn cascade học sinh', async () => {
     const s = await signup(app, 'classes-hard');
-    const c = await createClass(s, { name: 'Lớp xóa' });
+    const c = await createClass(s, { name: 'Lớp xóa', subject: 'toan', grade: '12' });
     await http()
       .post(`/api/classes/${c.id}/students/import`)
       .set('Cookie', ck(s))

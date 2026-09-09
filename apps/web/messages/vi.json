@@ -213,8 +213,8 @@
     "code": "Mã lớp",
     "name": "Tên lớp",
     "namePlaceholder": "VD: Toán 12A1 tối thứ 2-5",
-    "subject": "Môn",
-    "grade": "Khối / lớp",
+    "subject": "Môn học",
+    "grade": "Khối lớp",
     "schedule": "Lịch học",
     "addScheduleRow": "Thêm buổi",
     "removeScheduleRow": "Xóa buổi",
@@ -238,7 +238,10 @@
       "7": "Chủ nhật"
     },
     "notFound": "Không tìm thấy lớp",
-    "backToList": "Về danh sách lớp"
+    "backToList": "Về danh sách lớp",
+    "selectSubject": "Chọn môn",
+    "selectGrade": "Chọn khối",
+    "gradeLabel": "Lớp {grade}"
   },
   "Roster": {
     "pasteLabel": "Dán danh sách tên (mỗi dòng một tên)",

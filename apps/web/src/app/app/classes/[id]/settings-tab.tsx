@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { type FormEvent, useState } from 'react';
 import { CopyButton } from '@/components/copy-button';
+import { SubjectGradeFields } from '@/components/classes/subject-grade-fields';
 import { ScheduleEditor } from '@/components/schedule-editor';
 import { Alert } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
@@ -89,18 +90,20 @@ export function SettingsTab({ klass }: { klass: ClassDetailDto }) {
             <Field label={tcl('name')} htmlFor="s-name" error={errors.name}>
               <Input id="s-name" value={name} onChange={(e) => setName(e.target.value)} />
             </Field>
-            <div className="grid grid-cols-2 gap-3">
-              <Field label={tcl('subject')} htmlFor="s-subject">
-                <Input
-                  id="s-subject"
-                  value={subject}
-                  onChange={(e) => setSubject(e.target.value)}
-                />
-              </Field>
-              <Field label={tcl('grade')} htmlFor="s-grade">
-                <Input id="s-grade" value={grade} onChange={(e) => setGrade(e.target.value)} />
-              </Field>
-            </div>
+            <SubjectGradeFields
+              idPrefix="s"
+              subject={subject}
+              grade={grade}
+              onSubjectChange={(v) => {
+                setSubject(v);
+                setErrors((e) => ({ ...e, subject: '' }));
+              }}
+              onGradeChange={(v) => {
+                setGrade(v);
+                setErrors((e) => ({ ...e, grade: '' }));
+              }}
+              errors={errors}
+            />
             <Field label={tcl('schedule')} error={errors.schedule}>
               <ScheduleEditor value={schedule} onChange={setSchedule} />
             </Field>

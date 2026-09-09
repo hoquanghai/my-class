@@ -11,7 +11,9 @@ export interface StudentDto {
 export interface ClassSummaryDto {
   id: string;
   name: string;
+  /** Mã môn trong `SUBJECTS`; lớp tạo trước khi có danh mục có thể còn chữ tự do hoặc null. */
   subject: string | null;
+  /** Khối 6–12 dạng chuỗi; null với lớp cũ. */
   grade: string | null;
   code: string;
   rosterLocked: boolean;

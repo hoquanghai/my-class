@@ -193,7 +193,7 @@ async function seedDemo(): Promise<void> {
     data: {
       teacherId: teacher.id,
       name: 'Toán 12A1 (demo)',
-      subject: 'Toán',
+      subject: 'toan',
       grade: '12',
       code: DEMO_CLASS_CODE,
       schedule: [

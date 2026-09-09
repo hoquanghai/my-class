@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { type FormEvent, useState } from 'react';
+import { ClassMeta, SubjectGradeFields } from '@/components/classes/subject-grade-fields';
 import { ScheduleEditor } from '@/components/schedule-editor';
 import { Alert } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
@@ -14,6 +15,7 @@ import { Field } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { Spinner } from '@/components/ui/spinner';
 import { errorMessage } from '@/lib/api';
+import { useMe } from '@/lib/auth';
 import { useClasses, useCreateClass, useLimits } from '@/lib/classes';
 import { type FieldErrors, validate } from '@/lib/forms';
 
@@ -22,8 +24,10 @@ function CreateClassDialog({ open, onClose }: { open: boolean; onClose: () => vo
   const tc = useTranslations('Common');
   const router = useRouter();
   const create = useCreateClass();
+  const me = useMe();
   const [name, setName] = useState('');
-  const [subject, setSubject] = useState('');
+  // Gợi ý từ hồ sơ: giáo viên chỉ dạy một môn thì chọn sẵn môn đó.
+  const [subject, setSubject] = useState(me.data?.subjects.length === 1 ? me.data.subjects[0] : '');
   const [grade, setGrade] = useState('');
   const [schedule, setSchedule] = useState<ScheduleItem[]>([]);
   const [errors, setErrors] = useState<FieldErrors>({});
@@ -55,18 +59,20 @@ function CreateClassDialog({ open, onClose }: { open: boolean; onClose: () => vo
             autoFocus
           />
         </Field>
-        <div className="grid grid-cols-2 gap-3">
-          <Field label={`${t('subject')} (${tc('optional')})`} htmlFor="class-subject">
-            <Input
-              id="class-subject"
-              value={subject}
-              onChange={(e) => setSubject(e.target.value)}
-            />
-          </Field>
-          <Field label={`${t('grade')} (${tc('optional')})`} htmlFor="class-grade">
-            <Input id="class-grade" value={grade} onChange={(e) => setGrade(e.target.value)} />
-          </Field>
-        </div>
+        <SubjectGradeFields
+          idPrefix="class"
+          subject={subject}
+          grade={grade}
+          onSubjectChange={(v) => {
+            setSubject(v);
+            setErrors((e) => ({ ...e, subject: '' }));
+          }}
+          onGradeChange={(v) => {
+            setGrade(v);
+            setErrors((e) => ({ ...e, grade: '' }));
+          }}
+          errors={errors}
+        />
         <Field label={`${t('schedule')} (${tc('optional')})`} error={errors.schedule}>
           <ScheduleEditor value={schedule} onChange={setSchedule} />
         </Field>
@@ -126,7 +132,7 @@ export default function ClassesPage() {
             >
               <h2 className="text-lg font-semibold text-slate-900">{c.name}</h2>
               <p className="mt-1 text-sm text-slate-500">
-                {[c.subject, c.grade].filter(Boolean).join(' · ') || '—'}
+                <ClassMeta subject={c.subject} grade={c.grade} />
               </p>
               <div className="mt-4 flex items-center justify-between text-sm">
                 <span className="flex items-center gap-1.5 text-slate-600">

@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { GRADES, SUBJECTS } from '../education.js';
 
 const TIME_HHMM = /^([01]\d|2[0-3]):[0-5]\d$/;
 
@@ -26,8 +27,8 @@ const optionalShortText = z
 
 export const createClassSchema = z.object({
   name: classNameSchema,
-  subject: optionalShortText,
-  grade: optionalShortText,
+  subject: z.enum(SUBJECTS, { error: 'Vui lòng chọn môn' }),
+  grade: z.enum(GRADES, { error: 'Vui lòng chọn khối lớp' }),
   schedule: z.array(scheduleItemSchema).max(14).optional(),
 });
 export type CreateClassInput = z.infer<typeof createClassSchema>;

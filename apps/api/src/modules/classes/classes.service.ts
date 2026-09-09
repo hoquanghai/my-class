@@ -68,8 +68,8 @@ export class ClassesService {
       data: {
         teacherId,
         name: input.name,
-        subject: input.subject ?? null,
-        grade: input.grade ?? null,
+        subject: input.subject,
+        grade: input.grade,
         schedule: (input.schedule ?? []) as unknown as Prisma.InputJsonValue,
         code: await this.uniqueCode(),
       },

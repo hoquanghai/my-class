@@ -28,7 +28,7 @@ describe('Student join (e2e)', () => {
     const c = await http()
       .post('/api/classes')
       .set('Cookie', ck(s))
-      .send({ name: `Lớp ${tag}` })
+      .send({ name: `Lớp ${tag}`, subject: 'toan', grade: '12' })
       .expect(201);
     const imported = await http()
       .post(`/api/classes/${c.body.id}/students/import`)

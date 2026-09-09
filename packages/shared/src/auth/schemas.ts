@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { SUBJECTS, type Subject, TEACHING_LEVELS, type TeachingLevel } from '../education.js';
 
 export const emailSchema = z
   .string()
@@ -44,42 +45,6 @@ export const verifyEmailSchema = z.object({ token: z.string().min(1) });
 export type VerifyEmailInput = z.infer<typeof verifyEmailSchema>;
 
 // ---------- Hồ sơ giáo viên ----------
-
-/** Cấp dạy: THCS (lớp 6–9) hoặc THPT (lớp 10–12); có thể chọn cả hai. */
-export const TEACHING_LEVELS = ['thcs', 'thpt'] as const;
-export type TeachingLevel = (typeof TEACHING_LEVELS)[number];
-export const TEACHING_LEVEL_LABELS: Record<TeachingLevel, string> = {
-  thcs: 'THCS (lớp 6–9)',
-  thpt: 'THPT (lớp 10–12)',
-};
-
-export const SUBJECTS = [
-  'toan',
-  'vat_ly',
-  'hoa_hoc',
-  'sinh_hoc',
-  'ngu_van',
-  'tieng_anh',
-  'lich_su',
-  'dia_ly',
-  'gdkt_pl',
-  'tin_hoc',
-  'khac',
-] as const;
-export type Subject = (typeof SUBJECTS)[number];
-export const SUBJECT_LABELS: Record<Subject, string> = {
-  toan: 'Toán',
-  vat_ly: 'Vật lý',
-  hoa_hoc: 'Hóa học',
-  sinh_hoc: 'Sinh học',
-  ngu_van: 'Ngữ văn',
-  tieng_anh: 'Tiếng Anh',
-  lich_su: 'Lịch sử',
-  dia_ly: 'Địa lý',
-  gdkt_pl: 'Giáo dục kinh tế và pháp luật',
-  tin_hoc: 'Tin học',
-  khac: 'Môn khác',
-};
 
 /** Số điện thoại Việt Nam: 0xxxxxxxxx hoặc +84xxxxxxxxx; chuỗi rỗng → null. */
 const phoneSchema = z

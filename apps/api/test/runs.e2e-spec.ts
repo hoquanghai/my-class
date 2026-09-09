@@ -67,7 +67,7 @@ describe('Quiz runs (e2e)', () => {
       await http()
         .post('/api/classes')
         .set('Cookie', ck(s))
-        .send({ name: `Lớp ${tag}` })
+        .send({ name: `Lớp ${tag}`, subject: 'toan', grade: '12' })
         .expect(201)
     ).body;
     const roster = (

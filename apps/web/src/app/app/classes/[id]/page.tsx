@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { useState } from 'react';
+import { ClassMeta } from '@/components/classes/subject-grade-fields';
 import { CopyButton } from '@/components/copy-button';
 import { Alert } from '@/components/ui/alert';
 import { Spinner } from '@/components/ui/spinner';
@@ -67,7 +68,7 @@ export default function ClassDetailPage() {
             <div>
               <h1 className="text-2xl font-bold text-slate-900">{klass.name}</h1>
               <p className="text-sm text-slate-500">
-                {[klass.subject, klass.grade].filter(Boolean).join(' · ') || '—'}
+                <ClassMeta subject={klass.subject} grade={klass.grade} />
               </p>
             </div>
             <div className="flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-1.5">
