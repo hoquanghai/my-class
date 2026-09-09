@@ -7,6 +7,7 @@ import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { MarkdownLatex } from '@/components/markdown-latex';
 import { Countdown } from '@/components/runs/countdown';
 import { JoinPanel } from '@/components/runs/join-panel';
 import { Leaderboard } from '@/components/runs/leaderboard';
@@ -48,7 +49,10 @@ function QuestionReview({
     <details className="rounded-xl border border-slate-200 bg-white">
       <summary className="flex cursor-pointer items-center gap-3 p-3">
         <span className="font-semibold text-slate-500">{question.index + 1}</span>
-        <span className="line-clamp-1 flex-1 text-slate-900">{question.snapshot.stemMd}</span>
+        {/* Dòng tóm tắt: render KaTeX như trong đề, cắt còn một dòng */}
+        <MarkdownLatex className="line-clamp-1 min-w-0 flex-1 text-slate-900 [&_p]:my-0">
+          {question.snapshot.stemMd}
+        </MarkdownLatex>
         <span className="text-sm text-slate-500">
           {answers.filter((a) => a.isCorrect).length}/{answers.length}
         </span>
