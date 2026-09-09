@@ -1,7 +1,7 @@
 'use client';
 
 import { QUESTION_TYPE_LABELS, type QuizItemDto } from '@lophoc/shared';
-import { ArrowDown, ArrowLeft, ArrowUp, Plus, Shuffle, Trash2 } from 'lucide-react';
+import { ArrowDown, ArrowLeft, ArrowUp, Globe, Plus, Shuffle, Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
@@ -262,6 +262,15 @@ export default function QuizBuilderPage() {
             </div>
           </div>
           <div className="flex flex-wrap gap-2">
+            {data.items.length > 0 && (
+              <Link
+                href={`/app/community?publish=${data.id}`}
+                className="inline-flex h-10 items-center gap-2 rounded-md border border-slate-300 bg-white px-4 text-sm font-medium text-slate-800 hover:bg-slate-50"
+              >
+                <Globe className="size-4" />
+                {t('shareToCommunity')}
+              </Link>
+            )}
             <Button variant="secondary" onClick={() => setRandomOpen(true)}>
               <Shuffle className="size-4" />
               {t('addRandom')}

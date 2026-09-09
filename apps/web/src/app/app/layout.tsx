@@ -1,6 +1,6 @@
 'use client';
 
-import { BookOpen, ClipboardList, Users } from 'lucide-react';
+import { BookOpen, ClipboardList, Globe, Users } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
@@ -67,6 +67,7 @@ export default function TeacherLayout({ children }: { children: ReactNode }) {
     { href: '/app/classes', label: t('classes'), icon: Users, enabled: true },
     { href: '/app/questions', label: t('questions'), icon: BookOpen, enabled: true },
     { href: '/app/quizzes', label: t('quizzes'), icon: ClipboardList, enabled: true },
+    { href: '/app/community', label: t('community'), icon: Globe, enabled: true },
   ];
 
   return (
