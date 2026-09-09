@@ -33,7 +33,9 @@ export interface AccessTokenPayload {
 const VERIFY_TTL_MS = 24 * 60 * 60 * 1000;
 const RESET_TTL_MS = 60 * 60 * 1000;
 
-export function toTeacherDto(t: Teacher): TeacherDto {
+type TeacherWithIdentities = Teacher & { identities?: { provider: string }[] };
+
+export function toTeacherDto(t: TeacherWithIdentities): TeacherDto {
   return {
     id: t.id,
     email: t.email,
@@ -41,6 +43,12 @@ export function toTeacherDto(t: Teacher): TeacherDto {
     avatarUrl: t.avatarUrl,
     emailVerified: t.emailVerifiedAt !== null,
     plan: t.plan,
+    phone: t.phone,
+    school: t.school,
+    levels: t.levels as TeacherDto['levels'],
+    subjects: t.subjects as TeacherDto['subjects'],
+    hasPassword: t.passwordHash !== null,
+    providers: (t.identities ?? []).map((i) => i.provider),
   };
 }
 
@@ -126,6 +134,7 @@ export class AuthService {
   async me(teacherId: string): Promise<TeacherDto> {
     const teacher = await this.prisma.teacher.findFirst({
       where: { id: teacherId, deletedAt: null },
+      include: { identities: { select: { provider: true } } },
     });
     if (!teacher) throw new UnauthorizedException('Tài khoản không tồn tại');
     return toTeacherDto(teacher);

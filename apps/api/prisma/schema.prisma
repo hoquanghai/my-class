@@ -18,6 +18,10 @@ model Teacher {
   name            String
   avatarUrl       String?
   passwordHash    String?
+  phone           String?
+  school          String?
+  levels          String[]  @default([]) // thcs | thpt
+  subjects        String[]  @default([]) // toan | vat_ly | ...
   plan            String    @default("free")
   acceptedTermsAt DateTime?
   createdAt       DateTime  @default(now())

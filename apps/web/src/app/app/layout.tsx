@@ -1,10 +1,11 @@
 'use client';
 
-import { BookOpen, ClipboardList, LogOut, Users } from 'lucide-react';
+import { BookOpen, ClipboardList, Users } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { type ReactNode, useEffect, useState } from 'react';
+import { AccountMenu } from '@/components/account-menu';
 import { Alert } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/components/ui/cn';
@@ -105,20 +106,11 @@ export default function TeacherLayout({ children }: { children: ReactNode }) {
               )}
             </nav>
           </div>
-          <div className="flex items-center gap-3">
-            <span className="hidden text-sm text-slate-700 sm:inline">{me.data.name}</span>
-            <Button
-              variant="ghost"
-              size="sm"
-              loading={logout.isPending}
-              onClick={() =>
-                logout.mutate(undefined, { onSettled: () => router.replace('/login') })
-              }
-            >
-              <LogOut className="size-4" />
-              {tc('logout')}
-            </Button>
-          </div>
+          <AccountMenu
+            teacher={me.data}
+            loggingOut={logout.isPending}
+            onLogout={() => logout.mutate(undefined, { onSettled: () => router.replace('/login') })}
+          />
         </div>
       </header>
 

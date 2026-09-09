@@ -61,6 +61,7 @@ Xem `apps/api/.env.example` và `apps/web/.env.example`. `apps/api/.env.test` d�
 
 - Giáo viên: email + mật khẩu (argon2), Google hoặc Facebook. Access token JWT 15 phút trong cookie `lh_at`, refresh token 30 ngày (xoay vòng, hash trong DB) trong cookie `lh_rt` (path `/api/auth`), cookie gợi ý `lh_session` cho `proxy.ts` của web.
 - Rate limit: 120 req/phút/IP toàn cục, 10 req/phút/IP cho các endpoint auth.
+- Hồ sơ giáo viên: `GET/PATCH /api/teachers/me` (tên, điện thoại, trường, cấp dạy, môn), `POST /api/teachers/me/password` (đổi/đặt mật khẩu, thu hồi phiên khác), `POST/DELETE /api/teachers/me/avatar` (ảnh ≤ 2 MB).
 - Redirect Google OAuth: `API_URL/api/auth/google/callback` (khai báo trong Google Cloud Console). Redirect Facebook: `API_URL/api/auth/facebook/callback` (Facebook Developers → Facebook Login → Valid OAuth Redirect URIs; app cần quyền `email`).
 
 ## Docker

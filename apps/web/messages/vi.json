@@ -200,7 +200,9 @@
     "classes": "Lớp học",
     "questions": "Ngân hàng câu hỏi",
     "quizzes": "Đề kiểm tra",
-    "sessionExpired": "Phiên đăng nhập đã hết hạn"
+    "sessionExpired": "Phiên đăng nhập đã hết hạn",
+    "profile": "Hồ sơ giáo viên",
+    "accountMenu": "Tài khoản"
   },
   "Classes": {
     "title": "Lớp học của tôi",
@@ -541,5 +543,41 @@
     "timeLeft": "Còn {sec}s",
     "timeUp": "Hết giờ",
     "waitingReveal": "Chờ giáo viên công bố đáp án…"
+  },
+  "Profile": {
+    "title": "Hồ sơ giáo viên",
+    "subtitle": "Thông tin này giúp Lớp Học gợi ý môn, khối khi tạo lớp và hiện tên bạn trên máy chiếu.",
+    "avatarTitle": "Ảnh đại diện",
+    "avatarHint": "PNG, JPG, GIF hoặc WebP, tối đa 2 MB. Ảnh vuông hiển thị đẹp nhất.",
+    "avatarUpload": "Tải ảnh lên",
+    "avatarChange": "Đổi ảnh",
+    "avatarRemove": "Gỡ ảnh",
+    "avatarTooBig": "Ảnh vượt quá 2 MB, hãy chọn ảnh nhỏ hơn.",
+    "infoTitle": "Thông tin giảng dạy",
+    "name": "Họ và tên",
+    "phone": "Số điện thoại",
+    "phoneHint": "Chỉ dùng để liên hệ hỗ trợ, không hiện với học sinh",
+    "school": "Trường / trung tâm",
+    "schoolHint": "Ví dụ: THPT Nguyễn Huệ, Trung tâm Ánh Sáng",
+    "levels": "Cấp dạy",
+    "subjects": "Môn dạy",
+    "subjectsHint": "Chọn nhiều môn nếu bạn dạy nhiều môn.",
+    "saved": "Đã lưu hồ sơ.",
+    "securityTitle": "Bảo mật",
+    "email": "Email đăng nhập",
+    "emailVerified": "Đã xác thực",
+    "emailUnverified": "Chưa xác thực",
+    "linked": "Đăng nhập liên kết",
+    "linkedNone": "Chưa liên kết Google hay Facebook",
+    "changePassword": "Đổi mật khẩu",
+    "setPassword": "Đặt mật khẩu",
+    "setPasswordHint": "Tài khoản của bạn đang đăng nhập bằng Google hoặc Facebook. Đặt mật khẩu để có thể đăng nhập bằng email.",
+    "currentPassword": "Mật khẩu hiện tại",
+    "newPassword": "Mật khẩu mới",
+    "confirmPassword": "Nhập lại mật khẩu mới",
+    "passwordHint": "Tối thiểu 8 ký tự",
+    "currentRequired": "Vui lòng nhập mật khẩu hiện tại",
+    "confirmMismatch": "Mật khẩu nhập lại chưa khớp",
+    "passwordChanged": "Đã đổi mật khẩu. Các thiết bị khác sẽ phải đăng nhập lại."
   }
 }
