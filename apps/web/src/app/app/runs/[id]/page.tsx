@@ -7,8 +7,8 @@ import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { CopyButton } from '@/components/copy-button';
 import { Countdown } from '@/components/runs/countdown';
+import { JoinPanel } from '@/components/runs/join-panel';
 import { Leaderboard } from '@/components/runs/leaderboard';
 import { QuestionPanel } from '@/components/runs/question-panel';
 import { ResultPanel } from '@/components/runs/result-panel';
@@ -19,7 +19,6 @@ import { Spinner } from '@/components/ui/spinner';
 import { errorMessage } from '@/lib/api';
 import { runKeys, useOverrideAnswer, useRunAction, useRunDetail } from '@/lib/runs';
 import { useSessionSocket } from '@/lib/socket';
-import { studentJoinDisplay, studentJoinUrl } from '@/lib/student-origin';
 
 const STATUS_STYLE = {
   lobby: 'bg-slate-100 text-slate-700',
@@ -168,7 +167,6 @@ export default function RunControlPage() {
   const current = state.currentQuestion;
   const openedAt = state.questionOpenedAt ? Date.parse(state.questionOpenedAt) : null;
   const closed = state.questionClosedAt !== null;
-  const joinUrl = studentJoinUrl(state.classCode);
 
   return (
     <div className="space-y-5">
@@ -214,15 +212,17 @@ export default function RunControlPage() {
         <Alert variant="error">{rt.error ?? errorMessage(action.error ?? override.error)}</Alert>
       )}
 
+      {state.status !== 'finished' && (
+        <JoinPanel
+          classId={state.classId}
+          classCode={state.classCode}
+          participants={state.participants.length}
+          compact={state.status === 'in_progress'}
+        />
+      )}
+
       {state.status === 'lobby' && (
         <section className="space-y-4 rounded-xl border border-slate-200 bg-white p-5">
-          <div className="flex flex-wrap items-center gap-2 text-slate-700">
-            <span>{t('joinHint', { url: studentJoinDisplay(state.classCode) })}</span>
-            <span className="rounded-md bg-slate-900 px-2 py-0.5 font-mono text-lg font-bold tracking-widest text-white">
-              {state.classCode}
-            </span>
-            <CopyButton text={joinUrl} />
-          </div>
           <div>
             <p className="mb-2 text-sm font-medium text-slate-700">
               {t('joined', { count: state.participants.length })}

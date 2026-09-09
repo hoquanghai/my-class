@@ -13,6 +13,7 @@ import { useParams } from 'next/navigation';
 import { useState } from 'react';
 import { STATUS_ORDER, STATUS_STYLES } from '@/components/attendance-status';
 import { LaunchDialog } from '@/components/runs/launch-dialog';
+import { JoinPanel } from '@/components/runs/join-panel';
 import { Alert } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/components/ui/cn';
@@ -229,6 +230,8 @@ export default function SessionPage() {
           </div>
         </div>
       </div>
+
+      {active && <JoinPanel classId={session.classId} classCode={session.classCode} compact />}
 
       {thanks && <Alert variant="success">{t('feedbackThanks')}</Alert>}
       {(update.isError || end.isError) && (

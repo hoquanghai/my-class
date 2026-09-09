@@ -65,7 +65,7 @@ function StudentForm({
   student: StudentDto;
   onClose: () => void;
 }) {
-  const t = useTranslations('Student');
+  const t = useTranslations('StudentInfo');
   const tc = useTranslations('Common');
   const update = useUpdateStudent(classId);
   const [form, setForm] = useState<FormState>(() => initialState(student));
