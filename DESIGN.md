@@ -30,16 +30,16 @@ colors:
 typography:
   display-xl:
     fontFamily: Be Vietnam Pro
-    fontSize: 56px
+    fontSize: 48px
     fontWeight: 700
-    lineHeight: 1.05
-    letterSpacing: -0.02em
+    lineHeight: 1.15
+    letterSpacing: -0.01em
   display-lg:
     fontFamily: Be Vietnam Pro
-    fontSize: 40px
+    fontSize: 36px
     fontWeight: 700
-    lineHeight: 1.1
-    letterSpacing: -0.015em
+    lineHeight: 1.2
+    letterSpacing: -0.01em
   headline:
     fontFamily: Be Vietnam Pro
     fontSize: 24px
@@ -87,13 +87,13 @@ typography:
     fontSize: 13px
     fontWeight: 500
     lineHeight: 1.3
-    letterSpacing: 0.08em
+    letterSpacing: 0.06em
   caption:
     fontFamily: JetBrains Mono
     fontSize: 12px
     fontWeight: 400
-    lineHeight: 1.3
-    letterSpacing: 0.05em
+    lineHeight: 1.4
+    letterSpacing: 0.02em
   code-class:
     fontFamily: JetBrains Mono
     fontSize: 32px
@@ -436,7 +436,7 @@ Quy tắc: một khối màu chiếm trọn chiều rộng nội dung, bo `{roun
 | `{typography.projector-option}` | 30px                  | 500 | Phương án trên máy chiếu                                 |
 | `{typography.projector-timer}`  | 72px mono             | 700 | Đếm ngược trên máy chiếu                                 |
 
-Nguyên tắc: tiêu đề chặt dòng (1.05–1.3), thân bài thoáng (1.5–1.55). Chữ nhỏ nhất trong app là 12px và chỉ dùng mono caption. Số trong bảng, điểm, đồng hồ luôn `font-variant-numeric: tabular-nums`.
+Nguyên tắc: tiêu đề dòng cao 1.15–1.2 (dấu tiếng Việt chiếm thêm chỗ phía trên, 1.05 làm dấu chạm dòng trên), thân bài 1.6. Giãn chữ âm tối đa -0.01em. Không dùng `text-balance` cho tiêu đề tiếng Việt dài vì nó tách cụm từ ("đầu giờ"); dùng `text-wrap: pretty` và giới hạn `max-w-[16ch]`. Chữ mono chỉ ở eyebrow, caption, mã, số; ghi chú dưới nút dùng sans 14px. Các lớp tiện ích `type-display`, `type-h2`, `type-h3`, `type-lead`, `type-body`, `type-eyebrow`, `type-caption` trong `globals.css` là cách duy nhất để đặt cỡ tiêu đề và thân bài; không viết `text-4xl leading-tight` rời rạc. Chữ nhỏ nhất trong app là 12px và chỉ dùng mono caption. Số trong bảng, điểm, đồng hồ luôn `font-variant-numeric: tabular-nums`.
 
 ## 4. Bố cục và khoảng cách
 

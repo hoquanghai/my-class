@@ -24,9 +24,7 @@ export function LeaderboardMock({
 }) {
   return (
     <div className={cn('text-sm', className)}>
-      <p className="mb-2 font-mono text-[11px] font-medium uppercase tracking-[0.08em]">
-        Bảng xếp hạng
-      </p>
+      <p className="type-eyebrow mb-2 text-[11px]">Bảng xếp hạng</p>
       <ol className="space-y-1">
         {rows.map(([name, score], i) => (
           <li key={name} className="flex items-center gap-2">
@@ -103,9 +101,7 @@ export function PhoneQuizMock({
       aria-hidden="true"
     >
       <div className="mb-3 flex items-center justify-between">
-        <span className="font-mono text-[11px] uppercase tracking-[0.08em] text-ink-muted">
-          Câu 3/10
-        </span>
+        <span className="type-eyebrow text-[11px] text-ink-muted">Câu 3/10</span>
         <span className="tabular rounded-md bg-ink px-2 py-0.5 font-mono text-xs font-bold text-white">
           0:18
         </span>
@@ -159,9 +155,7 @@ export function ImportGridMock({ className }: { className?: string }) {
   const cells = [1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0];
   return (
     <div className={cn('text-sm', className)}>
-      <p className="mb-2 font-mono text-[11px] font-medium uppercase tracking-[0.08em]">
-        Nhận diện 12 câu · 2 cần xem lại
-      </p>
+      <p className="type-eyebrow mb-2 text-[11px]">Nhận diện 12 câu · 2 cần xem lại</p>
       <div className="grid grid-cols-6 gap-1.5">
         {cells.map((ok, i) => (
           <span

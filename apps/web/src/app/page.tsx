@@ -43,19 +43,15 @@ export default function LandingPage() {
         <section className={`${container} grid items-center gap-10 py-14 lg:grid-cols-12 lg:py-24`}>
           <div className="lg:col-span-6">
             <Eyebrow className="text-ink-muted">{t('hero.eyebrow')}</Eyebrow>
-            <h1 className="mt-4 text-balance text-4xl font-bold leading-[1.05] tracking-[-0.02em] text-ink sm:text-5xl lg:text-[56px]">
-              {t('hero.title')}
-            </h1>
-            <p className="mt-5 max-w-xl text-lg leading-relaxed text-ink">{t('hero.subtitle')}</p>
+            <h1 className="type-display mt-4 max-w-[16ch] text-ink">{t('hero.title')}</h1>
+            <p className="type-lead mt-5 max-w-xl text-ink">{t('hero.subtitle')}</p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <PillLink href="/signup">{t('hero.cta')}</PillLink>
               <PillLink href="#cach-dung" variant="secondary">
                 {t('hero.secondary')}
               </PillLink>
             </div>
-            <p className="mt-5 font-mono text-xs tracking-[0.05em] text-ink-muted">
-              {t('hero.note')}
-            </p>
+            <p className="mt-5 text-sm text-ink-muted">{t('hero.note')}</p>
           </div>
 
           <div className="relative lg:col-span-6">
@@ -81,9 +77,7 @@ export default function LandingPage() {
               rotate={2}
               className="absolute -right-2 -top-4 hidden w-44 sm:block"
             >
-              <p className="mb-2 font-mono text-[11px] font-medium uppercase tracking-[0.08em]">
-                {t('hero.noteAttendance')}
-              </p>
+              <p className="mb-2 type-eyebrow text-[11px]">{t('hero.noteAttendance')}</p>
               <div className="flex flex-wrap gap-1.5 text-xs font-medium">
                 <span className="rounded-md bg-block-mint px-2 py-1 text-success">
                   {t('hero.present')}: 27
@@ -127,9 +121,7 @@ export default function LandingPage() {
         <section id="cach-dung" className={`${container} py-16 lg:py-24`}>
           <Reveal>
             <Eyebrow className="text-ink-muted">{t('how.eyebrow')}</Eyebrow>
-            <h2 className="mt-3 max-w-2xl text-balance text-3xl font-bold tracking-[-0.015em] text-ink sm:text-4xl">
-              {t('how.title')}
-            </h2>
+            <h2 className="type-h2 mt-3 max-w-2xl text-ink">{t('how.title')}</h2>
           </Reveal>
           <ol className="mt-10 grid gap-6 md:grid-cols-3">
             {([1, 2, 3] as const).map((n, i) => (
@@ -139,11 +131,9 @@ export default function LandingPage() {
                 delayMs={i * 80}
                 className="rounded-card border border-hairline p-6"
               >
-                <span className="font-mono text-sm font-medium tracking-[0.08em] text-ink-muted">
-                  0{n}
-                </span>
-                <h3 className="mt-3 text-xl font-semibold text-ink">{t(`how.step${n}Title`)}</h3>
-                <p className="mt-2 text-base leading-relaxed text-ink">{t(`how.step${n}Body`)}</p>
+                <span className="type-eyebrow text-ink-muted">0{n}</span>
+                <h3 className="type-h3 mt-3 text-ink">{t(`how.step${n}Title`)}</h3>
+                <p className="type-body mt-2 text-ink">{t(`how.step${n}Body`)}</p>
               </Reveal>
             ))}
           </ol>
@@ -155,11 +145,9 @@ export default function LandingPage() {
             <ColorBlock tone="lime" className="grid items-center gap-10 lg:grid-cols-12">
               <div className="lg:col-span-6">
                 <Eyebrow>{t('quiz.eyebrow')}</Eyebrow>
-                <h2 className="mt-3 text-balance text-3xl font-bold tracking-[-0.015em] sm:text-4xl">
-                  {t('quiz.title')}
-                </h2>
-                <p className="mt-4 text-lg leading-relaxed">{t('quiz.body')}</p>
-                <ul className="mt-5 space-y-2 text-base">
+                <h2 className="type-h2 mt-3">{t('quiz.title')}</h2>
+                <p className="type-lead mt-4">{t('quiz.body')}</p>
+                <ul className="type-body mt-5 space-y-2">
                   <Bullet>{t('quiz.b1')}</Bullet>
                   <Bullet>{t('quiz.b2')}</Bullet>
                   <Bullet>{t('quiz.b3')}</Bullet>
@@ -169,7 +157,7 @@ export default function LandingPage() {
                 </PillLink>
               </div>
               <div className="relative flex justify-center py-6 lg:col-span-6 lg:justify-start lg:pl-6">
-                <PhoneQuizMock revealed />
+                <PhoneQuizMock revealed className="lg:mx-0" />
                 <StickyNote
                   tone="white"
                   rotate={3}
@@ -209,10 +197,8 @@ export default function LandingPage() {
               </div>
               <div className="order-1 lg:order-2 lg:col-span-7">
                 <Eyebrow>{t('bank.eyebrow')}</Eyebrow>
-                <h2 className="mt-3 text-balance text-3xl font-bold tracking-[-0.015em] sm:text-4xl">
-                  {t('bank.title')}
-                </h2>
-                <p className="mt-4 text-lg leading-relaxed">{t('bank.body')}</p>
+                <h2 className="type-h2 mt-3">{t('bank.title')}</h2>
+                <p className="type-lead mt-4">{t('bank.body')}</p>
                 <ul className="mt-5 grid gap-3 sm:grid-cols-3">
                   {[
                     [FileText, t('bank.b1')],
@@ -242,11 +228,9 @@ export default function LandingPage() {
             <ColorBlock tone="cream" className="grid items-center gap-10 lg:grid-cols-12">
               <div className="lg:col-span-6">
                 <Eyebrow>{t('attendance.eyebrow')}</Eyebrow>
-                <h2 className="mt-3 text-balance text-3xl font-bold tracking-[-0.015em] sm:text-4xl">
-                  {t('attendance.title')}
-                </h2>
-                <p className="mt-4 text-lg leading-relaxed">{t('attendance.body')}</p>
-                <ul className="mt-5 space-y-2 text-base">
+                <h2 className="type-h2 mt-3">{t('attendance.title')}</h2>
+                <p className="type-lead mt-4">{t('attendance.body')}</p>
+                <ul className="type-body mt-5 space-y-2">
                   <Bullet>{t('attendance.b1')}</Bullet>
                   <Bullet>{t('attendance.b2')}</Bullet>
                   <Bullet>{t('attendance.b3')}</Bullet>
@@ -271,12 +255,8 @@ export default function LandingPage() {
             <ColorBlock tone="navy" className="grid items-center gap-10 lg:grid-cols-12">
               <div className="lg:col-span-7">
                 <Eyebrow className="text-white/80">{t('students.eyebrow')}</Eyebrow>
-                <h2 className="mt-3 text-balance text-3xl font-bold tracking-[-0.015em] sm:text-4xl">
-                  {t('students.title')}
-                </h2>
-                <p className="mt-4 max-w-xl text-lg leading-relaxed text-white/90">
-                  {t('students.body')}
-                </p>
+                <h2 className="type-h2 mt-3">{t('students.title')}</h2>
+                <p className="type-lead mt-4 max-w-xl text-white/90">{t('students.body')}</p>
                 <div className="mt-6 flex flex-wrap items-center gap-4">
                   <ClassCodeMock />
                   <span className="text-sm text-white/80">{t('students.codeHint')}</span>
@@ -303,9 +283,7 @@ export default function LandingPage() {
         <section id="faq" className={`${container} py-16 lg:py-24`}>
           <Reveal>
             <Eyebrow className="text-ink-muted">{t('faq.eyebrow')}</Eyebrow>
-            <h2 className="mt-3 text-3xl font-bold tracking-[-0.015em] text-ink sm:text-4xl">
-              {t('faq.title')}
-            </h2>
+            <h2 className="type-h2 mt-3 text-ink">{t('faq.title')}</h2>
           </Reveal>
           <div className="mt-8 divide-y divide-hairline border-y border-hairline">
             {([1, 2, 3, 4] as const).map((n) => (
@@ -331,9 +309,7 @@ export default function LandingPage() {
         <section className={`${container} pb-20 lg:pb-28`}>
           <Reveal className="text-center">
             <Trophy className="mx-auto size-8 text-ink" aria-hidden="true" />
-            <h2 className="mx-auto mt-4 max-w-2xl text-balance text-3xl font-bold tracking-[-0.015em] text-ink sm:text-4xl">
-              {t('final.title')}
-            </h2>
+            <h2 className="type-h2 mx-auto mt-4 max-w-2xl text-ink">{t('final.title')}</h2>
             <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
               <PillLink href="/signup">{t('final.cta')}</PillLink>
               <Link

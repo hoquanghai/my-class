@@ -38,11 +38,23 @@ export function SocialButtons({ className }: { className?: string }) {
     <div className={cn('space-y-3', className)}>
       {notice && <Alert variant="warning">{notice}</Alert>}
       <div className="grid gap-3 sm:grid-cols-2">
-        <a href={apiUrl('/auth/google')} className={base} onClick={(e) => onClick('google', e)}>
+        <a
+          href={apiUrl('/auth/google')}
+          className={base}
+          data-enabled={String(enabled('google'))}
+          data-pending={String(providers.isPending)}
+          onClick={(e) => onClick('google', e)}
+        >
           <GoogleIcon />
           Google
         </a>
-        <a href={apiUrl('/auth/facebook')} className={base} onClick={(e) => onClick('facebook', e)}>
+        <a
+          href={apiUrl('/auth/facebook')}
+          className={base}
+          data-enabled={String(enabled('facebook'))}
+          data-pending={String(providers.isPending)}
+          onClick={(e) => onClick('facebook', e)}
+        >
           <FacebookIcon />
           Facebook
         </a>
@@ -56,7 +68,7 @@ export function SocialButtons({ className }: { className?: string }) {
 export function OrDivider() {
   const t = useTranslations('Auth');
   return (
-    <div className="flex items-center gap-3 font-mono text-[11px] uppercase tracking-[0.08em] text-ink-muted">
+    <div className="type-eyebrow flex items-center gap-3 text-ink-muted">
       <span className="h-px flex-1 bg-hairline" />
       {t('orEmail')}
       <span className="h-px flex-1 bg-hairline" />

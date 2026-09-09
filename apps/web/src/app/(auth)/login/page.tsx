@@ -63,9 +63,7 @@ function LoginForm() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-[-0.015em] text-ink sm:text-4xl">
-          {t('loginTitle')}
-        </h1>
+        <h1 className="type-h2 text-ink">{t('loginTitle')}</h1>
         <p className="mt-2 text-base text-ink-muted">{t('loginHint')}</p>
       </div>
 

@@ -33,11 +33,7 @@ export function PillLink({
 
 /** Nhãn mono in hoa mở đầu section. */
 export function Eyebrow({ children, className }: { children: ReactNode; className?: string }) {
-  return (
-    <p className={cn('font-mono text-[13px] font-medium uppercase tracking-[0.08em]', className)}>
-      {children}
-    </p>
-  );
+  return <p className={cn('type-eyebrow', className)}>{children}</p>;
 }
 
 type Block = 'lime' | 'lilac' | 'cream' | 'mint' | 'coral' | 'navy';

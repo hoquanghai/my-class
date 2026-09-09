@@ -51,9 +51,7 @@ export default function SignupPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-[-0.015em] text-ink sm:text-4xl">
-          {t('signupTitle')}
-        </h1>
+        <h1 className="type-h2 text-ink">{t('signupTitle')}</h1>
         <p className="mt-2 text-base text-ink-muted">{t('signupHint')}</p>
       </div>
       {serverError && <Alert variant="error">{serverError}</Alert>}

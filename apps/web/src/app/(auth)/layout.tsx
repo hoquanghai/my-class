@@ -35,10 +35,8 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
       <aside className="hidden items-center justify-center bg-block-lilac p-12 lg:flex xl:p-16">
         <div className="w-full max-w-xl">
           <Eyebrow>{t('panelEyebrow')}</Eyebrow>
-          <p className="mt-4 text-balance text-3xl font-bold leading-tight tracking-[-0.015em] text-ink xl:text-4xl">
-            {t('panelTitle')}
-          </p>
-          <p className="mt-4 max-w-md text-lg leading-relaxed text-ink">{t('panelBody')}</p>
+          <p className="type-h2 mt-4 max-w-md text-ink">{t('panelTitle')}</p>
+          <p className="type-lead mt-4 max-w-md text-ink">{t('panelBody')}</p>
 
           <div className="relative mt-12 mb-8">
             <div className="relative aspect-[3/2] overflow-hidden rounded-block bg-canvas/40">
@@ -54,9 +52,7 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
               <LeaderboardMock />
             </StickyNote>
             <StickyNote tone="cream" rotate={2} className="absolute -top-5 right-4 w-56">
-              <p className="font-mono text-[11px] font-medium uppercase tracking-[0.08em]">
-                {t('panelNoteTitle')}
-              </p>
+              <p className="type-eyebrow text-[11px]">{t('panelNoteTitle')}</p>
               <p className="mt-1.5 text-sm font-medium text-ink">{t('panelNoteBody')}</p>
             </StickyNote>
           </div>

@@ -13,7 +13,7 @@
     },
     "hero": {
       "eyebrow": "Miễn phí cho giáo viên trung tâm",
-      "title": "5 phút đầu giờ: điểm danh xong, kiểm tra xong, có ngay bảng xếp hạng.",
+      "title": "Điểm danh, kiểm tra, xếp hạng: xong trong 5 phút đầu giờ.",
       "subtitle": "Nhập đề từ Word, ảnh chụp hay dán văn bản. Học sinh làm bài trên điện thoại bằng mã lớp, không cần cài app. Kết quả hiện ngay trên máy chiếu.",
       "cta": "Dùng thử miễn phí",
       "secondary": "Xem cách dùng",
@@ -24,9 +24,9 @@
       "absent": "Vắng"
     },
     "proof": {
-      "join": "Học sinh vào lớp bằng mã 6 ký tự",
-      "import": "Nhập đề từ Word, ảnh chụp hoặc dán văn bản",
-      "project": "Chiếu câu hỏi và bảng xếp hạng trực tiếp"
+      "join": "Vào lớp bằng mã 6 ký tự",
+      "import": "Nhập đề từ Word, ảnh, văn bản dán",
+      "project": "Chiếu câu hỏi và bảng xếp hạng"
     },
     "how": {
       "eyebrow": "Cách dùng",
