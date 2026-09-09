@@ -1,0 +1,318 @@
+<title>Bộ nhận diện Lớp Học</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap">
+<style>
+  :root {
+    --ground: #ffffff;
+    --ink: #111111;
+    --ink-muted: #5b5b60;
+    --surface: #f7f7f5;
+    --hairline: #e6e6e6;
+    --accent: #2a5bd7;
+    --lime: #dceeb1;
+    --lilac: #c9b8f5;
+    --cream: #f4ecd6;
+    --mint: #c8e6cd;
+    --coral: #f3c9b6;
+    --pink: #efd4d4;
+    --navy: #1f1d3d;
+    --tile: #ffffff;
+    --tile-border: #e6e6e6;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground: #141416;
+      --ink: #f4f4f2;
+      --ink-muted: #a3a3a8;
+      --surface: #1e1e21;
+      --hairline: #2e2e33;
+      --tile: #ffffff;
+      --tile-border: #2e2e33;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground: #141416;
+    --ink: #f4f4f2;
+    --ink-muted: #a3a3a8;
+    --surface: #1e1e21;
+    --hairline: #2e2e33;
+    --tile: #ffffff;
+    --tile-border: #2e2e33;
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: 'Be Vietnam Pro', system-ui, 'Segoe UI', Roboto, sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+  }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 48px 24px 96px; }
+  .eyebrow {
+    font-family: 'JetBrains Mono', ui-monospace, Consolas, monospace;
+    font-size: 12px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--ink-muted);
+  }
+  h1 { font-size: clamp(2rem, 1.2rem + 2.4vw, 3rem); line-height: 1.15; letter-spacing: -0.01em; margin: 8px 0 12px; text-wrap: balance; }
+  h2 { font-size: 1.5rem; line-height: 1.25; letter-spacing: -0.01em; margin: 0; }
+  h3 { font-size: 1.125rem; margin: 0 0 4px; }
+  p { margin: 0; max-width: 62ch; }
+  .lead { font-size: 1.125rem; }
+  header { display: grid; gap: 8px; margin-bottom: 40px; }
+  .how {
+    display: flex; flex-wrap: wrap; gap: 12px 24px; align-items: center;
+    padding: 14px 18px; border: 1px solid var(--hairline); border-radius: 14px; background: var(--surface);
+    font-size: 15px;
+  }
+  .how strong { font-weight: 600; }
+
+  .option { display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px; padding: 32px 0; border-top: 1px solid var(--hairline); }
+  .option-head { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
+  .num {
+    font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 13px; letter-spacing: 0.08em;
+    padding: 4px 10px; border-radius: 999px; background: var(--ink); color: var(--ground);
+  }
+  .option-body { display: grid; grid-template-columns: minmax(0, 3fr) minmax(260px, 2fr); gap: 24px; align-items: start; }
+  @media (max-width: 760px) { .option-body { grid-template-columns: 1fr; } }
+
+  .board { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+  .tile {
+    display: grid; place-items: center; gap: 10px; padding: 16px 12px;
+    border-radius: 16px; border: 1px solid var(--tile-border); background: var(--tile); color: #111111; min-height: 150px;
+  }
+  .tile.navy { background: var(--navy); border-color: var(--navy); color: #ffffff; }
+  .tile.soft { background: #f7f7f5; }
+  .tile .cap { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.05em; color: inherit; opacity: 0.65; text-transform: uppercase; }
+  .tile.wide { grid-column: span 2; }
+  @media (max-width: 520px) { .tile.wide { grid-column: span 1; } }
+  .mark { display: block; }
+
+  .lockup { display: inline-flex; align-items: center; gap: 12px; }
+  .lockup .word { font-weight: 700; font-size: 26px; letter-spacing: -0.01em; line-height: 1; white-space: nowrap; }
+  .lockup .word em { font-style: normal; background: var(--lime); border-radius: 6px; padding: 0 6px; color: #111111; }
+
+  .sizes { display: flex; align-items: flex-end; gap: 18px; }
+  .sizes figure { margin: 0; display: grid; justify-items: center; gap: 6px; }
+  .sizes figcaption { font-family: 'JetBrains Mono', monospace; font-size: 10px; opacity: 0.6; }
+
+  .appicon { width: 92px; height: 92px; border-radius: 22px; display: grid; place-items: center; box-shadow: 0 8px 24px rgba(17,17,17,0.14); border: 1px solid #e6e6e6; }
+  .tab {
+    display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; border-radius: 10px 10px 0 0;
+    background: #f7f7f5; border: 1px solid #e6e6e6; border-bottom: none; font-size: 13px; color: #111111; font-weight: 500;
+  }
+  .tab .mark { width: 16px; height: 16px; }
+
+  .why { display: grid; gap: 12px; }
+  .why ul { margin: 0; padding-left: 18px; }
+  .why li { margin: 2px 0; }
+  .tags { display: flex; flex-wrap: wrap; gap: 6px; }
+  .tag { font-size: 13px; font-weight: 500; padding: 3px 10px; border-radius: 999px; background: var(--surface); border: 1px solid var(--hairline); }
+  .tag.fit { background: var(--mint); border-color: transparent; color: #111111; }
+  .tag.warn { background: var(--cream); border-color: transparent; color: #111111; }
+
+  .foundation { display: grid; gap: 28px; padding-top: 40px; border-top: 1px solid var(--hairline); }
+  .swatches { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; }
+  .sw { border-radius: 12px; border: 1px solid var(--hairline); overflow: hidden; }
+  .sw .chip { height: 56px; }
+  .sw .meta { padding: 8px 10px; font-size: 13px; display: grid; gap: 2px; }
+  .sw .meta code { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--ink-muted); }
+  .typo { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+  .typo .sample { padding: 18px; border-radius: 14px; border: 1px solid var(--hairline); display: grid; gap: 6px; }
+  .typo .big { font-size: 34px; font-weight: 700; letter-spacing: -0.01em; line-height: 1.15; }
+  .typo .mono { font-family: 'JetBrains Mono', monospace; font-size: 22px; font-weight: 700; letter-spacing: 0.2em; }
+  .dodont { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+  .dodont div { padding: 16px 18px; border-radius: 14px; border: 1px solid var(--hairline); }
+  .dodont h3 { display: flex; align-items: center; gap: 8px; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+  .foot { margin-top: 48px; padding: 18px 20px; border-radius: 14px; background: var(--lime); color: #111111; font-weight: 500; }
+  a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+</style>
+
+<div class="wrap">
+  <header>
+    <p class="eyebrow">Lớp Học · Bộ nhận diện · 5 phương án</p>
+    <h1>Chọn một biểu tượng để Lớp Học nhìn là nhận ra</h1>
+    <p class="lead">Mỗi phương án được vẽ bằng vector theo đúng hệ màu và chữ của sản phẩm, nên chọn xong là dùng ngay cho favicon, icon ứng dụng, thanh điều hướng và ảnh chia sẻ. Mỗi dòng cho thấy biểu tượng ở ba cỡ, trong tab trình duyệt, dạng icon điện thoại và trên nền máy chiếu.</p>
+    <div class="how"><strong>Cách chọn:</strong> trả lời số phương án (1–5). Có thể ghép: "biểu tượng của 3, chữ của 5".</div>
+  </header>
+
+  <div id="options"></div>
+
+  <section class="foundation">
+    <div>
+      <p class="eyebrow">Nền tảng chung cho mọi phương án</p>
+      <h2>Màu, chữ và cách viết tên</h2>
+    </div>
+
+    <div>
+      <h3>Bảng màu</h3>
+      <div class="swatches">
+        <div class="sw"><div class="chip" style="background:#111111"></div><div class="meta"><span>Mực</span><code>#111111</code></div></div>
+        <div class="sw"><div class="chip" style="background:#dceeb1"></div><div class="meta"><span>Lime · kiểm tra</span><code>#DCEEB1</code></div></div>
+        <div class="sw"><div class="chip" style="background:#c9b8f5"></div><div class="meta"><span>Lilac · câu hỏi</span><code>#C9B8F5</code></div></div>
+        <div class="sw"><div class="chip" style="background:#f4ecd6"></div><div class="meta"><span>Cream · điểm danh</span><code>#F4ECD6</code></div></div>
+        <div class="sw"><div class="chip" style="background:#c8e6cd"></div><div class="meta"><span>Mint · học sinh</span><code>#C8E6CD</code></div></div>
+        <div class="sw"><div class="chip" style="background:#f3c9b6"></div><div class="meta"><span>Coral · máy chiếu</span><code>#F3C9B6</code></div></div>
+        <div class="sw"><div class="chip" style="background:#1f1d3d"></div><div class="meta"><span>Navy · nền tối</span><code>#1F1D3D</code></div></div>
+        <div class="sw"><div class="chip" style="background:#2a5bd7"></div><div class="meta"><span>Accent · liên kết</span><code>#2A5BD7</code></div></div>
+      </div>
+    </div>
+
+    <div>
+      <h3>Chữ</h3>
+      <div class="typo">
+        <div class="sample">
+          <span class="eyebrow">Be Vietnam Pro 700</span>
+          <span class="big">Lớp Học</span>
+          <span>Tên sản phẩm luôn viết hoa chữ cái đầu hai từ, có dấu, không viết tắt. Wordmark dùng đúng font này, giãn chữ −0.01em.</span>
+        </div>
+        <div class="sample">
+          <span class="eyebrow">JetBrains Mono 700 · mã lớp</span>
+          <span class="mono">DEM268</span>
+          <span>Mã lớp, đồng hồ, điểm số luôn đặt bằng mono giãn 0.2em. Đây là "chữ ký" thứ hai của thương hiệu, xuất hiện trên bảng, tờ in và máy chiếu.</span>
+        </div>
+        <div class="sample">
+          <span class="eyebrow">Khẩu hiệu</span>
+          <span class="big" style="font-size:22px">5 phút đầu giờ.</span>
+          <span>Ngắn, nói về lợi ích thời gian. Dùng dưới wordmark trên ảnh chia sẻ và tờ in, không dùng trong giao diện.</span>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <h3>Nên và không nên</h3>
+      <div class="dodont">
+        <div>
+          <h3><span class="dot" style="background:#1a8f43"></span> Nên</h3>
+          <ul>
+            <li>Biểu tượng luôn có vùng trống quanh bằng 1/4 cạnh của nó.</li>
+            <li>Trên nền tối dùng bản trắng; màu pastel giữ nguyên.</li>
+            <li>Favicon dùng riêng biểu tượng, không kèm chữ.</li>
+            <li>Wordmark đi cạnh biểu tượng, cách một khoảng bằng chiều cao chữ.</li>
+          </ul>
+        </div>
+        <div>
+          <h3><span class="dot" style="background:#c62828"></span> Không nên</h3>
+          <ul>
+            <li>Không đổi màu pastel sang màu bão hòa, không gradient, không bóng đổ lên biểu tượng.</li>
+            <li>Không xoay hay kéo dãn; không đặt biểu tượng lên ảnh không có lớp phủ.</li>
+            <li>Không viết "LopHoc", "Lop Hoc" hay "LỚP HỌC" trong wordmark.</li>
+            <li>Không dùng emoji thay biểu tượng.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="foot">Sau khi chọn, tôi sẽ xuất bộ file: SVG gốc, favicon.ico + PNG 16/32/180/192/512, icon PWA, ảnh chia sẻ 1200×630, và đưa wordmark lên thanh điều hướng.</div>
+</div>
+
+<script>
+  // Toàn bộ nội dung ở đây là hằng số trong file, không có dữ liệu người dùng.
+  const P = { lime: '#dceeb1', lilac: '#c9b8f5', cream: '#f4ecd6', mint: '#c8e6cd', coral: '#f3c9b6', navy: '#1f1d3d' };
+  const svg = (inner) => `<svg class="mark" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true">${inner}</svg>`;
+
+  const MARKS = {
+    1: (ink) => svg(`
+      <rect x="8" y="8" width="48" height="48" rx="12" fill="${P.lime}" transform="rotate(-6 32 32)"/>
+      <path d="M20 33l9 9 16-18" fill="none" stroke="${ink}" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>`),
+    2: (ink) => svg(`
+      <rect x="12" y="8" width="16" height="48" rx="6" fill="${P.lilac}"/>
+      <rect x="12" y="40" width="40" height="16" rx="6" fill="${P.lime}"/>
+      <circle cx="44" cy="20" r="8" fill="${ink}"/>`),
+    3: (ink) => svg(`
+      <rect x="6" y="6" width="52" height="52" rx="14" fill="${ink}"/>
+      <rect x="15" y="36" width="10" height="14" rx="3" fill="${P.mint}"/>
+      <rect x="27" y="18" width="10" height="32" rx="3" fill="${P.lime}"/>
+      <rect x="39" y="28" width="10" height="22" rx="3" fill="${P.cream}"/>`),
+    4: (ink) => svg(`
+      <path d="M16 10h32a8 8 0 0 1 8 8v22a8 8 0 0 1-8 8H30l-10 9v-9h-4a8 8 0 0 1-8-8V18a8 8 0 0 1 8-8z" fill="${ink}"/>
+      <circle cx="22" cy="29" r="5" fill="${P.mint}"/>
+      <circle cx="32" cy="29" r="5" fill="${P.lilac}"/>
+      <circle cx="42" cy="29" r="5" fill="${P.coral}"/>`),
+    5: () => svg(`
+      <rect x="6" y="15" width="52" height="34" rx="8" fill="${P.lime}" transform="rotate(-3 32 32)"/>
+      <text x="32" y="42" text-anchor="middle" font-family="'Be Vietnam Pro', system-ui, sans-serif" font-weight="800" font-size="26" letter-spacing="-1" fill="#111111">LH</text>`),
+  };
+
+  const OPTIONS = [
+    {
+      n: 1, name: 'Giấy nhớ đã tích',
+      idea: 'Tờ giấy nhớ lime dán hơi nghiêng, trên đó là một dấu tích đậm: điểm danh xong, bài nộp xong. Là biểu tượng của khối màu và giấy nhớ đang dùng khắp trang chủ.',
+      says: ['Điểm danh', 'Hoàn thành', 'Thân thiện'],
+      pros: ['Rõ ở 16px vì chỉ có một hình và một nét', 'Nối trực tiếp với motif giấy nhớ trên landing'],
+      cons: ['Dấu tích là hình phổ biến, cần wordmark đi kèm để khác biệt'],
+      wordHighlight: false, darkIcon: false,
+    },
+    {
+      n: 2, name: 'Chữ L xếp khối',
+      idea: 'Chữ L ghép từ hai khối lilac và lime, cùng một chấm mực là học sinh vừa vào lớp. Đọc được cả chữ cái đầu của tên lẫn ngôn ngữ khối màu.',
+      says: ['Chữ cái L', 'Khối màu', 'Xây dựng'],
+      pros: ['Monogram riêng, khó nhầm với sản phẩm khác', 'Pastel + mực đúng hệ màu'],
+      cons: ['Ở 16px hai khối gần như thành một hình, cần bản favicon đơn giản hóa'],
+      wordHighlight: false, darkIcon: false,
+    },
+    {
+      n: 3, name: 'Bảng xếp hạng',
+      idea: 'Ô vuông mực như màn máy chiếu, ba cột pastel là phân bố đáp án và bục xếp hạng. Nói thẳng về khoảnh khắc "kết quả hiện ngay" mà giáo viên thích nhất.',
+      says: ['Kết quả', 'Máy chiếu', 'Thi đua'],
+      pros: ['Nổi bật nhất trong tab trình duyệt nhờ nền mực', 'Bản navy chỉ cần đổi khung sang trắng'],
+      cons: ['Hơi giống biểu tượng thống kê chung nếu đứng một mình'],
+      wordHighlight: false, darkIcon: true,
+    },
+    {
+      n: 4, name: 'Lớp học ba chấm',
+      idea: 'Bong bóng lớp học với ba chấm mint, lilac, coral: học sinh đang vào lớp, đang trả lời. Ấm và vui, hợp với trang học sinh trên điện thoại.',
+      says: ['Học sinh', 'Tham gia', 'Trò chuyện'],
+      pros: ['Thân thiện với học sinh, dễ làm sticker và mascot', 'Ba màu = ba tính năng của hệ màu'],
+      cons: ['Bong bóng chat dễ liên tưởng tới ứng dụng nhắn tin'],
+      wordHighlight: false, darkIcon: true,
+    },
+    {
+      n: 5, name: 'LH bút dạ quang',
+      idea: 'Hai chữ LH trên vệt bút dạ quang lime, y như cụm từ được tô sáng trong tiêu đề trang chủ. Thương hiệu nằm ở chữ và vệt màu, không cần hình vẽ.',
+      says: ['Tên viết tắt', 'Ghi chú', 'Học tập'],
+      pros: ['Nhất quán tuyệt đối với tiêu đề hero', 'Wordmark "Lớp Học" với "Học" tô lime là lockup mạnh'],
+      cons: ['Chữ nhỏ ở 16px khó đọc, favicon nên chỉ giữ vệt lime + chữ L'],
+      wordHighlight: true, darkIcon: false,
+    },
+  ];
+
+  const word = (highlight) => highlight ? 'Lớp <em>Học</em>' : 'Lớp Học';
+  const mk = (n, ink, size) => `<span style="width:${size}px;height:${size}px;display:block">${MARKS[n](ink)}</span>`;
+  const tile = (cls, cap, inner) => `<div class="tile ${cls}"><div>${inner}</div><span class="cap">${cap}</span></div>`;
+  const sized = (n) => `
+    <div class="sizes">
+      <figure>${mk(n, '#111111', 64)}<figcaption>64</figcaption></figure>
+      <figure>${mk(n, '#111111', 32)}<figcaption>32</figcaption></figure>
+      <figure>${mk(n, '#111111', 16)}<figcaption>16</figcaption></figure>
+    </div>`;
+
+  const markup = OPTIONS.map((o) => `
+    <section class="option" id="pa-${o.n}">
+      <div class="option-head"><span class="num">PHƯƠNG ÁN ${o.n}</span><h2>${o.name}</h2></div>
+      <div class="option-body">
+        <div class="board">
+          ${tile('', 'Biểu tượng', mk(o.n, '#111111', 96))}
+          ${tile('wide', 'Lockup ngang', `<span class="lockup">${mk(o.n, '#111111', 44)}<span class="word">${word(o.wordHighlight)}</span></span>`)}
+          ${tile('soft', 'Ba cỡ', sized(o.n))}
+          ${tile('soft', 'Tab trình duyệt', `<span class="tab">${MARKS[o.n]('#111111')}Lớp Học</span>`)}
+          ${tile('', 'Icon điện thoại', `<span class="appicon" style="background:${o.darkIcon ? '#111111' : '#ffffff'}">${mk(o.n, o.darkIcon ? '#ffffff' : '#111111', 60)}</span>`)}
+          ${tile('navy', 'Trên nền máy chiếu', `<span class="lockup">${mk(o.n, '#ffffff', 40)}<span class="word">${word(o.wordHighlight)}</span></span>`)}
+        </div>
+        <div class="why">
+          <p>${o.idea}</p>
+          <div class="tags">${o.says.map((s) => `<span class="tag">${s}</span>`).join('')}</div>
+          <ul>${o.pros.map((s) => `<li><span class="tag fit">Hợp</span> ${s}</li>`).join('')}${o.cons.map((s) => `<li><span class="tag warn">Lưu ý</span> ${s}</li>`).join('')}</ul>
+        </div>
+      </div>
+    </section>`).join('');
+
+  const root = document.getElementById('options');
+  root.append(document.createRange().createContextualFragment(markup));
+</script>
