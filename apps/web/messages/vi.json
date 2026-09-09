@@ -169,7 +169,8 @@
     "facebook": "Tiếp tục với Facebook",
     "facebookError": "Đăng nhập Facebook không thành công. Hãy chắc tài khoản Facebook có email và cho phép chia sẻ email.",
     "orEmail": "hoặc dùng email",
-    "socialTermsNote": "Khi tiếp tục với Google hoặc Facebook, bạn đồng ý với Điều khoản sử dụng và Chính sách bảo mật."
+    "socialTermsNote": "Khi tiếp tục với Google hoặc Facebook, bạn đồng ý với Điều khoản sử dụng và Chính sách bảo mật.",
+    "providerDisabled": "Đăng nhập bằng {provider} chưa được bật trên máy chủ này. Hãy dùng email hoặc liên hệ quản trị viên."
   },
   "Shell": {
     "classes": "Lớp học",

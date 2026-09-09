@@ -1,40 +1,51 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
+import { useState } from 'react';
+import { Alert } from '@/components/ui/alert';
 import { cn } from '@/components/ui/cn';
 import { apiUrl } from '@/lib/api';
 import { useAuthProviders } from '@/lib/auth';
 
+type Provider = 'google' | 'facebook';
+
 /**
- * Nút đăng nhập Google / Facebook cho giáo viên. Chỉ hiện nhà cung cấp đã cấu hình ở API
- * (`GET /auth/providers`), vì bấm vào nhà cung cấp chưa cấu hình sẽ chỉ nhận lỗi.
+ * Nút đăng nhập Google / Facebook cho giáo viên. Luôn hiển thị để giao diện nhất quán;
+ * nhà cung cấp chưa cấu hình ở API (`GET /auth/providers`) thì bấm vào sẽ báo chưa bật
+ * thay vì chuyển sang trang lỗi của API.
  */
 export function SocialButtons({ className }: { className?: string }) {
   const t = useTranslations('Auth');
   const providers = useAuthProviders();
-  const google = providers.data?.google ?? false;
-  const facebook = providers.data?.facebook ?? false;
-  if (!google && !facebook) return null;
+  const [notice, setNotice] = useState<string | null>(null);
 
-  const both = google && facebook;
+  const enabled = (p: Provider) => providers.data?.[p] ?? false;
   const base =
     'flex h-12 w-full cursor-pointer items-center justify-center gap-2.5 rounded-full border border-hairline bg-canvas font-semibold text-ink transition-colors hover:bg-surface-soft focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent';
 
+  function onClick(p: Provider, e: React.MouseEvent<HTMLAnchorElement>) {
+    if (providers.isPending || enabled(p)) return;
+    e.preventDefault();
+    const label = p === 'google' ? 'Google' : 'Facebook';
+    const hint =
+      process.env.NODE_ENV === 'development'
+        ? ` (${p === 'google' ? 'GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET' : 'FACEBOOK_APP_ID / FACEBOOK_APP_SECRET'} trong apps/api/.env)`
+        : '';
+    setNotice(t('providerDisabled', { provider: label }) + hint);
+  }
+
   return (
     <div className={cn('space-y-3', className)}>
-      <div className={cn('grid gap-3', both && 'sm:grid-cols-2')}>
-        {google && (
-          <a href={apiUrl('/auth/google')} className={base}>
-            <GoogleIcon />
-            {both ? 'Google' : t('google')}
-          </a>
-        )}
-        {facebook && (
-          <a href={apiUrl('/auth/facebook')} className={base}>
-            <FacebookIcon />
-            {both ? 'Facebook' : t('facebook')}
-          </a>
-        )}
+      {notice && <Alert variant="warning">{notice}</Alert>}
+      <div className="grid gap-3 sm:grid-cols-2">
+        <a href={apiUrl('/auth/google')} className={base} onClick={(e) => onClick('google', e)}>
+          <GoogleIcon />
+          Google
+        </a>
+        <a href={apiUrl('/auth/facebook')} className={base} onClick={(e) => onClick('facebook', e)}>
+          <FacebookIcon />
+          Facebook
+        </a>
       </div>
       <p className="text-center text-xs text-ink-muted">{t('socialTermsNote')}</p>
     </div>
@@ -44,8 +55,6 @@ export function SocialButtons({ className }: { className?: string }) {
 /** Đường kẻ "hoặc dùng email" đặt giữa nút mạng xã hội và form. */
 export function OrDivider() {
   const t = useTranslations('Auth');
-  const providers = useAuthProviders();
-  if (!providers.data?.google && !providers.data?.facebook) return null;
   return (
     <div className="flex items-center gap-3 font-mono text-[11px] uppercase tracking-[0.08em] text-ink-muted">
       <span className="h-px flex-1 bg-hairline" />
