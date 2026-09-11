@@ -79,7 +79,7 @@ Build-graph notes:
 - Two global guards, both of which skip non-HTTP contexts because the Socket.IO gateway authenticates on connect:
   - `JwtAuthGuard`: default is a teacher access JWT (cookie `lh_at` or Bearer) exposed via `@CurrentTeacher()`. `@Public()` skips auth. `@StudentRoute()` expects a student device token (cookie `lh_st` or Bearer; JWT with `kind: 'student'`, checked against `StudentDevice.revokedAt`) exposed via `@CurrentStudent()` as `{ deviceId, studentId, classId }`.
   - `HttpThrottlerGuard`: 120 req/min/IP globally; auth endpoints use `@Throttle(AUTH_THROTTLE)` for 10/min.
-- Env is a zod schema in `config/env.ts`, validated at boot; read with `ConfigService<Env, true>` and `{ infer: true }`. Driver-style switches select in-memory implementations for tests and single-instance runs: `MAIL_TRANSPORT`, `STORAGE_DRIVER`, `AI_PROVIDER`, `QUEUE_DRIVER` (bullmq | inline), `REALTIME_ADAPTER` (redis | memory), `WORKER_INLINE`.
+- Env is a zod schema in `config/env.ts`, validated at boot; read with `ConfigService<Env, true>` and `{ infer: true }`. Driver-style switches select in-memory implementations for tests and single-instance runs: `MAIL_TRANSPORT` (`smtp` = Mailpit in dev, `resend` = Resend HTTPS API for production and needs `RESEND_API_KEY` plus a verified sending domain in `MAIL_FROM`, `memory` = test outbox), `STORAGE_DRIVER`, `AI_PROVIDER`, `QUEUE_DRIVER` (bullmq | inline), `REALTIME_ADAPTER` (redis | memory), `WORKER_INLINE`.
 
 ### Module conventions
 

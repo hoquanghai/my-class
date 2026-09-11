@@ -26,6 +26,12 @@ describe('validateEnv', () => {
     expect(() => validateEnv({ JWT_SECRET: 'x'.repeat(32) })).toThrow(/DATABASE_URL/);
   });
 
+  it('MAIL_TRANSPORT=resend cần RESEND_API_KEY', () => {
+    expect(() => validateEnv({ ...base, MAIL_TRANSPORT: 'resend' })).toThrow(/RESEND_API_KEY/);
+    const env = validateEnv({ ...base, MAIL_TRANSPORT: 'resend', RESEND_API_KEY: 're_x' });
+    expect(env.MAIL_TRANSPORT).toBe('resend');
+  });
+
   it('từ chối JWT_SECRET ngắn', () => {
     expect(() => validateEnv({ ...base, JWT_SECRET: 'short' })).toThrow(/JWT_SECRET/);
   });
