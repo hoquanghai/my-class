@@ -14,12 +14,21 @@ type Provider = 'google' | 'facebook';
  * nhà cung cấp chưa cấu hình ở API (`GET /auth/providers`) thì bấm vào sẽ báo chưa bật
  * thay vì chuyển sang trang lỗi của API.
  */
-export function SocialButtons({ className }: { className?: string }) {
+export function SocialButtons({
+  className,
+  next,
+}: {
+  className?: string;
+  /** Trang trong app cần quay lại sau khi đăng nhập (API giữ trong cookie của luồng OAuth). */
+  next?: string | null;
+}) {
   const t = useTranslations('Auth');
   const providers = useAuthProviders();
   const [notice, setNotice] = useState<string | null>(null);
 
   const enabled = (p: Provider) => providers.data?.[p] ?? false;
+  const startUrl = (p: Provider) =>
+    next ? `${apiUrl(`/auth/${p}`)}?next=${encodeURIComponent(next)}` : apiUrl(`/auth/${p}`);
   const base =
     'flex h-12 w-full cursor-pointer items-center justify-center gap-2.5 rounded-full border border-hairline bg-canvas font-semibold text-ink transition-colors hover:bg-surface-soft focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent';
 
@@ -39,7 +48,7 @@ export function SocialButtons({ className }: { className?: string }) {
       {notice && <Alert variant="warning">{notice}</Alert>}
       <div className="grid gap-3 sm:grid-cols-2">
         <a
-          href={apiUrl('/auth/google')}
+          href={startUrl('google')}
           className={base}
           data-enabled={String(enabled('google'))}
           data-pending={String(providers.isPending)}
@@ -49,7 +58,7 @@ export function SocialButtons({ className }: { className?: string }) {
           Google
         </a>
         <a
-          href={apiUrl('/auth/facebook')}
+          href={startUrl('facebook')}
           className={base}
           data-enabled={String(enabled('facebook'))}
           data-pending={String(providers.isPending)}

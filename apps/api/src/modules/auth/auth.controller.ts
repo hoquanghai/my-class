@@ -38,11 +38,15 @@ import { TeachersService } from '../teachers/teachers.service.js';
 import { AuthService, type RequestMeta } from './auth.service.js';
 import {
   clearAuthCookies,
+  clearOAuthNextCookie,
   clearOAuthStateCookie,
+  OAUTH_NEXT_COOKIE,
   OAUTH_STATE_COOKIE,
   readCookie,
   REFRESH_COOKIE,
+  safeNextPath,
   setAuthCookies,
+  setOAuthNextCookie,
   setOAuthStateCookie,
 } from './cookies.js';
 import { FacebookOAuthService } from './facebook-oauth.service.js';
@@ -198,8 +202,8 @@ export class AuthController {
 
   @Public()
   @Get('google')
-  googleStart(@Res() res: Response): void {
-    this.oauthStart(this.google, res);
+  googleStart(@Query('next') next: string | undefined, @Res() res: Response): void {
+    this.oauthStart(this.google, res, next);
   }
 
   @Public()
@@ -216,8 +220,8 @@ export class AuthController {
 
   @Public()
   @Get('facebook')
-  facebookStart(@Res() res: Response): void {
-    this.oauthStart(this.facebook, res);
+  facebookStart(@Query('next') next: string | undefined, @Res() res: Response): void {
+    this.oauthStart(this.facebook, res, next);
   }
 
   @Public()
@@ -232,8 +236,11 @@ export class AuthController {
     return this.oauthCallback(this.facebook, { code, state, error }, req, res);
   }
 
-  /** Bắt đầu luồng OAuth: sinh state chống CSRF, lưu cookie rồi chuyển hướng tới nhà cung cấp. */
-  private oauthStart(service: OAuthProviderService, res: Response): void {
+  /**
+   * Bắt đầu luồng OAuth: sinh state chống CSRF, lưu cookie rồi chuyển hướng tới nhà cung cấp.
+   * `next` (trang trong app, ví dụ /app/upgrade) được giữ trong cookie để callback quay lại đúng chỗ.
+   */
+  private oauthStart(service: OAuthProviderService, res: Response, next?: string): void {
     if (!service.isConfigured()) {
       throw new ServiceUnavailableException(
         `Đăng nhập ${providerLabel(service.provider)} chưa được cấu hình`,
@@ -241,6 +248,9 @@ export class AuthController {
     }
     const state = randomToken(16);
     setOAuthStateCookie(res, state, this.secure);
+    const target = safeNextPath(next);
+    if (target) setOAuthNextCookie(res, target, this.secure);
+    else clearOAuthNextCookie(res, this.secure);
     res.redirect(service.authorizeUrl(state));
   }
 
@@ -252,7 +262,9 @@ export class AuthController {
     res: Response,
   ): Promise<void> {
     const expectedState = readCookie(req, OAUTH_STATE_COOKIE);
+    const next = safeNextPath(readCookie(req, OAUTH_NEXT_COOKIE)) ?? '/app/classes';
     clearOAuthStateCookie(res, this.secure);
+    clearOAuthNextCookie(res, this.secure);
     const failure = `${this.appUrl}/login?error=${service.provider}`;
 
     if (query.error || !query.code || !query.state || query.state !== expectedState) {
@@ -263,7 +275,7 @@ export class AuthController {
       const profile = await service.exchangeCode(query.code);
       const result = await this.auth.loginWithOAuth(service.provider, profile, meta(req));
       setAuthCookies(res, result, this.secure);
-      res.redirect(`${this.appUrl}/app/classes`);
+      res.redirect(`${this.appUrl}${next}`);
     } catch {
       res.redirect(failure);
     }

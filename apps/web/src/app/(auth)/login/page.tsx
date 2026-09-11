@@ -15,16 +15,14 @@ import { Input } from '@/components/ui/input';
 import { apiFetch, errorMessage } from '@/lib/api';
 import { ME_QUERY_KEY } from '@/lib/auth';
 import { type FieldErrors, validate } from '@/lib/forms';
-
-function safeNext(next: string | null): string {
-  return next && next.startsWith('/') && !next.startsWith('//') ? next : '/app/classes';
-}
+import { safeNext, withNext } from '@/lib/next-path';
 
 function LoginForm() {
   const t = useTranslations('Auth');
   const router = useRouter();
   const params = useSearchParams();
   const queryClient = useQueryClient();
+  const next = params.get('next');
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -52,7 +50,7 @@ function LoginForm() {
         body: v.data,
       });
       queryClient.setQueryData(ME_QUERY_KEY, res.teacher);
-      router.replace(safeNext(params.get('next')));
+      router.replace(safeNext(next));
     } catch (err) {
       setServerError(errorMessage(err));
       setLoading(false);
@@ -68,7 +66,7 @@ function LoginForm() {
 
       {serverError && <Alert variant="error">{serverError}</Alert>}
 
-      <SocialButtons />
+      <SocialButtons next={next} />
       <OrDivider />
 
       <form onSubmit={onSubmit} className="space-y-4" noValidate>
@@ -111,7 +109,7 @@ function LoginForm() {
       <p className="text-center text-sm text-ink-muted">
         {t('noAccount')}{' '}
         <Link
-          href="/signup"
+          href={withNext('/signup', next)}
           className="font-semibold text-accent underline-offset-4 hover:underline"
         >
           {t('signupLink')}

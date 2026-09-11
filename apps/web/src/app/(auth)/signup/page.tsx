@@ -4,8 +4,8 @@ import { signupSchema, type TeacherDto } from '@lophoc/shared';
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { type FormEvent, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { type FormEvent, Suspense, useState } from 'react';
 import { PasswordInput } from '@/components/auth/password-input';
 import { OrDivider, SocialButtons } from '@/components/auth/social-buttons';
 import { Alert } from '@/components/ui/alert';
@@ -15,11 +15,15 @@ import { Input } from '@/components/ui/input';
 import { apiFetch, errorMessage } from '@/lib/api';
 import { ME_QUERY_KEY } from '@/lib/auth';
 import { type FieldErrors, validate } from '@/lib/forms';
+import { safeNext, withNext } from '@/lib/next-path';
 
-export default function SignupPage() {
+function SignupForm() {
   const t = useTranslations('Auth');
   const router = useRouter();
+  const params = useSearchParams();
   const queryClient = useQueryClient();
+  // Từ bảng giá (?plan=gold) → sau khi đăng ký đưa thẳng tới trang gói dịch vụ
+  const next = safeNext(params.get('next'), params.get('plan') ? '/app/upgrade' : '/app/classes');
 
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -42,7 +46,7 @@ export default function SignupPage() {
         body: v.data,
       });
       queryClient.setQueryData(ME_QUERY_KEY, res.teacher);
-      router.replace('/app/classes');
+      router.replace(next);
     } catch (err) {
       setServerError(errorMessage(err));
       setLoading(false);
@@ -58,7 +62,7 @@ export default function SignupPage() {
 
       {serverError && <Alert variant="error">{serverError}</Alert>}
 
-      <SocialButtons />
+      <SocialButtons next={next} />
       <OrDivider />
 
       <form onSubmit={onSubmit} className="space-y-4" noValidate>
@@ -147,12 +151,20 @@ export default function SignupPage() {
       <p className="text-center text-sm text-ink-muted">
         {t('haveAccount')}{' '}
         <Link
-          href="/login"
+          href={withNext('/login', next)}
           className="font-semibold text-accent underline-offset-4 hover:underline"
         >
           {t('loginLink')}
         </Link>
       </p>
     </div>
+  );
+}
+
+export default function SignupPage() {
+  return (
+    <Suspense>
+      <SignupForm />
+    </Suspense>
   );
 }

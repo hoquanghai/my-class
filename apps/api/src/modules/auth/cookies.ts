@@ -3,6 +3,8 @@ import type { CookieOptions, Request, Response } from 'express';
 export const ACCESS_COOKIE = 'lh_at';
 export const REFRESH_COOKIE = 'lh_rt';
 export const OAUTH_STATE_COOKIE = 'lh_oauth_state';
+/** Trang trong app cần quay lại sau khi đăng nhập Google/Facebook (chỉ nhận đường dẫn nội bộ). */
+export const OAUTH_NEXT_COOKIE = 'lh_oauth_next';
 /** Cookie gợi ý "đang có phiên" cho proxy của web (không httpOnly, không chứa bí mật). */
 export const SESSION_HINT_COOKIE = 'lh_session';
 
@@ -55,6 +57,25 @@ export function setOAuthStateCookie(res: Response, state: string, secure: boolea
 
 export function clearOAuthStateCookie(res: Response, secure: boolean): void {
   res.clearCookie(OAUTH_STATE_COOKIE, { ...baseOptions(secure), path: AUTH_COOKIE_PATH });
+}
+
+/** Chỉ chấp nhận đường dẫn nội bộ (bắt đầu bằng một dấu "/") để không thành open redirect. */
+export function safeNextPath(next: string | undefined): string | undefined {
+  if (!next || next.length > 300) return undefined;
+  if (!next.startsWith('/') || next.startsWith('//') || next.startsWith('/\\')) return undefined;
+  return next;
+}
+
+export function setOAuthNextCookie(res: Response, next: string, secure: boolean): void {
+  res.cookie(OAUTH_NEXT_COOKIE, next, {
+    ...baseOptions(secure),
+    path: AUTH_COOKIE_PATH,
+    maxAge: OAUTH_STATE_TTL_SEC * 1000,
+  });
+}
+
+export function clearOAuthNextCookie(res: Response, secure: boolean): void {
+  res.clearCookie(OAUTH_NEXT_COOKIE, { ...baseOptions(secure), path: AUTH_COOKIE_PATH });
 }
 
 export function readCookie(req: Request, name: string): string | undefined {
