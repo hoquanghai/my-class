@@ -1,6 +1,7 @@
 'use client';
 
 import {
+  mediaRef,
   PARSE_ISSUE_LABELS,
   parseQuestions,
   QUESTION_TYPE_LABELS,
@@ -161,7 +162,8 @@ function CardEditor({
     const ta = e.currentTarget;
     const { selectionStart, selectionEnd } = ta;
     const result = await upload.mutateAsync(file).catch(() => null);
-    if (result) insertAt(`\n![](${result.url})\n`, selectionStart, selectionEnd);
+    // Lưu tham chiếu `media:<key>`, không lưu URL của nhà cung cấp (xem packages/shared/src/media.ts)
+    if (result) insertAt(`\n![](${mediaRef(result.key)})\n`, selectionStart, selectionEnd);
   }
 
   return (

@@ -66,7 +66,7 @@ describe('StorageService', () => {
   it('memory: lưu trong RAM và trả URL do API phục vụ', async () => {
     const s = service({ ...spaces, STORAGE_DRIVER: 'memory' });
     const url = await s.put('t/a.png', Buffer.from('x'), 'image/png');
-    expect(url).toBe('http://localhost:4000/api/media/mem/t/a.png');
+    expect(url).toBe('http://localhost:4000/api/media/f/t/a.png');
     expect(await s.get('t/a.png')).toEqual({ body: Buffer.from('x'), mime: 'image/png' });
     await s.remove('t/a.png');
     expect(s.getFromMemory('t/a.png')).toBeUndefined();

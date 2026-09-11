@@ -1,5 +1,6 @@
 export * from './class-code.js';
 export * from './education.js';
+export * from './media.js';
 export * from './plans.js';
 export * from './billing/schemas.js';
 export * from './billing/types.js';

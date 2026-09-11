@@ -1,9 +1,10 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import {
+  mediaRef,
   type ParsedQuestion,
+  parseQuestions,
   type ParseResult,
   type ParserLine,
-  parseQuestions,
 } from '@lophoc/shared';
 import mammoth from 'mammoth';
 import { HTMLElement, type Node, NodeType, parse as parseHtml } from 'node-html-parser';
@@ -72,10 +73,10 @@ export function htmlToParserLines(html: string): ParserLine[] {
   return lines;
 }
 
-/** Ảnh trong Word được nhúng vào Markdown của đề/phương án để lưới hiển thị ngay. */
+/** Ảnh trong Word được nhúng vào Markdown của đề/phương án dưới dạng tham chiếu `media:<key>`. */
 function embedImages(q: ParsedQuestion): ParsedQuestion {
-  const withImg = (md: string, urls: string[]) =>
-    urls.length ? `${md}\n\n${urls.map((u) => `![](${u})`).join('\n')}`.trim() : md;
+  const withImg = (md: string, refs: string[]) =>
+    refs.length ? `${md}\n\n${refs.map((r) => `![](${r})`).join('\n')}`.trim() : md;
   return {
     ...q,
     stemMd: withImg(q.stemMd, q.imageKeys),
@@ -108,11 +109,11 @@ export class DocxImportService {
             if (!ext) return { src: '' };
             const body = await image.readAsBuffer();
             const key = this.storage.buildKey(teacherId, ext);
-            const url = await this.storage.put(key, body, mime);
+            await this.storage.put(key, body, mime);
             await this.prisma.mediaFile.create({
               data: { teacherId, key, mime, sizeBytes: body.length },
             });
-            return { src: url };
+            return { src: mediaRef(key) };
           }),
         },
       );

@@ -89,7 +89,7 @@ export class StorageService {
 
     if (config.get('STORAGE_DRIVER', { infer: true }) === 'memory') {
       this.client = null;
-      this.publicUrl = `${config.get('API_URL', { infer: true })}/api/media/mem`;
+      this.publicUrl = `${config.get('API_URL', { infer: true })}/api/media/f`;
       return;
     }
     this.client = new S3Client({
@@ -174,6 +174,11 @@ export class StorageService {
       return;
     }
     await this.client.send(new DeleteObjectCommand({ Bucket: this.bucket, Key: key }));
+  }
+
+  /** URL thật trên Spaces để chuyển hướng tới; null khi đang dùng driver memory. */
+  externalUrl(key: string): string | null {
+    return this.client ? this.url(key) : null;
   }
 
   /** Ném lỗi nếu khóa sai hoặc Space không tồn tại; dùng cho lệnh kiểm tra kết nối. */

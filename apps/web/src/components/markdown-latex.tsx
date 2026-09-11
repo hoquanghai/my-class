@@ -1,11 +1,34 @@
 'use client';
 
-import ReactMarkdown from 'react-markdown';
+import { mediaRefKey } from '@lophoc/shared';
+import type { ComponentProps } from 'react';
+import ReactMarkdown, { defaultUrlTransform } from 'react-markdown';
 import rehypeKatex from 'rehype-katex';
 import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
 import { cn } from '@/components/ui/cn';
+import { apiUrl } from '@/lib/api';
 import 'katex/dist/katex.min.css';
+
+/**
+ * Ảnh trong đề được lưu dạng `media:<key>` (xem `packages/shared/src/media.ts`); địa chỉ thật
+ * dựng lúc hiển thị qua `GET /api/media/f/<key>`. Ảnh có URL tuyệt đối (nội dung cũ, ảnh dán từ
+ * nơi khác) giữ nguyên.
+ */
+function MarkdownImage({ src, alt, ...rest }: ComponentProps<'img'>) {
+  const key = typeof src === 'string' ? mediaRefKey(src) : null;
+  return (
+    // eslint-disable-next-line @next/next/no-img-element -- kích thước ảnh do giáo viên nhập, host có thể đổi nên không dùng next/image
+    <img src={key ? apiUrl(`/media/f/${key}`) : src} alt={alt ?? ''} loading="lazy" {...rest} />
+  );
+}
+
+const COMPONENTS = { img: MarkdownImage };
+
+/** react-markdown chặn mọi giao thức lạ; cho `media:` đi qua, phần còn lại giữ nguyên bộ lọc mặc định. */
+function urlTransform(url: string): string {
+  return mediaRefKey(url) ? url : defaultUrlTransform(url);
+}
 
 /** Render Markdown + LaTeX (`$…$`, `$$…$$`) dùng cho đề bài, phương án, lời giải. */
 export function MarkdownLatex({ children, className }: { children: string; className?: string }) {
@@ -17,7 +40,12 @@ export function MarkdownLatex({ children, className }: { children: string; class
         className,
       )}
     >
-      <ReactMarkdown remarkPlugins={[remarkGfm, remarkMath]} rehypePlugins={[rehypeKatex]}>
+      <ReactMarkdown
+        remarkPlugins={[remarkGfm, remarkMath]}
+        rehypePlugins={[rehypeKatex]}
+        urlTransform={urlTransform}
+        components={COMPONENTS}
+      >
         {children}
       </ReactMarkdown>
     </div>

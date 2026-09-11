@@ -265,7 +265,7 @@ describe('Questions (e2e)', () => {
       .expect(201);
     expect(ok.body.key).toMatch(/\.png$/);
     expect(ok.body.url).toContain(ok.body.key);
-    const served = await http().get(`/api/media/mem/${ok.body.key}`).expect(200);
+    const served = await http().get(`/api/media/f/${ok.body.key}`).expect(200);
     expect(served.headers['content-type']).toBe('image/png');
 
     await http()

@@ -22,6 +22,8 @@ import { PrismaService } from '../../prisma/prisma.service.js';
 import { IMAGE_MIME_EXT, sniffImageMime, StorageService } from '../storage/storage.service.js';
 
 const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
+/** Trình duyệt nhớ đích chuyển hướng 1 giờ; đủ để không hỏi lại liên tục, vẫn đổi được cấu hình nhanh. */
+const REDIRECT_CACHE_CONTROL = 'public, max-age=3600';
 
 interface UploadedImage {
   buffer: Buffer;
@@ -55,11 +57,21 @@ export class MediaController {
     return { key, url };
   }
 
-  /** Phục vụ file khi STORAGE_DRIVER=memory (chỉ test). */
+  /**
+   * Phục vụ file theo key, dùng cho tham chiếu `media:<key>` trong nội dung câu hỏi.
+   * Driver `spaces`: chuyển hướng sang URL công khai (đổi nhà cung cấp chỉ cần đổi cấu hình,
+   * nội dung cũ không phải sửa). Driver `memory`: trả thẳng bytes.
+   */
   @Public()
-  @Get('mem/*path')
-  serveMemory(@Param('path') path: string | string[], @Res() res: Response): void {
+  @Get('f/*path')
+  serve(@Param('path') path: string | string[], @Res() res: Response): void {
     const key = Array.isArray(path) ? path.join('/') : path;
+    const target = this.storage.externalUrl(key);
+    if (target) {
+      res.setHeader('Cache-Control', REDIRECT_CACHE_CONTROL);
+      res.redirect(302, target);
+      return;
+    }
     const found = this.storage.getFromMemory(key);
     if (!found) throw new NotFoundException();
     res.setHeader('Content-Type', found.mime);
