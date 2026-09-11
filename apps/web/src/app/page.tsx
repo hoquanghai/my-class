@@ -12,11 +12,13 @@ import { Footer } from '@/components/marketing/footer';
 import { Showcase } from '@/components/marketing/showcase';
 import { AttendanceMock } from '@/components/marketing/mocks';
 import { Eyebrow, PillLink } from '@/components/marketing/primitives';
+import { PricingTable } from '@/components/pricing/pricing-table';
 import { TopNav } from '@/components/marketing/top-nav';
 
 const container = 'mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8';
 export default function LandingPage() {
   const t = useTranslations('Landing');
+  const tp = useTranslations('Pricing');
   const icons = [FileText, Smartphone, ChartColumn];
   return (
     <>
@@ -120,29 +122,12 @@ export default function LandingPage() {
           </div>
         </section>
         <section id="mien-phi" className={`${container} scroll-mt-24 py-16 sm:py-24`}>
-          <div className="grid gap-8 rounded-block bg-block-navy p-6 text-white sm:p-10 lg:grid-cols-2 lg:gap-16 lg:p-12">
-            <div>
-              <Eyebrow className="text-white/70">{t('pricing.eyebrow')}</Eyebrow>
-              <h2 className="type-h2 mt-4">{t('pricing.title')}</h2>
-              <p className="type-lead mt-5 text-white/85">{t('pricing.body')}</p>
-              <p className="mt-8 text-6xl font-bold tracking-tight">{t('pricing.price')}</p>
-              <p className="mt-2 text-sm text-white/70">{t('pricing.unit')}</p>
-            </div>
-            <div className="rounded-card bg-white p-6 text-ink sm:p-8">
-              <ul className="space-y-4">
-                {[0, 1, 2, 3, 4].map((i) => (
-                  <li key={i} className="flex gap-3 text-sm leading-relaxed sm:text-base">
-                    <Check className="mt-0.5 size-5 shrink-0 text-accent" aria-hidden="true" />
-                    {t(`pricing.items.${i}`)}
-                  </li>
-                ))}
-              </ul>
-              <PillLink href="/signup" className="mt-8 w-full px-3">
-                {t('pricing.cta')}
-                <ArrowRight className="size-4 shrink-0" aria-hidden="true" />
-              </PillLink>
-            </div>
+          <div className="mx-auto max-w-2xl text-center">
+            <Eyebrow className="text-ink-muted">{tp('eyebrow')}</Eyebrow>
+            <h2 className="type-h2 mt-3">{tp('title')}</h2>
+            <p className="type-lead mt-4 text-ink-muted">{tp('body')}</p>
           </div>
+          <PricingTable variant="marketing" className="mt-10" />
         </section>
         <section id="faq" className={`${container} scroll-mt-24 pb-16 sm:pb-24`}>
           <div className="mx-auto max-w-3xl">

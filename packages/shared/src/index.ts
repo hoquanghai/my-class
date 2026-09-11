@@ -1,5 +1,6 @@
 export * from './class-code.js';
 export * from './education.js';
+export * from './plans.js';
 export * from './auth/schemas.js';
 export * from './classes/schemas.js';
 export * from './classes/types.js';

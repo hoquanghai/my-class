@@ -6,7 +6,7 @@
       "menu": "Mở menu",
       "features": "Tính năng",
       "showcase": "Lớp học mẫu",
-      "pricing": "Gói miễn phí",
+      "pricing": "Bảng giá",
       "faq": "Hỏi đáp",
       "login": "Đăng nhập",
       "cta": "Bắt đầu miễn phí"
@@ -642,32 +642,12 @@
     "passwordChanged": "Đã đổi mật khẩu. Các thiết bị khác sẽ phải đăng nhập lại."
   },
   "Upgrade": {
-    "title": "Nâng cấp gói",
-    "subtitle": "Gói miễn phí đủ cho một vài lớp nhỏ. Gói Trung tâm mở rộng giới hạn cho giáo viên dạy nhiều lớp và các trung tâm.",
+    "title": "Gói dịch vụ",
+    "subtitle": "Gói miễn phí đủ cho vài lớp nhỏ. Gold dành cho giáo viên dạy nhiều lớp, Platinum cho trung tâm và người dùng AI nhiều.",
     "usageTitle": "Mức đang dùng",
     "usageStudents": "Học sinh (tất cả các lớp)",
     "usageClasses": "Lớp học",
-    "currentPlan": "Gói hiện tại",
-    "freeName": "Miễn phí",
-    "freePrice": "0đ",
-    "freeItems": {
-      "classes": "{max} lớp học",
-      "students": "Tối đa {max} học sinh cho mỗi giáo viên",
-      "ai": "{max} trang trích xuất bằng AI mỗi tháng",
-      "history": "Lưu lịch sử {max} ngày",
-      "unlimited": "Không giới hạn số buổi học và câu hỏi"
-    },
-    "proName": "Gói Trung tâm",
-    "proPrice": "Sắp công bố",
-    "comingSoon": "Sắp ra mắt",
-    "proItems": {
-      "unlimited": "Không giới hạn lớp và học sinh",
-      "ai": "200 trang trích xuất bằng AI mỗi tháng",
-      "history": "Lưu lịch sử không giới hạn",
-      "export": "Xuất báo cáo điểm danh, điểm số ra Excel",
-      "center": "Nhiều giáo viên trong một trung tâm"
-    },
-    "notifyBody": "Gói Trung tâm đang hoàn thiện. Khi ra mắt, chúng tôi sẽ báo qua email {email} và ưu tiên nâng cấp cho các tài khoản đăng ký sớm.",
+    "activationNote": "Thanh toán bằng chuyển khoản, gói được kích hoạt thủ công trong vòng 24 giờ làm việc. Cổng thanh toán tự động sẽ có sau.",
     "back": "Về danh sách lớp"
   },
   "StudentInfo": {
@@ -834,5 +814,138 @@
     "deleteComment": "Xóa góp ý",
     "notFound": "Không tìm thấy bộ đề, hoặc bài đã bị ẩn / lưu trữ.",
     "back": "Về cộng đồng"
+  },
+  "Pricing": {
+    "eyebrow": "Bảng giá",
+    "title": "Miễn phí để bắt đầu, nâng cấp khi lớp đông hơn.",
+    "body": "Gói miễn phí đủ cho vài lớp nhỏ. Gold cho giáo viên dạy nhiều lớp, Platinum cho trung tâm và người dùng AI nhiều.",
+    "billingLabel": "Chu kỳ thanh toán",
+    "billingMonthly": "Theo tháng",
+    "billingYearly": "Theo năm",
+    "yearlySave": "Tiết kiệm 30%",
+    "note": "Giá đã gồm VAT. Gói năm thanh toán một lần, bằng 70% giá 12 tháng.",
+    "perMonth": "/tháng",
+    "yearlyBilled": "Thanh toán {total} một lần cho 12 tháng",
+    "monthlyBilled": "Hoặc {yearly}/năm khi trả theo năm",
+    "forever": "Miễn phí mãi mãi, không cần thẻ",
+    "popular": "Phổ biến nhất",
+    "current": "Gói hiện tại",
+    "compareTitle": "So sánh chi tiết các gói",
+    "compareFeature": "Quyền lợi",
+    "plans": {
+      "free": {
+        "tagline": "Cho thầy cô mới bắt đầu",
+        "features": [
+          "2 lớp học, tối đa 30 học sinh",
+          "300 câu hỏi trong ngân hàng",
+          "20 trang AI đọc đề mỗi tháng",
+          "Lưu lịch sử 30 ngày",
+          "Cộng đồng: xem, đăng, lấy về 20 bộ đề mỗi ngày"
+        ],
+        "cta": "Bắt đầu miễn phí"
+      },
+      "gold": {
+        "tagline": "Cho giáo viên dạy nhiều lớp",
+        "features": [
+          "10 lớp học, tối đa 300 học sinh",
+          "5.000 câu hỏi trong ngân hàng",
+          "150 trang AI đọc đề mỗi tháng",
+          "Lưu lịch sử 12 tháng",
+          "Báo cáo, xuất Excel/PDF (sắp có)",
+          "Máy chiếu đầy đủ (sắp có)",
+          "Cộng đồng: lấy về không giới hạn, 1 bài nổi bật mỗi tháng",
+          "Hỗ trợ qua email trong 48 giờ"
+        ],
+        "cta": "Chọn Gold"
+      },
+      "platinum": {
+        "tagline": "Cho trung tâm và người dùng AI nhiều",
+        "features": [
+          "Không giới hạn lớp, tối đa 1.000 học sinh",
+          "Ngân hàng câu hỏi không giới hạn",
+          "300 trang AI mỗi tháng, gồm 50 trang chế độ chính xác cao",
+          "Lưu lịch sử không giới hạn",
+          "Báo cáo, xuất file và phiếu kết quả gửi phụ huynh (sắp có)",
+          "Máy chiếu gắn logo trung tâm (sắp có)",
+          "Cộng đồng: huy hiệu tác giả, ưu tiên nổi bật",
+          "Hỗ trợ Zalo ưu tiên trong 24 giờ"
+        ],
+        "soon": "Sắp có riêng cho Platinum: 3 tài khoản giáo viên chung trung tâm, ngân hàng dùng chung, thông báo phụ huynh qua Zalo.",
+        "cta": "Chọn Platinum"
+      }
+    },
+    "compare": {
+      "rows": [
+        {
+          "label": "Lớp học",
+          "free": "2",
+          "gold": "10",
+          "platinum": "Không giới hạn"
+        },
+        {
+          "label": "Học sinh (tất cả lớp)",
+          "free": "30",
+          "gold": "300",
+          "platinum": "1.000"
+        },
+        {
+          "label": "Ngân hàng câu hỏi",
+          "free": "300 câu",
+          "gold": "5.000 câu",
+          "platinum": "Không giới hạn"
+        },
+        {
+          "label": "AI đọc đề",
+          "free": "20 trang/tháng",
+          "gold": "150 trang/tháng",
+          "platinum": "300 trang/tháng + 50 trang chính xác cao"
+        },
+        {
+          "label": "Lịch sử điểm danh, kết quả",
+          "free": "30 ngày",
+          "gold": "12 tháng",
+          "platinum": "Không giới hạn"
+        },
+        {
+          "label": "Báo cáo, xuất file",
+          "free": "—",
+          "gold": "Excel/PDF",
+          "platinum": "Excel/PDF + phiếu phụ huynh"
+        },
+        {
+          "label": "Máy chiếu",
+          "free": "Cơ bản",
+          "gold": "Đầy đủ",
+          "platinum": "Gắn logo trung tâm"
+        },
+        {
+          "label": "Cộng đồng",
+          "free": "Lấy về 20 bộ/ngày",
+          "gold": "Không giới hạn, 1 bài nổi bật/tháng",
+          "platinum": "Huy hiệu tác giả, ưu tiên nổi bật"
+        },
+        {
+          "label": "Hỗ trợ",
+          "free": "Cộng đồng",
+          "gold": "Email trong 48 giờ",
+          "platinum": "Zalo ưu tiên trong 24 giờ"
+        }
+      ]
+    },
+    "order": {
+      "title": "Đăng ký gói {plan}",
+      "summary": "{plan} · {cycle}",
+      "cycleMonthly": "1 tháng",
+      "cycleYearly": "12 tháng",
+      "step1": "Chuyển khoản đúng số tiền và nội dung dưới đây để chúng tôi đối chiếu.",
+      "bank": "Ngân hàng",
+      "account": "Số tài khoản",
+      "owner": "Chủ tài khoản",
+      "amount": "Số tiền",
+      "memo": "Nội dung",
+      "missingBank": "Thông tin tài khoản nhận đang được cập nhật. Vui lòng liên hệ hỗ trợ để được hướng dẫn thanh toán.",
+      "step2": "Sau khi nhận được tiền, gói được kích hoạt thủ công trong vòng 24 giờ làm việc và báo về email {email}.",
+      "contact": "Cần hỗ trợ nhanh: Zalo {zalo}."
+    }
   }
 }
