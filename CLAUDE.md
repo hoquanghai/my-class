@@ -25,7 +25,7 @@ Prereqs: Node 24, pnpm 9 (`corepack enable`), Docker Desktop.
 
 ```bash
 pnpm install
-pnpm infra:up                 # postgres :5433 (not 5432), redis :6379, minio :9000/:9001, mailpit :8025/:1025
+pnpm infra:up                 # postgres :5433 (not 5432), redis :6379, mailpit :8025/:1025
 cp apps/api/.env.example apps/api/.env          # or keep personal secrets in apps/api/.env.dev (gitignored): in dev, Nest and prisma.config.ts load .env.dev first, then .env
 cp apps/web/.env.example apps/web/.env.local
 pnpm db:migrate               # prisma migrate dev in apps/api (also regenerates the client)
@@ -80,7 +80,7 @@ Build-graph notes:
 - Two global guards, both of which skip non-HTTP contexts because the Socket.IO gateway authenticates on connect:
   - `JwtAuthGuard`: default is a teacher access JWT (cookie `lh_at` or Bearer) exposed via `@CurrentTeacher()`. `@Public()` skips auth. `@StudentRoute()` expects a student device token (cookie `lh_st` or Bearer; JWT with `kind: 'student'`, checked against `StudentDevice.revokedAt`) exposed via `@CurrentStudent()` as `{ deviceId, studentId, classId }`.
   - `HttpThrottlerGuard`: 120 req/min/IP globally; auth endpoints use `@Throttle(AUTH_THROTTLE)` for 10/min.
-- Env is a zod schema in `config/env.ts`, validated at boot; read with `ConfigService<Env, true>` and `{ infer: true }`. Driver-style switches select in-memory implementations for tests and single-instance runs: `MAIL_TRANSPORT` (`smtp` = Mailpit in dev, `resend` = Resend HTTPS API for production and needs `RESEND_API_KEY` plus a verified sending domain in `MAIL_FROM`, `memory` = test outbox), `STORAGE_DRIVER`, `AI_PROVIDER`, `QUEUE_DRIVER` (bullmq | inline), `REALTIME_ADAPTER` (redis | memory), `WORKER_INLINE`.
+- Env is a zod schema in `config/env.ts`, validated at boot; read with `ConfigService<Env, true>` and `{ infer: true }`. Driver-style switches select in-memory implementations for tests and single-instance runs: `MAIL_TRANSPORT` (`smtp` = Mailpit in dev, `resend` = Resend HTTPS API for production and needs `RESEND_API_KEY` plus a verified sending domain in `MAIL_FROM`, `memory` = test outbox), `STORAGE_DRIVER` (`spaces` = DigitalOcean Spaces, needs `SPACES_KEY`/`SPACES_SECRET`; `memory` = RAM, for tests and before the keys are filled), `AI_PROVIDER`, `QUEUE_DRIVER` (bullmq | inline), `REALTIME_ADAPTER` (redis | memory), `WORKER_INLINE`.
 
 ### Module conventions
 

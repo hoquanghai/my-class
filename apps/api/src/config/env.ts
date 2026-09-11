@@ -34,16 +34,22 @@ export const envSchema = z
     /** Nhận email khi giáo viên báo đã chuyển khoản (kèm link duyệt kích hoạt gói). */
     BILLING_ADMIN_EMAIL: z.string().default('hoquanghai.bka@gmail.com'),
 
-    /** `s3` = MinIO (dev) hoặc Cloudflare R2 (prod); `memory` chỉ dùng cho test. */
-    STORAGE_DRIVER: z.enum(['s3', 'memory']).default('s3'),
-    S3_ENDPOINT: z.string().optional(),
-    S3_REGION: z.string().default('auto'),
-    S3_BUCKET: z.string().default('lophoc'),
-    S3_ACCESS_KEY: z.string().optional(),
-    S3_SECRET_KEY: z.string().optional(),
-    /** URL công khai của bucket, ví dụ http://localhost:9000/lophoc hoặc https://media.example.com */
-    S3_PUBLIC_URL: z.string().optional(),
-    S3_FORCE_PATH_STYLE: z.stringbool().default(true),
+    /** `spaces` = DigitalOcean Spaces (API tương thích S3); `memory` cho test và khi chưa có khóa. */
+    STORAGE_DRIVER: z.enum(['spaces', 'memory']).default('spaces'),
+    /** Vùng của Space: sgp1 (Singapore, gần Việt Nam nhất), nyc3, fra1, sfo3, blr1, syd1… */
+    SPACES_REGION: z.string().default('sgp1'),
+    /** Tên Space (vai trò như bucket S3). */
+    SPACES_BUCKET: z.string().default('lophoc'),
+    /** Access Key ID, 20 ký tự dạng DO00… (https://cloud.digitalocean.com/account/api/spaces). */
+    SPACES_KEY: z.string().optional(),
+    /** Secret key, 43 ký tự; DigitalOcean chỉ hiện một lần lúc tạo khóa. */
+    SPACES_SECRET: z.string().optional(),
+    /** Ghi đè endpoint; mặc định https://<vùng>.digitaloceanspaces.com */
+    SPACES_ENDPOINT: z.string().optional(),
+    /** URL công khai; mặc định https://<space>.<vùng>.digitaloceanspaces.com. Đặt khi bật CDN hoặc dùng tên miền riêng. */
+    SPACES_PUBLIC_URL: z.string().optional(),
+    /** Tiền tố key để tách file dev/prod trong cùng một Space, ví dụ `dev`. */
+    SPACES_PREFIX: z.string().optional(),
 
     /**
      * Trích xuất câu hỏi từ ảnh/PDF. `mock` không gọi mạng (dev/test);
@@ -73,6 +79,17 @@ export const envSchema = z
     WORKER_INLINE: z.stringbool().default(true),
   })
   .superRefine((env, ctx) => {
+    if (env.STORAGE_DRIVER === 'spaces') {
+      for (const key of ['SPACES_KEY', 'SPACES_SECRET'] as const) {
+        if (!env[key]) {
+          ctx.addIssue({
+            code: 'custom',
+            path: [key],
+            message: `STORAGE_DRIVER=spaces cần ${key} (https://cloud.digitalocean.com/account/api/spaces)`,
+          });
+        }
+      }
+    }
     if (env.MAIL_TRANSPORT === 'resend' && !env.RESEND_API_KEY) {
       ctx.addIssue({
         code: 'custom',
