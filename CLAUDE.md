@@ -10,7 +10,8 @@ Read these before starting a slice, in order:
 
 1. `mvp-requirements-classroom-app.md` — requirements, free-tier limits, non-goals, working method (§11).
 2. `docs/superpowers/specs/2026-09-08-classroom-app-design.md` — approved architecture, Prisma schema rationale, module breakdown, slice order S0–S8, decisions (§12).
-3. `docs/superpowers/plans/*.md` — one plan per slice, each with a status header at the top. S0–S4 are complete; S5 (projector `/present/[sessionId]`, realtime control) is next, then S6 reports, S7 analytics/feedback/landing, S8 deploy + load test.
+3. `docs/superpowers/plans/*.md` — one plan per slice, each with a status header at the top.
+4. `docs/backlog.md` — ideas the user explicitly deferred (with dates and reasons); check it before proposing something "new". S0–S4 are complete; S5 (projector `/present/[sessionId]`, realtime control) is next, then S6 reports, S7 analytics/feedback/landing, S8 deploy + load test.
 
 Conventions that are not obvious from the code:
 
