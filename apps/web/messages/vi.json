@@ -205,7 +205,10 @@
     "profile": "Hồ sơ giáo viên",
     "accountMenu": "Tài khoản",
     "upgrade": "Nâng cấp gói",
-    "community": "Cộng đồng"
+    "community": "Cộng đồng",
+    "planFree": "Gói miễn phí",
+    "planPaid": "Gói {plan} · đến {date}",
+    "planPaidNoExpiry": "Gói {plan}"
   },
   "Classes": {
     "title": "Lớp học của tôi",
@@ -647,7 +650,7 @@
     "usageTitle": "Mức đang dùng",
     "usageStudents": "Học sinh (tất cả các lớp)",
     "usageClasses": "Lớp học",
-    "activationNote": "Thanh toán bằng chuyển khoản, gói được kích hoạt thủ công trong vòng 24 giờ làm việc. Cổng thanh toán tự động sẽ có sau.",
+    "activationNote": "Thanh toán bằng chuyển khoản qua mã QR, sau đó bấm \"Tôi đã chuyển khoản\" để gửi xác nhận. Admin đối chiếu và kích hoạt trong vòng 24 giờ làm việc; bạn sẽ nhận email khi gói có hiệu lực.",
     "back": "Về danh sách lớp"
   },
   "StudentInfo": {
@@ -943,9 +946,38 @@
       "owner": "Chủ tài khoản",
       "amount": "Số tiền",
       "memo": "Nội dung",
-      "missingBank": "Thông tin tài khoản nhận đang được cập nhật. Vui lòng liên hệ hỗ trợ để được hướng dẫn thanh toán.",
-      "step2": "Sau khi nhận được tiền, gói được kích hoạt thủ công trong vòng 24 giờ làm việc và báo về email {email}.",
-      "contact": "Cần hỗ trợ nhanh: Zalo {zalo}."
+      "step2": "Sau khi chuyển khoản xong, bấm \"Tôi đã chuyển khoản\" để gửi xác nhận. Admin đối chiếu và kích hoạt trong vòng 24 giờ làm việc, báo về email {email}.",
+      "contact": "Cần hỗ trợ nhanh: Zalo {zalo}.",
+      "qrAlt": "Mã QR chuyển khoản {plan} {cycle}",
+      "scanHint": "Quét mã bằng ứng dụng ngân hàng, số tiền đã điền sẵn. Kiểm tra lại nội dung chuyển khoản trước khi xác nhận.",
+      "paid": "Tôi đã chuyển khoản",
+      "confirmBody": "Xác nhận bạn đã chuyển {amount} cho gói {plan} · {cycle}. Yêu cầu sẽ được gửi tới admin để đối chiếu.",
+      "noteLabel": "Ghi chú cho admin (tùy chọn)",
+      "notePlaceholder": "VD: chuyển từ Vietcombank lúc 10:15, tên người chuyển nếu khác tên tài khoản…",
+      "back": "Quay lại",
+      "send": "Gửi xác nhận",
+      "sent": "Đã gửi yêu cầu, trạng thái Chờ xác nhận. Admin sẽ kích hoạt trong 24 giờ làm việc và báo về email {email}.",
+      "pendingExists": "Bạn đang có yêu cầu {plan} · {cycle} gửi lúc {date} chờ xác nhận. Vui lòng đợi xử lý xong trước khi gửi yêu cầu mới.",
+      "pendingShort": "Bạn đang có một yêu cầu chờ xác nhận, vui lòng đợi admin xử lý."
+    }
+  },
+  "Billing": {
+    "currentPlanTitle": "Gói hiện tại",
+    "planFreeHint": "Chưa có gói trả phí. Chọn Gold hoặc Platinum bên dưới để mở rộng giới hạn.",
+    "planUntil": "Hiệu lực đến {date}",
+    "planNoExpiry": "Không giới hạn thời gian",
+    "pendingBanner": "Yêu cầu {plan} · {cycle} gửi lúc {date} đang chờ admin xác nhận. Bạn sẽ nhận email khi gói được kích hoạt.",
+    "historyTitle": "Lịch sử thanh toán",
+    "historyEmpty": "Chưa có giao dịch nào.",
+    "colDate": "Ngày gửi",
+    "colPlan": "Gói",
+    "colAmount": "Số tiền",
+    "colStatus": "Trạng thái",
+    "colNote": "Ghi chú",
+    "activatedUntil": "đến {date}",
+    "cycle": {
+      "monthly": "1 tháng",
+      "yearly": "12 tháng"
     }
   }
 }

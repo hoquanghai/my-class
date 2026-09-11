@@ -6,7 +6,13 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { ErrorCodes, type LoginInput, type SignupInput, type TeacherDto } from '@lophoc/shared';
+import {
+  effectivePlan,
+  ErrorCodes,
+  type LoginInput,
+  type SignupInput,
+  type TeacherDto,
+} from '@lophoc/shared';
 import type { Env } from '../../config/env.js';
 import type { Teacher } from '../../generated/prisma/client.js';
 import { PrismaService } from '../../prisma/prisma.service.js';
@@ -42,7 +48,8 @@ export function toTeacherDto(t: TeacherWithIdentities): TeacherDto {
     name: t.name,
     avatarUrl: t.avatarUrl,
     emailVerified: t.emailVerifiedAt !== null,
-    plan: t.plan,
+    plan: effectivePlan(t.plan, t.planExpiresAt),
+    planExpiresAt: t.planExpiresAt?.toISOString() ?? null,
     phone: t.phone,
     school: t.school,
     levels: t.levels as TeacherDto['levels'],

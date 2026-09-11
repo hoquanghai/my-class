@@ -34,3 +34,6 @@ apps/web/next-env.d.ts
 # File môi trường cá nhân khác (ví dụ .env.dev), không đẩy lên repo
 .env.dev
 .env.*.local
+
+# Ảnh QR gốc chụp từ app ngân hàng (bản đã cắt nằm ở apps/web/public/img/qr)
+/bank/

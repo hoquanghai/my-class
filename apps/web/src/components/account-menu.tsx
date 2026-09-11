@@ -1,11 +1,12 @@
 'use client';
 
-import type { TeacherDto } from '@lophoc/shared';
+import { PLAN_NAMES, type PlanId, type TeacherDto } from '@lophoc/shared';
 import { ChevronDown, LogOut, Sparkles, UserRound } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 import { cn } from '@/components/ui/cn';
+import { formatDate } from '@/lib/format';
 import { initials } from '@/lib/teachers';
 
 /** Ảnh đại diện tròn; không có ảnh thì hiện chữ cái đầu trên nền accent nhạt. */
@@ -88,6 +89,18 @@ export function AccountMenu({
         <div className="px-3 py-2">
           <p className="truncate text-sm font-semibold text-ink">{teacher.name}</p>
           <p className="truncate text-xs text-ink-muted">{teacher.email}</p>
+          <p className="mt-0.5 text-xs font-medium text-accent">
+            {teacher.plan === 'free'
+              ? t('planFree')
+              : teacher.planExpiresAt
+                ? t('planPaid', {
+                    plan: PLAN_NAMES[teacher.plan as PlanId] ?? teacher.plan,
+                    date: formatDate(teacher.planExpiresAt),
+                  })
+                : t('planPaidNoExpiry', {
+                    plan: PLAN_NAMES[teacher.plan as PlanId] ?? teacher.plan,
+                  })}
+          </p>
         </div>
         <Link
           href="/app/profile"

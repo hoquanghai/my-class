@@ -25,6 +25,8 @@ export const envSchema = z.object({
   MAIL_FROM: z.string().default('Lớp Học <no-reply@lophoc.app>'),
   /** `memory` giữ email trong RAM (dùng cho test), `smtp` gửi thật (Mailpit ở dev). */
   MAIL_TRANSPORT: z.enum(['smtp', 'memory']).default('smtp'),
+  /** Nhận email khi giáo viên báo đã chuyển khoản (kèm link duyệt kích hoạt gói). */
+  BILLING_ADMIN_EMAIL: z.string().default('hoquanghai.bka@gmail.com'),
 
   /** `s3` = MinIO (dev) hoặc Cloudflare R2 (prod); `memory` chỉ dùng cho test. */
   STORAGE_DRIVER: z.enum(['s3', 'memory']).default('s3'),

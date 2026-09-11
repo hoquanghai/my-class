@@ -7,6 +7,7 @@ import { validateEnv } from './config/env.js';
 import { AiImportModule } from './modules/ai-import/ai-import.module.js';
 import { AnalyticsModule } from './modules/analytics/analytics.module.js';
 import { AuthModule } from './modules/auth/auth.module.js';
+import { BillingModule } from './modules/billing/billing.module.js';
 import { ClassesModule } from './modules/classes/classes.module.js';
 import { CommunityModule } from './modules/community/community.module.js';
 import { FeatureFlagsModule } from './modules/feature-flags/feature-flags.module.js';
@@ -50,6 +51,7 @@ import { PrismaModule } from './prisma/prisma.module.js';
     SessionsModule,
     StudentProfileModule,
     CommunityModule,
+    BillingModule,
     QuestionsModule,
     AiImportModule,
     QuizzesModule,

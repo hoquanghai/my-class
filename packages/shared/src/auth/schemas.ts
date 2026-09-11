@@ -92,7 +92,9 @@ export interface TeacherDto {
   name: string;
   avatarUrl: string | null;
   emailVerified: boolean;
+  /** Gói đang hiệu lực (`free` khi gói trả phí đã hết hạn) */
   plan: string;
+  planExpiresAt: string | null;
   phone: string | null;
   school: string | null;
   levels: TeachingLevel[];

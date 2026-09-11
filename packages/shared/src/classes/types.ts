@@ -88,6 +88,8 @@ export const ErrorCodes = {
   LIMIT_COMMUNITY_CLONES: 'LIMIT_COMMUNITY_CLONES',
   /** Cần xác minh email trước khi đăng bài / bình luận / báo cáo. */
   EMAIL_NOT_VERIFIED: 'EMAIL_NOT_VERIFIED',
+  /** Đang có yêu cầu thanh toán chờ admin xác nhận. */
+  PAYMENT_PENDING: 'PAYMENT_PENDING',
   STUDENT_BOUND: 'STUDENT_BOUND',
 } as const;
 export type ErrorCode = (typeof ErrorCodes)[keyof typeof ErrorCodes];

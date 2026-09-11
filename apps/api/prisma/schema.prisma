@@ -22,7 +22,8 @@ model Teacher {
   school          String?
   levels          String[]  @default([]) // thcs | thpt
   subjects        String[]  @default([]) // toan | vat_ly | ...
-  plan            String    @default("free")
+  plan            String    @default("free") // free | gold | platinum (hiệu lực tới planExpiresAt)
+  planExpiresAt   DateTime?
   acceptedTermsAt DateTime?
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
@@ -44,6 +45,7 @@ model Teacher {
   sharedSetComments SharedSetComment[]
   sharedSetReports  SharedSetReport[]
   sharedSetClones   SharedSetClone[]
+  paymentRequests   PaymentRequest[]
 }
 
 model AuthIdentity {
@@ -553,4 +555,25 @@ model SharedSetClone {
 
   @@index([setId])
   @@index([teacherId, createdAt])
+}
+
+/// Yêu cầu thanh toán bằng chuyển khoản; admin duyệt qua link trong email (kích hoạt tay).
+model PaymentRequest {
+  id             String    @id @default(cuid())
+  teacherId      String
+  plan           String // gold | platinum
+  cycle          String // monthly | yearly
+  amount         Int
+  memo           String
+  note           String?
+  status         String    @default("pending") // pending | confirmed | rejected
+  reviewedAt     DateTime?
+  reviewNote     String?
+  activatedUntil DateTime?
+  createdAt      DateTime  @default(now())
+
+  teacher Teacher @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+
+  @@index([teacherId, createdAt])
+  @@index([status])
 }

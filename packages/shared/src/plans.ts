@@ -96,6 +96,43 @@ export const PLAN_LIMITS: Record<PlanId, PlanLimits> = {
   },
 };
 
+/** Tài khoản nhận thanh toán, trùng với thông tin in trên 4 mã VietQR trong `apps/web/public/img/qr`. */
+export const BANK_ACCOUNT = {
+  bank: 'TPBank',
+  account: '68686895995',
+  owner: 'HO QUANG HAI',
+} as const;
+
+/** Ảnh mã QR chuyển khoản đúng số tiền của gói/chu kỳ (null với gói miễn phí). */
+export function qrImagePath(plan: PlanId, cycle: BillingCycle): string | null {
+  return plan === 'free' ? null : `/img/qr/${plan}-${cycle}.webp`;
+}
+
+/** Gói đang hiệu lực: gói trả phí quá hạn thì tính là miễn phí; không có hạn = kích hoạt vĩnh viễn. */
+export function effectivePlan(
+  plan: string,
+  expiresAt: Date | string | null | undefined,
+  now: number = Date.now(),
+): PlanId {
+  if (plan !== 'gold' && plan !== 'platinum') return 'free';
+  if (!expiresAt) return plan;
+  const t = typeof expiresAt === 'string' ? Date.parse(expiresAt) : expiresAt.getTime();
+  return t > now ? plan : 'free';
+}
+
+/** Hạn mới khi kích hoạt: nối tiếp hạn cũ nếu cùng gói và còn hạn, ngược lại tính từ lúc duyệt. */
+export function extendExpiry(
+  current: { plan: string; expiresAt: Date | null },
+  plan: PlanId,
+  cycle: BillingCycle,
+  now: Date = new Date(),
+): Date {
+  const keep = current.plan === plan && current.expiresAt !== null && current.expiresAt > now;
+  const base = new Date(keep ? (current.expiresAt as Date) : now);
+  base.setMonth(base.getMonth() + (cycle === 'yearly' ? 12 : 1));
+  return base;
+}
+
 /** Nội dung chuyển khoản để kích hoạt tay: `LOPHOC GOLD 12T ten@email`. */
 export function transferMemo(plan: PlanId, cycle: BillingCycle, email: string): string {
   return `LOPHOC ${plan.toUpperCase()} ${cycle === 'yearly' ? 12 : 1}T ${email}`;
